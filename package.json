@@ -9,8 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "computer": "file:../computer/",
-    "crt": "file:../crt/",
+    "ITSBasic": "file:../ITSBasic/",
     "gl-shader": "^4.0.5",
     "gl-texture2d": "^2.0.9"
   },

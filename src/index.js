@@ -1,10 +1,9 @@
-const Computer = require('computer');
-const CRT = require('CRT');
+const {Computer, CRT} = require('ITSBasic');
 const createTexture = require("gl-texture2d");
 const createShader = require("gl-shader");
 
 const computer = new Computer();
-const screen = CRT(computer.env);
+const screen = CRT(computer);
 
 document.body.addEventListener('keydown', e => computer.keys.down(e), false);
 document.body.addEventListener('keyup', e => computer.keys.up(e), false);
@@ -53,10 +52,10 @@ gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
 gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
   -1.0, -1.0,
   1.0, -1.0,
-  -1.0,  1.0,
-  -1.0,  1.0,
+  -1.0, 1.0,
+  -1.0, 1.0,
   1.0, -1.0,
-  1.0,  1.0
+  1.0, 1.0
 ]), gl.STATIC_DRAW);
 gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
 
