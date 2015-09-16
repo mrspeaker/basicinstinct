@@ -1,0 +1,21 @@
+{
+  "name": "main",
+  "version": "1.0.0",
+  "description": "",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "budo src/index.js:bundle.js | garnish"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "computer": "file:../computer/",
+    "crt": "file:../crt/",
+    "gl-shader": "^4.0.5",
+    "gl-texture2d": "^2.0.9"
+  },
+  "devDependencies": {
+    "budo": "^4.2.1",
+    "garnish": "^3.2.0"
+  }
+}
