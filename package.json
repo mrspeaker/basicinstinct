@@ -7,11 +7,12 @@
     "start": "budo src/index.js:bundle.js | garnish"
   },
   "author": "",
-  "license": "ISC",
+  "license": "",
   "dependencies": {
     "ITSBasic": "file:../ITSBasic/",
     "gl-shader": "^4.0.5",
-    "gl-texture2d": "^2.0.9"
+    "gl-texture2d": "^2.0.9",
+    "three": "^0.71.1"
   },
   "devDependencies": {
     "budo": "^4.2.1",

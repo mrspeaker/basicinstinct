@@ -1,78 +1,56 @@
+const {THREE} = require('three');
 const {Computer, CRT} = require('ITSBasic');
-const createTexture = require("gl-texture2d");
-const createShader = require("gl-shader");
 
 const computer = new Computer();
 const screen = CRT(computer);
+const screenTexture = new THREE.Texture(screen);
 
 document.body.addEventListener('keydown', e => computer.keys.down(e), false);
 document.body.addEventListener('keyup', e => computer.keys.up(e), false);
 
-const w = screen.width;
-const h = screen.height;
+var scene, camera, renderer, mesh;
 
-const container = document.querySelector('#container');
-const canvas = document.createElement("canvas");
-canvas.width = w;
-canvas.height = h;
-container.appendChild(canvas);
+init();
+animate();
 
-const vertShader = `attribute vec2 _p;
-varying vec2 uv;
-void main() {
-  gl_Position = vec4(_p,0.0,1.0);
-  uv = vec2(0.5, 0.5) * (_p+vec2(1.0, 1.0));
-}`;
-const fragShader = `precision highp float;
-varying vec2 uv;
-uniform sampler2D texture;
+function init() {
 
-void main() {
-  float o = clamp(abs(sin(uv.y * 1000.)), 0.8, 1.0);
-  gl_FragColor = vec4(
-    vec3(
-      texture2D(texture, uv).r * o,
-      texture2D(texture, uv).g * o,
-      texture2D(texture, uv).b * o
-    ),
-    1.0);
-}`;
-const opts = {};
-const gl = (
-  canvas.getContext("webgl", opts) ||
-  canvas.getContext("webgl-experimental", opts) ||
-  canvas.getContext("experimental-webgl", opts)
-);
+  scene = new THREE.Scene();
 
-gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
-gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
+  camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 1, 10000 );
+  camera.position.z = 2;
 
-const buffer = gl.createBuffer();
-gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
-gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
-  -1.0, -1.0,
-  1.0, -1.0,
-  -1.0, 1.0,
-  -1.0, 1.0,
-  1.0, -1.0,
-  1.0, 1.0
-]), gl.STATIC_DRAW);
-gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+  const geometry = new THREE.BoxGeometry( 1.6, 1, 1 );
+  const material = new THREE.MeshBasicMaterial( { color: 0xff0000, wireframe: true } );
 
-gl.enable(gl.BLEND);
-gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+  mesh = new THREE.Mesh( geometry, material );
+  scene.add( mesh );
 
-const shader = createShader(gl, vertShader, fragShader);
-shader.bind();
-shader.attributes._p.pointer();
+  renderer = new THREE.WebGLRenderer();
+  renderer.setSize( window.innerWidth, window.innerHeight );
 
-const texture = createTexture(gl, [ w, h ]);
-texture.minFilter = texture.magFilter = gl.LINEAR;
+  document.body.appendChild( renderer.domElement );
 
-function loop() {
-  requestAnimationFrame(loop);
-  texture.setPixels(screen);
-  texture.bind();
-  gl.drawArrays(gl.TRIANGLES, 0, 6);
+  var screenMaterial = new THREE.MeshBasicMaterial({
+    map : screenTexture,
+    side: THREE.DoubleSide
+  });
+  screenMaterial.map.minFilter = THREE.NearestFilter;
+  const screenMesh = new THREE.Mesh(
+    new THREE.PlaneBufferGeometry(screen.width, screen.height),
+    screenMaterial);
+  screenMesh.scale.set(0.005  , 0.005, 1);
+  screenMesh.position.x = 0;
+  screenMesh.position.y = 0;
+  screenMesh.position.z = 0.501;
+  mesh.add(screenMesh);
 }
-loop();
+
+function animate() {
+  requestAnimationFrame( animate );
+
+  mesh.rotation.y = Math.sin(Date.now() / 3000) * 0.7;
+
+  renderer.render( scene, camera );
+  screenTexture.needsUpdate = true;
+}
