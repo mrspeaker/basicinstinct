@@ -1,6 +1,9 @@
 const {THREE} = require('three');
 const {Computer, CRT} = require('ITSBasic');
 
+const geometry = new THREE.BoxGeometry( 1.8, 1.2, 1 );
+const material = new THREE.MeshLambertMaterial( { color: 0x956E46 } );
+
 class Compy {
 
   constructor () {
@@ -9,9 +12,6 @@ class Compy {
     const computer = new Computer();
     const screen = CRT(computer);
 
-    const geometry = new THREE.BoxGeometry( 1.8, 1.2, 1 );
-    const material = new THREE.MeshLambertMaterial( { color: 0x956E46 } );
-
     this.mesh = new THREE.Mesh( geometry, material );
 
     const screenTexture = new THREE.Texture(screen);
@@ -19,7 +19,6 @@ class Compy {
       map : screenTexture,
       side: THREE.DoubleSide
     });
-    //screenMaterial.map.minFilter = THREE.NearestFilter;
     screenMaterial.map.minFilter = THREE.LinearFilter;
     const screenMesh = new THREE.Mesh(
       new THREE.PlaneBufferGeometry(screen.width, screen.height),
@@ -34,11 +33,22 @@ class Compy {
     this.computer = computer;
   }
 
+  on (eventName, event) {
+    switch (eventName) {
+    case 'keydown':
+      console.log("down")
+      this.computer.keys.down(event);
+      break;
+    case 'keyup':
+      this.computer.keys.up(event);
+      break;
+    }
+  }
+
   update () {
     if (this.tick++ % 4 === 0) {
       this.texture.needsUpdate = true;
     }
-    //this.mesh.rotation.y = Math.sin((this.tick/100) + (Date.now() / 3000)) * 0.7;
   }
 
 }
