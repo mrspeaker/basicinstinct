@@ -1,56 +1,67 @@
 const {THREE} = require('three');
-const {Computer, CRT} = require('ITSBasic');
+const Computer = require('./Computer');
 
 const computer = new Computer();
-const screen = CRT(computer);
-const screenTexture = new THREE.Texture(screen);
+const compy = new Computer();
 
-document.body.addEventListener('keydown', e => computer.keys.down(e), false);
-document.body.addEventListener('keyup', e => computer.keys.up(e), false);
-
-var scene, camera, renderer, mesh;
+var scene, camera, renderer;
 
 init();
 animate();
 
 function init() {
 
+  document.body.addEventListener('keydown', e => computer.computer.keys.down(e), false);
+  document.body.addEventListener('keyup', e => computer.computer.keys.up(e), false);
+
+
+
   scene = new THREE.Scene();
 
   camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 1, 10000 );
   camera.position.z = 2;
-
-  const geometry = new THREE.BoxGeometry( 1.6, 1, 1 );
-  const material = new THREE.MeshBasicMaterial( { color: 0xff0000, wireframe: true } );
-
-  mesh = new THREE.Mesh( geometry, material );
-  scene.add( mesh );
 
   renderer = new THREE.WebGLRenderer();
   renderer.setSize( window.innerWidth, window.innerHeight );
 
   document.body.appendChild( renderer.domElement );
 
-  var screenMaterial = new THREE.MeshBasicMaterial({
-    map : screenTexture,
-    side: THREE.DoubleSide
-  });
-  screenMaterial.map.minFilter = THREE.NearestFilter;
-  const screenMesh = new THREE.Mesh(
-    new THREE.PlaneBufferGeometry(screen.width, screen.height),
-    screenMaterial);
-  screenMesh.scale.set(0.005  , 0.005, 1);
-  screenMesh.position.x = 0;
-  screenMesh.position.y = 0;
-  screenMesh.position.z = 0.501;
-  mesh.add(screenMesh);
+  scene.add( computer.mesh );
+  scene.add( compy.mesh );
+
+  compy.mesh.position.set(0.0, 2.0, -7.0);
+  computer.mesh.position.set(0.0, -0.4, -1.0);
+  computer.mesh.rotation.y = Math.PI/8;
+  compy.mesh.rotation.y = -Math.PI/5;
+  compy.mesh.rotation.x = 0.2;
+  addLights();
+
 }
+
+function addLights() {
+  const ambLight = new THREE.AmbientLight(0xFFf7d1);
+  scene.add(ambLight);
+
+  // var dirLight = new THREE.DirectionalLight(0xffffff, 1);
+  // dirLight.position.set(100, 100, 50);
+  // scene.add(dirLight);
+
+  //var hemLight = new THREE.HemisphereLight(0xffe5bb, 0xFFBF00, .1);
+//scene.add(hemLight)
+
+  var bluePoint = new THREE.PointLight(0xFEFFDE, 3, 10);
+bluePoint.position.set( 3, 3, 1 );
+scene.add(bluePoint);
+scene.add(new THREE.PointLightHelper(bluePoint, 3));
+
+}
+
 
 function animate() {
   requestAnimationFrame( animate );
 
-  mesh.rotation.y = Math.sin(Date.now() / 3000) * 0.7;
+  computer.update();
+  compy.update();
 
   renderer.render( scene, camera );
-  screenTexture.needsUpdate = true;
 }
