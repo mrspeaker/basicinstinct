@@ -13,36 +13,74 @@ class Room {
 
     this.scene = new THREE.Scene();
 
-    this.items = (DATA.items || []).map(i => {
-      const item = items[i.type];
-      if (items[i.type]) {
-        const args = i.args || {};
-        const itemInst = new item(args);
-        itemInst.mesh.userData.inst = itemInst;
-        itemInst.id = UUID();
-
-        i.pos && itemInst.mesh.position.set(...i.pos);
-        i.rot && itemInst.mesh.rotation.set(...i.rot);
-        i.scale && itemInst.mesh.scale.set(...i.scale);
-
-        (i.events || []).forEach(name => {
-          if (!this.events[name]) {
-            console.error('no event called ', name);
-          } else {
-            this.events[name].push(itemInst);
-          }
-        });
-        return itemInst;
-      } else {
-        console.log('unknown item:', i.type);
-      }
-    });
-
-    this.items.forEach(i => this.scene.add(i.mesh));
+    this.items = [];
+    (DATA.items || []).map(i => this.addItem(i));
 
     this.bindEvents();
     this.addLights();
 
+  }
+
+  dump () {
+    console.log("saved to window._dump (and clipboard)");
+    window._dump = this.items.map(i => this.getDefn(i));
+    copy(window._dump);
+  }
+
+  getDefn (inst) {
+    const {type, args, events} = inst.defn;
+    const roundy = a => {
+      const r = num => Math.floor(num * 10000)/10000;
+      return [r(a.x), r(a.y), r(a.z)];
+    };
+    const {position:pos, rotation:rot, scale} = inst.mesh;
+    const rscale = roundy(scale);
+    const rrot = roundy(rot);
+    const out = {
+      type,
+      args,
+      events,
+      pos: roundy(pos),
+      rot: rrot
+    };
+
+    // Don't include scale if 1
+    if (rscale[0] !== 1 || rscale[1] !== 1 || rscale[2] !== 1) {
+      // no 0 scales.
+      out.scale = rscale.map(i => i <= 0 ? 0.01 : i);
+    }
+
+    return out;
+  }
+
+  addItem (i) {
+    const item = items[i.type];
+    if (items[i.type]) {
+      const args = i.args || {};
+      const itemInst = new item(args);
+      itemInst.mesh.userData.inst = itemInst;
+      itemInst.id = UUID();
+      itemInst.defn = i;
+
+      i.pos && itemInst.mesh.position.set(...i.pos);
+      i.rot && itemInst.mesh.rotation.set(...i.rot);
+      i.scale && itemInst.mesh.scale.set(...i.scale);
+
+      (i.events || []).forEach(name => {
+        if (!this.events[name]) {
+          console.error('no event called ', name);
+        } else {
+          this.events[name].push(itemInst);
+        }
+      });
+
+      this.items.push(itemInst);
+      this.scene.add(itemInst.mesh);
+
+      return itemInst;
+    } else {
+      console.log('unknown item:', i.type);
+    }
   }
 
   bindEvents () {

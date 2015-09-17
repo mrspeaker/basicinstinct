@@ -130,6 +130,12 @@ class Game {
         document.querySelector('#mode').textContent = this.mode;
       }
 
+      // Duplicate item!
+      if (this.selected && which === 90) {
+        this.selected = this.room.addItem(this.room.getDefn(this.selected));
+        this.selected.mesh.position.y += 0.2;
+      }
+
       const obj = this.selected ? this.selected.mesh : this.camera;
       const mode = obj === this.camera ? "position" : this.mode;
       if (left) obj[mode].x -= 0.1;
@@ -138,6 +144,9 @@ class Game {
       if (backward) obj[mode].z += 0.1;
       if (up) obj[mode].y -= 0.1;
       if (down) obj[mode].y += 0.1;
+      if (mode === "scale") {
+        // Don't let negative scale!
+      }
     }, false);
     document.body.addEventListener('keyup', e => {
       this.room.onKeyUp(e);
