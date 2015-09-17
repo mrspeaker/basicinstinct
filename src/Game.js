@@ -6,6 +6,8 @@ class Game {
 
   constructor () {
 
+    this.mode = "position";
+
     this.bindUI();
 
     this.bus = {
@@ -80,6 +82,7 @@ class Game {
         this.selected.isSelected = false;
       }
       // Click
+      this.mode = "position";
       if (this.hovering) {
         this.selected = this.hovering;
         //this.selected.mesh.position.y += 0.1;
@@ -110,16 +113,25 @@ class Game {
         return;
       }
       const {which} = e;
-      const up = which === 38 || which === 87;
-      const down = which === 40 || which === 83;
+      const forward = which === 38 || which === 87;
+      const backward = which === 40 || which === 83;
       const left = which === 37 || which === 65;
       const right = which === 39 || which === 68;
+      const up = which === 81;
+      const down = which === 69;
+
+      if (which === 49) {this.mode = "position";}
+      if (which === 50) {this.mode = "scale";}
+      if (which === 51) {this.mode = "rotation";}
 
       const obj = this.selected ? this.selected.mesh : this.camera;
-      if (left) obj.position.x -= 0.1;
-      if (right) obj.position.x += 0.1;
-      if (up) obj.position.z -= 0.1;
-      if (down) obj.position.z += 0.1;
+      const mode = obj === this.camera ? "position" : this.mode;
+      if (left) obj[mode].x -= 0.1;
+      if (right) obj[mode].x += 0.1;
+      if (forward) obj[mode].z -= 0.1;
+      if (backward) obj[mode].z += 0.1;
+      if (up) obj[mode].y -= 0.1;
+      if (down) obj[mode].y += 0.1;
     }, false);
     document.body.addEventListener('keyup', e => {
       this.room.onKeyUp(e);
