@@ -47,8 +47,6 @@ class Room {
   bindEvents () {
     this.onKeyDown = this.onKeyDown.bind(this);
     this.onKeyUp = this.onKeyUp.bind(this);
-    document.body.addEventListener('keydown', this.onKeyDown, false);
-    document.body.addEventListener('keyup', this.onKeyUp, false);
   }
 
   onKeyDown (e) {

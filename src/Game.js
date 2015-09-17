@@ -6,6 +6,8 @@ class Game {
 
   constructor () {
 
+    this.bindUI();
+
     this.bus = {
       fire: args => {
         if (args.type === 'set') {
@@ -49,8 +51,67 @@ class Game {
     this.camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 1, 300);
     this.camera.position.x = 1;
 
+    this.raycaster = new THREE.Raycaster();
+    this.mouse = new THREE.Vector2();
+    this.intersection = null;
+
+    this.mouseDownTime = null;
+
     document.body.appendChild(this.renderer.domElement);
 
+  }
+
+  bindUI () {
+    document.body.addEventListener('mousedown', e => {
+      const x = (e.clientX / window.innerWidth) * 2 - 1;
+      const y = -(e.clientY / window.innerHeight) * 2 + 1;
+
+      this.mouseDownTime = Date.now();
+      this.mouseDownPos = {x, y};
+    }, false);
+    document.body.addEventListener('mouseup', () => {
+      if (Date.now() - this.mouseDownTime > 300) {
+        this.mouseDownTime = null;
+        return;
+      }
+      this.mouseDownTime = null;
+      // Click
+      if (this.hovering) {
+        this.selected = this.hovering;
+        this.selected.object.position.y += 0.1;
+      } else {
+        this.selected = null;
+      }
+
+    }, false);
+    document.body.addEventListener('mousemove', e => {
+      e.preventDefault();
+
+      this.mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
+      this.mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
+
+      if (this.mouseDownTime && Date.now() - this.mouseDownTime > 50) {
+        // Drag
+        this.camera.rotation.y += this.mouseDownPos.x - this.mouse.x > 0 ? 0.01 : -0.01;
+      }
+    }, false);
+
+    document.body.addEventListener('keydown', e => {
+      this.room.onKeyDown(e);
+    }, false);
+    document.body.addEventListener('keyup', e => {
+      this.room.onKeyUp(e);
+    }, false);
+
+    window.addEventListener('resize', this.resize.bind(this), false);
+  }
+
+  resize () {
+    const {camera, renderer} = this;
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+
+    renderer.setSize(window.innerWidth, window.innerHeight);
   }
 
   loadRoom (data) {
@@ -61,8 +122,19 @@ class Game {
   }
 
   update () {
-    this.room.update(this.renderer, this.camera);
-    this.camera.position.z = 1 + (Math.sin(Date.now() / 3000) * 0.3);
+    const {renderer, camera, raycaster, mouse, room} = this;
+    room.update(renderer, camera);
+    camera.position.z = 1 + (Math.sin(Date.now() / 3000) * 0.3);
+
+    raycaster.setFromCamera(mouse, camera);
+
+    const intersections = raycaster.intersectObjects(room.scene.children);
+    if (intersections.length) {
+      this.hovering = intersections[0];
+    } else {
+      this.hovering = null;
+    }
+
   }
 
 }
