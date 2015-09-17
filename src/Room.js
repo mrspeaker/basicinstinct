@@ -18,6 +18,7 @@ class Room {
       if (items[i.type]) {
         const args = i.args || {};
         const itemInst = new item(args);
+        itemInst.mesh.userData.inst = itemInst;
         itemInst.id = UUID();
 
         i.pos && itemInst.mesh.position.set(...i.pos);

@@ -48,8 +48,9 @@ class Game {
     this.renderer = new THREE.WebGLRenderer();
     this.renderer.setSize(window.innerWidth, window.innerHeight);
 
-    this.camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 1, 300);
+    this.camera = new THREE.PerspectiveCamera( 65, window.innerWidth / window.innerHeight, 0.1, 300);
     this.camera.position.x = 1;
+    this.camera.position.z = 3;
 
     this.raycaster = new THREE.Raycaster();
     this.mouse = new THREE.Vector2();
@@ -75,10 +76,14 @@ class Game {
         return;
       }
       this.mouseDownTime = null;
+      if (this.selected) {
+        this.selected.isSelected = false;
+      }
       // Click
       if (this.hovering) {
         this.selected = this.hovering;
-        this.selected.object.position.y += 0.1;
+        //this.selected.mesh.position.y += 0.1;
+        this.selected.isSelected = true;
       } else {
         this.selected = null;
       }
@@ -93,11 +98,28 @@ class Game {
       if (this.mouseDownTime && Date.now() - this.mouseDownTime > 50) {
         // Drag
         this.camera.rotation.y += this.mouseDownPos.x - this.mouse.x > 0 ? 0.01 : -0.01;
+        this.camera.rotation.x += this.mouseDownPos.y - this.mouse.y > 0 ? -0.01 : 0.01;
       }
     }, false);
 
     document.body.addEventListener('keydown', e => {
       this.room.onKeyDown(e);
+
+      if (this.selected && this.selected.type == "Computer") {
+        // Don't move the computer.
+        return;
+      }
+      const {which} = e;
+      const up = which === 38 || which === 87;
+      const down = which === 40 || which === 83;
+      const left = which === 37 || which === 65;
+      const right = which === 39 || which === 68;
+
+      const obj = this.selected ? this.selected.mesh : this.camera;
+      if (left) obj.position.x -= 0.1;
+      if (right) obj.position.x += 0.1;
+      if (up) obj.position.z -= 0.1;
+      if (down) obj.position.z += 0.1;
     }, false);
     document.body.addEventListener('keyup', e => {
       this.room.onKeyUp(e);
@@ -124,13 +146,13 @@ class Game {
   update () {
     const {renderer, camera, raycaster, mouse, room} = this;
     room.update(renderer, camera);
-    camera.position.z = 1 + (Math.sin(Date.now() / 3000) * 0.3);
+    //camera.position.z = 1 + (Math.sin(Date.now() / 3000) * 0.3);
 
     raycaster.setFromCamera(mouse, camera);
 
     const intersections = raycaster.intersectObjects(room.scene.children);
     if (intersections.length) {
-      this.hovering = intersections[0];
+      this.hovering = intersections[0].object.userData.inst;
     } else {
       this.hovering = null;
     }

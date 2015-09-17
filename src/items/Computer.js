@@ -8,6 +8,7 @@ class Compy {
 
   constructor () {
     this.tick = Math.random() * 10 | 0;
+    this.type = "Computer";
 
     const computer = new Computer();
     const screen = CRT(computer);
@@ -34,6 +35,9 @@ class Compy {
   }
 
   on (eventName, event) {
+    if (!this.isSelected) {
+      return;
+    }
     switch (eventName) {
     case 'keydown':
       this.computer.keys.down(event);

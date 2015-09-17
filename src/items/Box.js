@@ -6,6 +6,7 @@ class Box {
 
   constructor ({color}) {
     color = color || 0x956E46;
+    this.type = "Box";
     const material = new THREE.MeshLambertMaterial({ color });
     this.mesh = new THREE.Mesh(geometry, material);
   }
