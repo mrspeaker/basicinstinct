@@ -4,7 +4,8 @@ const geometry = new THREE.BoxGeometry( 1, 1, 1 );
 
 class Box {
 
-  constructor (color = 0x956E46) {
+  constructor ({color}) {
+    color = color || 0x956E46;
     const material = new THREE.MeshLambertMaterial({ color });
     this.mesh = new THREE.Mesh(geometry, material);
   }
@@ -14,4 +15,5 @@ class Box {
   }
 
 }
+
 module.exports = Box;

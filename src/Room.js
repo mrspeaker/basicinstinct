@@ -1,5 +1,6 @@
 const {THREE} = require('three');
 const items = require('./items/');
+const UUID = require('./items/UUID');
 
 class Room {
 
@@ -15,8 +16,10 @@ class Room {
     this.items = (DATA.items || []).map(i => {
       const item = items[i.type];
       if (items[i.type]) {
-        const args = i.args || [];
-        const itemInst = new item(...args);
+        const args = i.args || {};
+        const itemInst = new item(args);
+        itemInst.id = UUID();
+
         i.pos && itemInst.mesh.position.set(...i.pos);
         i.rot && itemInst.mesh.rotation.set(...i.rot);
         i.scale && itemInst.mesh.scale.set(...i.scale);
@@ -57,14 +60,14 @@ class Room {
 
   addLights () {
     const {scene} = this;
-    const ambLight = new THREE.AmbientLight(0xFFf7d1);
+    const ambLight = new THREE.AmbientLight(0xFFf7f1);
     scene.add(ambLight);
 
     //var hemLight = new THREE.HemisphereLight(0xffe5bb, 0xFFBF00, .1);
     //scene.add(hemLight)
 
-    var point = new THREE.PointLight(0xFEFFDE, 3, 10);
-    point.position.set( 3, 3, 1 );
+    var point = new THREE.PointLight(0xFEFFDE, 3, 7);
+    point.position.set( 1, 3, 3 );
     scene.add(point);
     scene.add(new THREE.PointLightHelper(point, 1));
   }

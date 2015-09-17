@@ -36,7 +36,6 @@ class Compy {
   on (eventName, event) {
     switch (eventName) {
     case 'keydown':
-      console.log("down")
       this.computer.keys.down(event);
       break;
     case 'keyup':
