@@ -83,6 +83,7 @@ class Game {
       }
       // Click
       this.mode = "position";
+      document.querySelector('#mode').textContent = this.mode;
       if (this.hovering) {
         this.selected = this.hovering;
         //this.selected.mesh.position.y += 0.1;
@@ -90,6 +91,8 @@ class Game {
       } else {
         this.selected = null;
       }
+      document.querySelector('#selected').textContent = this.selected ? this.selected.id + ' ' + this.selected.type : '-';
+
 
     }, false);
     document.body.addEventListener('mousemove', e => {
@@ -120,9 +123,12 @@ class Game {
       const up = which === 81;
       const down = which === 69;
 
-      if (which === 49) {this.mode = "position";}
-      if (which === 50) {this.mode = "scale";}
-      if (which === 51) {this.mode = "rotation";}
+      if (which >= 49 && which <= 51) {
+        if (which === 49) {this.mode = "position";}
+        if (which === 50) {this.mode = "scale";}
+        if (which === 51) {this.mode = "rotation";}
+        document.querySelector('#mode').textContent = this.mode;
+      }
 
       const obj = this.selected ? this.selected.mesh : this.camera;
       const mode = obj === this.camera ? "position" : this.mode;
