@@ -70,6 +70,9 @@ rule: {
   condition: 'player' 'Has' 'DiskDrive'
   actions: [{
     doEvent 'AddItem', 'DiskDrive', 'Bedroom'
+    doEvent 'RemoveItem', 'DiskDrive', 'Player'
   }]
 };
+
+
 ```

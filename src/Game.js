@@ -14,7 +14,8 @@ class Game {
       left: false,
       right: false,
       up: false,
-      down: false
+      down: false,
+      shift: false
     };
 
     this.bindUI();
@@ -56,7 +57,7 @@ class Game {
     };
 
     this.room = new Room(DATA.bedroom);
-    this.renderer = new THREE.WebGLRenderer();
+    this.renderer = new THREE.WebGLRenderer({antialias:true});
     this.renderer.setSize(window.innerWidth, window.innerHeight);
 
     this.camera = new THREE.PerspectiveCamera( 65, window.innerWidth / window.innerHeight, 0.1, 300);
@@ -144,20 +145,17 @@ class Game {
         return;
       }
       const {which} = e;
-      const forward = which === 38 || which === 87;
-      const backward = which === 40 || which === 83;
-      const left = which === 37 || which === 65;
-      const right = which === 39 || which === 68;
-      const up = which === 81;
-      const down = which === 69;
-      if (forward) { this.move.forward = true; }
-      if (backward) { this.move.backward = true; }
-      if (left) { this.move.left = true; }
-      if (right) { this.move.right = true; }
-      if (up) { this.move.up = true; }
-      if (down) { this.move.down = true; }
 
-      if (which >= 49 && which <= 51) {
+      if (e.shiftKey) this.move.shift = true;
+      // WSAD / Keys
+      if (which === 38 || which === 87) { this.move.forward = true; }
+      if (which === 40 || which === 83) { this.move.backward = true; }
+      if (which === 37 || which === 65) { this.move.left = true; }
+      if (which === 39 || which === 68) { this.move.right = true; }
+      if (which === 81) { this.move.up = true; }
+      if (which === 69) { this.move.down = true; }
+
+      if (which >= 49 && which <= 51) { // 1,2,3
         if (which === 49) {this.mode = "position";}
         if (which === 50) {this.mode = "scale";}
         if (which === 51) {this.mode = "rotation";}
@@ -170,27 +168,11 @@ class Game {
         this.selected.mesh.position.y += 0.2;
       }
 
-      /*
-      const obj = this.selected ? this.selected.mesh : this.camera;
-      const mode = obj === this.camera ? "position" : this.mode;
-      const amount = this.mode === "rotation" ? Math.PI / 20 : 0.1;
-      if (left) obj[mode].x -= amount;
-      if (right) obj[mode].x += amount;
-      if (forward) obj[mode].z -= amount;
-      if (backward) obj[mode].z += amount;
-      if (up) obj[mode].y -= amount;
-      if (down) obj[mode].y += amount;
-      if (mode === "scale") {
-        // No 0 size!
-        obj.scale.x = Math.max(0.01, obj.scale.x);
-        obj.scale.y = Math.max(0.01, obj.scale.y);
-        obj.scale.z = Math.max(0.01, obj.scale.z);
-      }
-      */
     }, false);
     document.body.addEventListener('keyup', e => {
       this.room.onKeyUp(e);
       const {which} = e;
+      if (!e.shiftKey) this.move.shift = false;
       const forward = which === 38 || which === 87;
       const backward = which === 40 || which === 83;
       const left = which === 37 || which === 65;
@@ -241,11 +223,26 @@ class Game {
     const {left, right, forward, backward, up, down} = this.move;
     const obj = this.selected ? this.selected.mesh : this.camera;
     const mode = obj === this.camera ? "position" : this.mode;
-    const amount = this.mode === "rotation" ? Math.PI / 20 : 0.05;
+    var amount = this.mode === "rotation" ? Math.PI / 20 : 0.05;
+
+    amount *= this.move.shift ? 0.1 : 1;
+
     if (left) obj[mode].x -= amount;
     if (right) obj[mode].x += amount;
-    if (forward) obj[mode].z -= amount;
-    if (backward) obj[mode].z += amount;
+    if (forward) {
+      if (mode === "position") {
+        obj.translateZ(-amount);
+      } else {
+        obj[mode].z -= amount;
+      }
+    }
+    if (backward) {
+      if (mode === "position") {
+        obj.translateZ(amount);
+      } else {
+        obj[mode].z += amount;
+      }
+    }
     if (up) obj[mode].y -= amount;
     if (down) obj[mode].y += amount;
     if (mode === "scale") {
