@@ -22,9 +22,8 @@ class Room {
   }
 
   dump () {
-    console.log("saved to window._dump (and clipboard)");
+    console.log("saved to window._dump: copy(_dump); for clipboard.");
     window._dump = this.items.map(i => this.getDefn(i));
-    copy(window._dump);
   }
 
   getDefn (inst) {

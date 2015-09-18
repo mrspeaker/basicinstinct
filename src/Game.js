@@ -8,6 +8,15 @@ class Game {
 
     this.mode = "position";
 
+    this.move = {
+      forward: false,
+      backward: false,
+      left: false,
+      right: false,
+      up: false,
+      down: false
+    };
+
     this.bindUI();
 
     this.bus = {
@@ -69,8 +78,10 @@ class Game {
       const x = (e.clientX / window.innerWidth) * 2 - 1;
       const y = -(e.clientY / window.innerHeight) * 2 + 1;
 
+      const rmb = e.which === 3;
       this.mouseDownTime = Date.now();
-      this.mouseDownPos = {x, y};
+      this.mouseDownPos = {x, y, rmb};
+
     }, false);
     document.body.addEventListener('mouseup', () => {
       if (Date.now() - this.mouseDownTime > 300) {
@@ -85,9 +96,14 @@ class Game {
       this.mode = "position";
       document.querySelector('#mode').textContent = this.mode;
       if (this.hovering) {
-        this.selected = this.hovering;
-        //this.selected.mesh.position.y += 0.1;
-        this.selected.isSelected = true;
+        if (this.mouseDownPos.rmb) {
+          // Right click!
+          console.log('do something with:', this.hovering);
+        } else {
+          this.selected = this.hovering;
+          //this.selected.mesh.position.y += 0.1;
+          this.selected.isSelected = true;
+        }
       } else {
         this.selected = null;
       }
@@ -95,16 +111,28 @@ class Game {
 
 
     }, false);
+    document.body.addEventListener('mouseleave', () => {
+      this.mouseDownTime = null;
+    });
     document.body.addEventListener('mousemove', e => {
       e.preventDefault();
 
       this.mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
       this.mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
 
-      if (this.mouseDownTime && Date.now() - this.mouseDownTime > 50) {
-        // Drag
-        this.camera.rotation.y += this.mouseDownPos.x - this.mouse.x > 0 ? 0.01 : -0.01;
-        this.camera.rotation.x += this.mouseDownPos.y - this.mouse.y > 0 ? -0.01 : 0.01;
+      // Drag
+      if (!this.mouseDownPos || !this.mouseDownTime) {
+        return;
+      }
+      const diffX = this.mouseDownPos.x - this.mouse.x;
+      const diffY = this.mouseDownPos.y - this.mouse.y;
+      if (diffX !== 0) {
+        this.camera.rotation.y += (diffX > 0 ? -0.01 : 0.01) * Math.abs(diffX * 80);
+        this.mouseDownPos.x = this.mouse.x;
+      }
+      if (diffY !== 0) {
+        this.camera.rotation.x += (diffY > 0 ? 0.01 : -0.01) * Math.abs(diffY * 80);
+        this.mouseDownPos.y = this.mouse.y;
       }
     }, false);
 
@@ -122,6 +150,12 @@ class Game {
       const right = which === 39 || which === 68;
       const up = which === 81;
       const down = which === 69;
+      if (forward) { this.move.forward = true; }
+      if (backward) { this.move.backward = true; }
+      if (left) { this.move.left = true; }
+      if (right) { this.move.right = true; }
+      if (up) { this.move.up = true; }
+      if (down) { this.move.down = true; }
 
       if (which >= 49 && which <= 51) {
         if (which === 49) {this.mode = "position";}
@@ -136,22 +170,42 @@ class Game {
         this.selected.mesh.position.y += 0.2;
       }
 
+      /*
       const obj = this.selected ? this.selected.mesh : this.camera;
       const mode = obj === this.camera ? "position" : this.mode;
-      if (left) obj[mode].x -= 0.1;
-      if (right) obj[mode].x += 0.1;
-      if (forward) obj[mode].z -= 0.1;
-      if (backward) obj[mode].z += 0.1;
-      if (up) obj[mode].y -= 0.1;
-      if (down) obj[mode].y += 0.1;
+      const amount = this.mode === "rotation" ? Math.PI / 20 : 0.1;
+      if (left) obj[mode].x -= amount;
+      if (right) obj[mode].x += amount;
+      if (forward) obj[mode].z -= amount;
+      if (backward) obj[mode].z += amount;
+      if (up) obj[mode].y -= amount;
+      if (down) obj[mode].y += amount;
       if (mode === "scale") {
-        // Don't let negative scale!
+        // No 0 size!
+        obj.scale.x = Math.max(0.01, obj.scale.x);
+        obj.scale.y = Math.max(0.01, obj.scale.y);
+        obj.scale.z = Math.max(0.01, obj.scale.z);
       }
+      */
     }, false);
     document.body.addEventListener('keyup', e => {
       this.room.onKeyUp(e);
+      const {which} = e;
+      const forward = which === 38 || which === 87;
+      const backward = which === 40 || which === 83;
+      const left = which === 37 || which === 65;
+      const right = which === 39 || which === 68;
+      const up = which === 81;
+      const down = which === 69;
+      if (forward) { this.move.forward = false; }
+      if (backward) { this.move.backward = false; }
+      if (left) { this.move.left = false; }
+      if (right) { this.move.right = false; }
+      if (up) { this.move.up = false; }
+      if (down) { this.move.down = false; }
     }, false);
 
+    window.addEventListener('contextmenu', e => { e.preventDefault(); }, false);
     window.addEventListener('resize', this.resize.bind(this), false);
   }
 
@@ -182,6 +236,23 @@ class Game {
       this.hovering = intersections[0].object.userData.inst;
     } else {
       this.hovering = null;
+    }
+
+    const {left, right, forward, backward, up, down} = this.move;
+    const obj = this.selected ? this.selected.mesh : this.camera;
+    const mode = obj === this.camera ? "position" : this.mode;
+    const amount = this.mode === "rotation" ? Math.PI / 20 : 0.05;
+    if (left) obj[mode].x -= amount;
+    if (right) obj[mode].x += amount;
+    if (forward) obj[mode].z -= amount;
+    if (backward) obj[mode].z += amount;
+    if (up) obj[mode].y -= amount;
+    if (down) obj[mode].y += amount;
+    if (mode === "scale") {
+      // No 0 size!
+      obj.scale.x = Math.max(0.01, obj.scale.x);
+      obj.scale.y = Math.max(0.01, obj.scale.y);
+      obj.scale.z = Math.max(0.01, obj.scale.z);
     }
 
   }
