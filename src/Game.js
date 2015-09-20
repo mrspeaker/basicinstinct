@@ -27,7 +27,7 @@ class Game {
 
   updateUI () {
     React.render(
-      <SideBar selected={this.selected} onChange={this.changey} />,
+      <SideBar selected={this.selected} />,
       document.getElementById('sidebar')
     );
   }
@@ -302,7 +302,7 @@ class Game {
       obj.scale.z = Math.max(0.01, obj.scale.z);
     }
 
-    this.updateUI()
+    //this.updateUI()
 
   }
 

@@ -59,7 +59,7 @@ class Room {
       const itemInst = new item(args);
       itemInst.mesh.userData.inst = itemInst;
       itemInst.id = UUID();
-      itemInst.defn = i;
+      itemInst.defn = Object.assign({}, i);
 
       i.pos && itemInst.mesh.position.set(...i.pos);
       i.rot && itemInst.mesh.rotation.set(...i.rot);
