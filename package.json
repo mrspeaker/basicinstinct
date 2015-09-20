@@ -4,7 +4,7 @@
   "description": "",
   "main": "src/index.js",
   "scripts": {
-    "start": "budo src/index.js:bundle.js | garnish"
+    "start": "budo src/index.js --serve bundle.js -- --transform babelify"
   },
   "author": "",
   "license": "",
@@ -12,9 +12,13 @@
     "ITSBasic": "file:../ITSBasic/",
     "gl-shader": "^4.0.5",
     "gl-texture2d": "^2.0.9",
+    "react": "^0.13.3",
+    "rx": "^3.1.2",
     "three": "^0.71.1"
   },
   "devDependencies": {
+    "babelify": "^6.3.0",
+    "browserify": "^11.1.0",
     "budo": "^4.2.1",
     "garnish": "^3.2.0"
   }

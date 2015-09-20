@@ -16,29 +16,45 @@
     font-family: monospace;
     font-size: 8pt;
   }
-  .sprite {
-    position: absolute;
-    display: block;
-    left: 0;
-    top: 0;
-    width: 24px !important;
-    height: 24px !important;
+  #screen {
+    display: flex;
+    flex-direction: row;
+  }
+  #workArea {
+    flex:1;
+  }
+  #sidebar {
+    width: 300px;
+    padding: 10px;
+    background-color: #F3F3F3;
+    color: #888888;
   }
   #ui {
     position: absolute;
     left: 10px;
     top: 10px;
   }
-
+  input {
+    border: 0;
+    width: 60px;
+  }
   </style>
 </head>
 <body>
-  <div id="ui">
-    <span>Selected:<span id="selected">-</span></span><br/>
-    <span>Mode:<span id="mode">pos</span></span><br/>
-    <span>1/2/3: change mode.</span><br/>
-    <span>WASDQE: modify selected.</span><br/>
-    <span>z: duplicate selected.</span><br/>
+  <div id="screen">
+    <div id="workArea">
+      <div id="ui">
+        <span>Selected:<span id="selected">-</span></span><br/>
+        <span>Mode:<span id="mode">pos</span></span><br/>
+        <span>1/2/3: change mode.</span><br/>
+        <span>WASDQE: modify selected.</span><br/>
+        <span>z: duplicate selected.</span><br/>
+      </div>
+      <div id="main"></div>
+    </div>
+    <div id="sidebar">
+      Sidebar.
+    </div>
   </div>
   <script src="bundle.js"></script>
 </body>

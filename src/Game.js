@@ -1,10 +1,57 @@
+const Rx = require('rx');
+const React = require('react');
 const {THREE} = require('three');
 const Room = require('./Room');
 const DATA = require('./DATA');
+const SideBar = require('./editor/SideBar');
 
 class Game {
 
+  setSelected (selected) {
+    if (this.selected) {
+      this.selected.isSelected = false;
+    }
+    this.selected = selected || null;
+    if (this.selected) {
+      this.selected.isSelected = true;
+    }
+
+    this.updateUI();
+
+  }
+
+  changey (attr, index, val) {
+    //this.selected.onChange(attr, index, val);
+    this.updateUI();
+  }
+
+  updateUI () {
+    React.render(
+      <SideBar selected={this.selected} onChange={this.changey} />,
+      document.getElementById('sidebar')
+    );
+  }
+
   constructor () {
+    this.changey = this.changey.bind(this);
+    this.dom = document.querySelector('#main');
+
+
+    /*const src = Rx.Observable.create(observer => {
+      observer.onNext(42);
+      observer.onCompleted();
+
+      return () => console.log('lol');
+    });*/
+    const src = Rx.Observable.range(1, 5);
+
+    var sub = src.subscribe(
+      x => console.log('Next!', x),
+      e => console.error(e),
+      () => console.log('done')
+    );
+
+    sub.dispose();
 
     this.mode = "position";
 
@@ -58,9 +105,10 @@ class Game {
 
     this.room = new Room(DATA.bedroom);
     this.renderer = new THREE.WebGLRenderer({antialias:true});
-    this.renderer.setSize(window.innerWidth, window.innerHeight);
 
-    this.camera = new THREE.PerspectiveCamera( 65, window.innerWidth / window.innerHeight, 0.1, 300);
+    this.renderer.setSize(this.dom.clientWidth, window.innerHeight);
+
+    this.camera = new THREE.PerspectiveCamera( 65, this.dom.clientWidth / window.innerHeight, 0.1, 300);
     this.camera.position.x = 1;
     this.camera.position.z = 3;
 
@@ -70,13 +118,14 @@ class Game {
 
     this.mouseDownTime = null;
 
-    document.body.appendChild(this.renderer.domElement);
+    document.querySelector('#main').appendChild(this.renderer.domElement);
 
   }
 
   bindUI () {
-    document.body.addEventListener('mousedown', e => {
-      const x = (e.clientX / window.innerWidth) * 2 - 1;
+    const dom = this.dom;
+    dom.addEventListener('mousedown', e => {
+      const x = (e.clientX / this.dom.clientWidth) * 2 - 1;
       const y = -(e.clientY / window.innerHeight) * 2 + 1;
 
       const rmb = e.which === 3;
@@ -84,15 +133,13 @@ class Game {
       this.mouseDownPos = {x, y, rmb};
 
     }, false);
-    document.body.addEventListener('mouseup', () => {
+    dom.addEventListener('mouseup', () => {
       if (Date.now() - this.mouseDownTime > 300) {
         this.mouseDownTime = null;
         return;
       }
       this.mouseDownTime = null;
-      if (this.selected) {
-        this.selected.isSelected = false;
-      }
+
       // Click
       this.mode = "position";
       document.querySelector('#mode').textContent = this.mode;
@@ -101,24 +148,22 @@ class Game {
           // Right click!
           console.log('do something with:', this.hovering);
         } else {
-          this.selected = this.hovering;
-          //this.selected.mesh.position.y += 0.1;
-          this.selected.isSelected = true;
+          this.setSelected(this.hovering);
         }
       } else {
-        this.selected = null;
+        this.setSelected();
       }
       document.querySelector('#selected').textContent = this.selected ? this.selected.id + ' ' + this.selected.type : '-';
 
 
     }, false);
-    document.body.addEventListener('mouseleave', () => {
+    dom.addEventListener('mouseleave', () => {
       this.mouseDownTime = null;
     });
-    document.body.addEventListener('mousemove', e => {
+    dom.addEventListener('mousemove', e => {
       e.preventDefault();
 
-      this.mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
+      this.mouse.x = (e.clientX / this.dom.clientWidth) * 2 - 1;
       this.mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
 
       // Drag
@@ -164,7 +209,7 @@ class Game {
 
       // Duplicate item!
       if (this.selected && which === 90) {
-        this.selected = this.room.addItem(this.room.getDefn(this.selected));
+        this.setSelected(this.room.addItem(this.room.getDefn(this.selected)))
         this.selected.mesh.position.y += 0.2;
       }
 
@@ -193,10 +238,10 @@ class Game {
 
   resize () {
     const {camera, renderer} = this;
-    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.aspect = this.dom.clientWidth / window.innerHeight;
     camera.updateProjectionMatrix();
 
-    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setSize(this.dom.clientWidth, window.innerHeight);
   }
 
   loadRoom (data) {
@@ -225,7 +270,12 @@ class Game {
     const mode = obj === this.camera ? "position" : this.mode;
     var amount = this.mode === "rotation" ? Math.PI / 20 : 0.05;
 
-    amount *= this.move.shift ? 0.1 : 1;
+    // Move camera fast by default, slow with shift
+    if (obj === this.camera) {
+      amount *= this.move.shift ? 0.05: 1;
+    } else {
+      amount *= this.move.shift ? 1: 0.05;
+    }
 
     if (left) obj[mode].x -= amount;
     if (right) obj[mode].x += amount;
@@ -251,6 +301,8 @@ class Game {
       obj.scale.y = Math.max(0.01, obj.scale.y);
       obj.scale.z = Math.max(0.01, obj.scale.z);
     }
+
+    this.updateUI()
 
   }
 

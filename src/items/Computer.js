@@ -1,12 +1,14 @@
 const {THREE} = require('three');
 const {Computer, CRT} = require('ITSBasic');
+const Item = require('./Item');
 
 const geometry = new THREE.BoxGeometry( 1.8, 1.2, 1 );
 const material = new THREE.MeshLambertMaterial( { color: 0x956E46 } );
 
-class Compy {
+class Compy extends Item {
 
   constructor () {
+    super();
     this.tick = Math.random() * 10 | 0;
     this.type = "Computer";
 

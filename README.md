@@ -9,6 +9,7 @@
 * everything in the world can be controlled with ItsBasic.
   name things?
 
+* goal is not to teach BASIC: player should alwyas be out of their depth, and has no help from anyone else in the gaem. Fumbling always forward and learning stuff the hardest of hard ways.
 
 ## Rules engine? how could it work?
 
@@ -51,28 +52,31 @@ if Player enters bedroom
 ```js
 document.onload = trigger('WorldCreate');
 
-rule: {
-  event: 'WorldCreate',
-  actions: [{
-    trigger: 'GoToLocation',
-    data: 'Bedroom'
-  }]
-}
+rule: event: 'WorldCreate', actions: 'GoToBedroom'
 
 document.on('GoToLocation', (data) => {
   game.scene = new Room(data);
 });
 
-class Room(data) { trigger('?BedroomRoomLoaded', room);}
+class Room(data) { trigger(data.name + 'RoomLoaded') }
 
-rule: {
-  event: 'BedroomLoaded',
-  condition: 'player' 'Has' 'DiskDrive'
-  actions: [{
-    doEvent 'AddItem', 'DiskDrive', 'Bedroom'
-    doEvent 'RemoveItem', 'DiskDrive', 'Player'
-  }]
-};
+event: 'BedroomLoaded',
 
 
 ```
+onWorldCreated => add(ClassicAchievement)
+
+1. ClassicAchievement: astIsClassic.
+   [HP++, bedroomDoorOpens, remove(LockedBedroom), add(ClassicAchievement+)]
+
+2. LockedBedroom: triggerDoor
+   [msg("Not 'til you do your homework")]
+
+3. ClassicAchievement+: astIsClassic + string is different
+   [HP++]
+
+4. AddQuizProg: triggerMag1
+   [msg("has been added!"), addToGlobalProgBook(quizCode), add(QuizAchievement)]
+
+5. QuizAchievement: astIsQuiz
+   [HP+, triggerGlitchTeaser]

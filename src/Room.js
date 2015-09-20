@@ -73,10 +73,10 @@ class Room {
         }
       });
 
-      this.items.push(itemInst);
       this.scene.add(itemInst.mesh);
-
+      this.items.push(itemInst);
       return itemInst;
+
     } else {
       console.log('unknown item:', i.type);
     }
