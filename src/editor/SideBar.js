@@ -34,6 +34,14 @@ class SideBar extends Component {
       return all;
     }, []);
 
+    const col = selected.type !== 'Box' ? null : <input defaultValue={selected.color} onBlur={
+      e => {
+        const val = e.currentTarget.value;
+        selected.color = val;
+        this.forceUpdate();
+      }
+    } />;
+
     return (
       <div>
         <span>Type: {selected.type}. ID: {selected.id}</span><br/>
@@ -41,6 +49,7 @@ class SideBar extends Component {
         {transforms}
         <hr />
         <textarea value={JSON.stringify(selected.defn.args)} />
+        {col}
       </div>
     );
   }
