@@ -1,7 +1,7 @@
 const {THREE} = require('three');
 const Item = require('./Item');
 
-const geometry = new THREE.BoxGeometry( 1, 1, 1 );
+const geometry = new THREE.BoxGeometry(1, 1, 1);
 
 class Box extends Item {
 

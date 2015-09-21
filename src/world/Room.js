@@ -1,10 +1,10 @@
 const {THREE} = require('three');
-const items = require('./items/');
-const UUID = require('./items/UUID');
+const items = require('../items/');
+const UUID = require('../items/UUID');
 
 class Room {
 
-  constructor (DATA) {
+  constructor (DATA, viewer) {
 
     this.events = {
       keydown: [],
@@ -15,6 +15,8 @@ class Room {
 
     this.items = [];
     (DATA.items || []).map(i => this.addItem(i));
+
+    this.scene.add(viewer.mesh);
 
     this.bindEvents();
     this.addLights();
@@ -111,11 +113,6 @@ class Room {
   update (renderer, camera) {
     this.items.forEach(i => i.update());
     renderer.render(this.scene, camera);
-  }
-
-  onLeave () {
-    document.body.removeEventListener('keydown', this.onKeyDown);
-    document.body.removeEventListener('keyup', this.onKeyUp);
   }
 
 }

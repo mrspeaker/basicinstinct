@@ -20,14 +20,8 @@
     display: flex;
     flex-direction: row;
   }
-  #main {
+  #workArea {
     flex:1;
-  }
-  #sidebar {
-    width: 300px;
-    padding: 10px;
-    background-color: #F3F3F3;
-    color: #888888;
   }
   #ui {
     position: absolute;
@@ -42,9 +36,10 @@
 </head>
 <body>
   <div id="screen">
-    <div id="main"></div>
-    <div id="sidebar">
-      Sidebar.
+    <div id="workArea">
+      <div id="ui">
+      </div>
+      <div id="main"></div>
     </div>
   </div>
   <script src="bundle.js"></script>

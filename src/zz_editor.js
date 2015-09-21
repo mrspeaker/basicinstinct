@@ -1,10 +1,11 @@
+const Rx = require('rx');
+const React = require('react');
 const {THREE} = require('three');
-const Room = require('./world/Room');
+const Room = require('./Room');
 const DATA = require('./DATA');
-const Player = require('./entities/Player');
-const {EventEmitter} = require('events');
+const SideBar = require('./editor/SideBar');
 
-class Game {
+class Editor {
 
   setSelected (selected) {
     if (this.selected) {
@@ -15,13 +16,41 @@ class Game {
       this.selected.isSelected = true;
     }
 
-    this.events.emit('selectionChange', this.selected);
+    this.updateUI();
+
   }
 
-  constructor (dom) {
-    this.events = new EventEmitter();
-    this.player = new Player();
-    this.dom = dom;
+  updateUI () {
+    React.render(
+      <SideBar selected={this.selected} />,
+      document.getElementById('sidebar')
+    );
+  }
+
+  constructor (game) {
+
+    this.game = game;
+
+    this.dom = document.querySelector('#main');
+
+    /*const src = Rx.Observable.create(observer => {
+      observer.onNext(42);
+      observer.onCompleted();
+
+      return () => console.log('lol');
+    });*/
+
+    const src = Rx.Observable.range(1, 5);
+
+    var sub = src.subscribe(
+      x => console.log('Next!', x),
+      e => console.error(e),
+      () => console.log('done')
+    );
+
+    sub.dispose();
+
+    this.mode = "position";
 
     this.move = {
       forward: false,
@@ -71,9 +100,9 @@ class Game {
       }
     };
 
-    this.room = new Room(DATA.bedroom, this.player);
-
+    this.room = new Room(DATA.bedroom);
     this.renderer = new THREE.WebGLRenderer({antialias:true});
+
     this.renderer.setSize(this.dom.clientWidth, window.innerHeight);
 
     this.camera = new THREE.PerspectiveCamera( 65, this.dom.clientWidth / window.innerHeight, 0.1, 300);
@@ -86,7 +115,7 @@ class Game {
 
     this.mouseDownTime = null;
 
-    this.dom.appendChild(this.renderer.domElement);
+    document.querySelector('#main').appendChild(this.renderer.domElement);
 
   }
 
@@ -110,6 +139,7 @@ class Game {
 
       // Click
       this.mode = "position";
+      document.querySelector('#mode').textContent = this.mode;
       if (this.hovering) {
         if (this.mouseDownPos.rmb) {
           // Right click!
@@ -120,6 +150,8 @@ class Game {
       } else {
         this.setSelected();
       }
+      document.querySelector('#selected').textContent = this.selected ? this.selected.id + ' ' + this.selected.type : '-';
+
 
     }, false);
     dom.addEventListener('mouseenter', () => {
@@ -158,7 +190,12 @@ class Game {
       }
       this.room.onKeyDown(e);
 
+      if (this.selected && this.selected.type == "Computer") {
+        // Don't move the computer.
+        return;
+      }
       const {which} = e;
+
       if (e.shiftKey) this.move.shift = true;
       // WSAD / Keys
       if (which === 38 || which === 87) { this.move.forward = true; }
@@ -168,12 +205,24 @@ class Game {
       if (which === 81) { this.move.up = true; }
       if (which === 69) { this.move.down = true; }
 
+      if (which >= 49 && which <= 51) { // 1,2,3
+        if (which === 49) {this.mode = "position";}
+        if (which === 50) {this.mode = "scale";}
+        if (which === 51) {this.mode = "rotation";}
+        document.querySelector('#mode').textContent = this.mode;
+      }
+
+      // Duplicate item!
+      if (this.selected && which === 90) {
+        this.setSelected(this.room.addItem(this.room.getDefn(this.selected)))
+        this.selected.mesh.position.y += 0.2;
+      }
+
     }, false);
     document.body.addEventListener('keyup', e => {
       if (!this.domFocused) {
         return;
       }
-
       this.room.onKeyUp(e);
       const {which} = e;
       if (!e.shiftKey) this.move.shift = false;
@@ -225,19 +274,52 @@ class Game {
 
     const {left, right, forward, backward, up, down} = this.move;
     if (left || right || forward || backward || up || down) {
-      const obj = this.camera;
-      const amount = 0.05;
+      const obj = this.selected ? this.selected.mesh : this.camera;
+      const mode = obj === this.camera ? "position" : this.mode;
+      var amount = this.mode === "rotation" ? Math.PI / 20 : 0.05;
 
-      if (left) obj.translateX(-amount);
-      if (right) obj.translateX(amount);
-      if (forward) obj.translateZ(-amount);
-      if (backward) obj.translateZ(amount);
-      if (up) obj.translateY(-amount);
-      if (down) obj.translateY(amount);
+      // Move camera fast by default, slow with shift
+      if (obj === this.camera) {
+        amount *= this.move.shift ? 0.05: 1;
+      } else {
+        amount *= this.move.shift ? 1: 0.05;
+      }
+
+      if (left) {
+        if (mode === "position") obj.translateX(-amount);
+        else obj[mode].x -= amount;
+      }
+      if (right) {
+        if (mode === "position") obj.translateX(amount);
+        else obj[mode].x += amount;
+      }
+      if (forward) {
+        if (mode === "position") obj.translateZ(-amount);
+        else obj[mode].z -= amount;
+      }
+      if (backward) {
+        if (mode === "position") obj.translateZ(amount);
+        else obj[mode].z += amount;
+      }
+      if (up) {
+        if (mode === "position") obj.translateY(-amount);
+        else obj[mode].y -= amount;
+      }
+      if (down) {
+        if (mode === "position") obj.translateY(amount);
+        else obj[mode].y += amount;
+      }
+      if (mode === "scale") {
+        // No 0 size!
+        obj.scale.x = Math.max(0.01, obj.scale.x);
+        obj.scale.y = Math.max(0.01, obj.scale.y);
+        obj.scale.z = Math.max(0.01, obj.scale.z);
+      }
+      this.updateUI();
     }
 
   }
 
 }
 
-module.exports = Game;
+module.exports = Editor;
