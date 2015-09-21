@@ -20,11 +20,6 @@ class Game {
 
   }
 
-  changey (attr, index, val) {
-    //this.selected.onChange(attr, index, val);
-    this.updateUI();
-  }
-
   updateUI () {
     React.render(
       <SideBar selected={this.selected} />,
@@ -33,9 +28,7 @@ class Game {
   }
 
   constructor () {
-    this.changey = this.changey.bind(this);
     this.dom = document.querySelector('#main');
-
 
     /*const src = Rx.Observable.create(observer => {
       observer.onNext(42);
@@ -157,7 +150,12 @@ class Game {
 
 
     }, false);
+    dom.addEventListener('mouseenter', () => {
+      this.domFocused = true;
+      this.mouseDownTime = null;
+    });
     dom.addEventListener('mouseleave', () => {
+      this.domFocused = false;
       this.mouseDownTime = null;
     });
     dom.addEventListener('mousemove', e => {
@@ -183,6 +181,9 @@ class Game {
     }, false);
 
     document.body.addEventListener('keydown', e => {
+      if (!this.domFocused) {
+        return;
+      }
       this.room.onKeyDown(e);
 
       if (this.selected && this.selected.type == "Computer") {
@@ -215,6 +216,9 @@ class Game {
 
     }, false);
     document.body.addEventListener('keyup', e => {
+      if (!this.domFocused) {
+        return;
+      }
       this.room.onKeyUp(e);
       const {which} = e;
       if (!e.shiftKey) this.move.shift = false;
@@ -254,7 +258,6 @@ class Game {
   update () {
     const {renderer, camera, raycaster, mouse, room} = this;
     room.update(renderer, camera);
-    //camera.position.z = 1 + (Math.sin(Date.now() / 3000) * 0.3);
 
     raycaster.setFromCamera(mouse, camera);
 
@@ -266,43 +269,50 @@ class Game {
     }
 
     const {left, right, forward, backward, up, down} = this.move;
-    const obj = this.selected ? this.selected.mesh : this.camera;
-    const mode = obj === this.camera ? "position" : this.mode;
-    var amount = this.mode === "rotation" ? Math.PI / 20 : 0.05;
+    if (left || right || forward || backward || up || down) {
+      const obj = this.selected ? this.selected.mesh : this.camera;
+      const mode = obj === this.camera ? "position" : this.mode;
+      var amount = this.mode === "rotation" ? Math.PI / 20 : 0.05;
 
-    // Move camera fast by default, slow with shift
-    if (obj === this.camera) {
-      amount *= this.move.shift ? 0.05: 1;
-    } else {
-      amount *= this.move.shift ? 1: 0.05;
-    }
-
-    if (left) obj[mode].x -= amount;
-    if (right) obj[mode].x += amount;
-    if (forward) {
-      if (mode === "position") {
-        obj.translateZ(-amount);
+      // Move camera fast by default, slow with shift
+      if (obj === this.camera) {
+        amount *= this.move.shift ? 0.05: 1;
       } else {
-        obj[mode].z -= amount;
+        amount *= this.move.shift ? 1: 0.05;
       }
-    }
-    if (backward) {
-      if (mode === "position") {
-        obj.translateZ(amount);
-      } else {
-        obj[mode].z += amount;
-      }
-    }
-    if (up) obj[mode].y -= amount;
-    if (down) obj[mode].y += amount;
-    if (mode === "scale") {
-      // No 0 size!
-      obj.scale.x = Math.max(0.01, obj.scale.x);
-      obj.scale.y = Math.max(0.01, obj.scale.y);
-      obj.scale.z = Math.max(0.01, obj.scale.z);
-    }
 
-    //this.updateUI()
+      if (left) {
+        if (mode === "position") obj.translateX(-amount);
+        else obj[mode].x -= amount;
+      }
+      if (right) {
+        if (mode === "position") obj.translateX(amount);
+        else obj[mode].x += amount;
+      }
+      if (forward) {
+        if (mode === "position") obj.translateZ(-amount);
+        else obj[mode].z -= amount;
+      }
+      if (backward) {
+        if (mode === "position") obj.translateZ(amount);
+        else obj[mode].z += amount;
+      }
+      if (up) {
+        if (mode === "position") obj.translateY(-amount);
+        else obj[mode].y -= amount;
+      }
+      if (down) {
+        if (mode === "position") obj.translateY(amount);
+        else obj[mode].y += amount;
+      }
+      if (mode === "scale") {
+        // No 0 size!
+        obj.scale.x = Math.max(0.01, obj.scale.x);
+        obj.scale.y = Math.max(0.01, obj.scale.y);
+        obj.scale.z = Math.max(0.01, obj.scale.z);
+      }
+      this.updateUI();
+    }
 
   }
 

@@ -18,13 +18,10 @@ class Box extends Item {
   }
 
   get color () {
-    return this.mesh.material.color.getHexString();
+    return '0x' + this.mesh.material.color.getHexString();
   }
 
   set color (col) {
-    //console.log(col);
-    //const color = new THREE.Color(col);
-    console.log(col, this.mesh.material.color)
     this.mesh.material.color.setHex(col);
   }
 

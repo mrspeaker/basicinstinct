@@ -8,8 +8,8 @@
 * make things proc gen? and scriptable with ItsBasic
 * everything in the world can be controlled with ItsBasic.
   name things?
-
 * goal is not to teach BASIC: player should alwyas be out of their depth, and has no help from anyone else in the gaem. Fumbling always forward and learning stuff the hardest of hard ways.
+* World can be controlled by BASIC - but also... moving things in the world could set memory locations in the computer!
 
 ## Rules engine? how could it work?
 
