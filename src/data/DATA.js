@@ -54,7 +54,7 @@ const DATA = {
         0.01
       ]
     }, {
-      "type": "Box",
+      "type": "Switch",
       "args": {
         "color": 5587985
       },

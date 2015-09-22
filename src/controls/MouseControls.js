@@ -71,6 +71,7 @@ class MouseControls {
     obj.dragging = false;
 
     if (Date.now() - obj._downAt < 300) {
+      // TODO: if moved far from mousedown then not a click.
       obj.clicked = true;
     }
 

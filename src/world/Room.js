@@ -1,10 +1,14 @@
 const {THREE} = require('three');
 const items = require('../items/');
 const UUID = require('../items/UUID');
+const Env = require('../Env');
 
 class Room {
 
   constructor (DATA, viewer) {
+    // This is to pass events down to interested items.
+    // Might be better to move this out to a more global system
+    // like in Env.
     this.events = {
       keydown: [],
       keyup: []
@@ -28,37 +32,45 @@ class Room {
 
   addItem (i) {
     const item = items[i.type];
-    if (items[i.type]) {
-      const args = i.args || {};
-      const itemInst = new item(args);
-      itemInst.mesh.userData.inst = itemInst;
-      itemInst.id = UUID();
-      itemInst.defn = Object.assign({}, i);
-
-      i.pos && itemInst.mesh.position.set(...i.pos);
-      i.rot && itemInst.mesh.rotation.set(...i.rot);
-      i.scale && itemInst.mesh.scale.set(...i.scale);
-
-      (i.events || []).forEach(name => {
-        if (!this.events[name]) {
-          console.error('no event called ', name);
-        } else {
-          this.events[name].push(itemInst);
-        }
-      });
-
-      this.scene.add(itemInst.mesh);
-      this.items.push(itemInst);
-      return itemInst;
-
-    } else {
+    if (!item) {
       console.log('unknown item:', i.type);
+      return null;
     }
+
+    const args = i.args || {};
+    const itemInst = new item(args);
+    itemInst.mesh.userData.inst = itemInst;
+    itemInst.id = UUID();
+    itemInst.defn = Object.assign({}, i);
+
+    i.pos && itemInst.mesh.position.set(...i.pos);
+    i.rot && itemInst.mesh.rotation.set(...i.rot);
+    i.scale && itemInst.mesh.scale.set(...i.scale);
+
+    (i.events || []).forEach(name => {
+      if (!this.events[name]) {
+        console.error('no event called ', name);
+      } else {
+        this.events[name].push(itemInst);
+      }
+    });
+
+    // Add to scene and items
+    this.scene.add(itemInst.mesh);
+    this.items.push(itemInst);
+
+    return itemInst;
   }
 
   bindEvents () {
     this.onKeyDown = this.onKeyDown.bind(this);
     this.onKeyUp = this.onKeyUp.bind(this);
+
+    Env.events.on('itemSelected', s => {
+      if (s && s.type === 'Switch') {
+        s.switchIt();
+      }
+    });
   }
 
   onKeyDown (e) {

@@ -92,9 +92,15 @@ class Editor {
     const raycaster = this.raycaster;
 
     raycaster.setFromCamera(mouse.pos, camera);
-    const intersections = raycaster.intersectObjects(room.scene.children);
+    const intersections = raycaster.intersectObjects(room.scene.children, true);
     if (intersections.length) {
-      this.hovering = intersections[0].object.userData.inst;
+      const hovering = intersections[0].object.userData.inst ? intersections[0].object : intersections[0].object.parent;
+      if (!hovering.userData.inst) {
+        //'didnt really fix this')
+        this.hovering = null;
+      } else {
+        this.hovering = hovering.userData.inst;
+      }
     } else {
       this.hovering = null;
     }
