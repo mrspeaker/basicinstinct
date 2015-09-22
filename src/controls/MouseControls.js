@@ -1,4 +1,4 @@
-const Env = require('./Env');
+const Env = require('../Env');
 
 class MouseControls {
 

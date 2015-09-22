@@ -5,20 +5,19 @@ const Game = require('./Game');
 /* All external things should be in Env */
 const Env = require('./Env');
 Env.dom = document.querySelector('#main');
-Env.domEvents.emit('mousedown');
 Env.width = Env.dom.clientWidth;
 Env.height = window.innerHeight;
 
-const game = new Game(document.querySelector('#main'));
-
-window.worldBus = game.bus; // For computer interactin'
-window.game = game; // For testin'
+const game = new Game();
+game.events = Env.events;  // Used for editor to hook into game
+window.worldBus = game.world.bus; // For computer interactin'
+window.game = game; // global for testin'
 
 function loop () {
   requestAnimationFrame(loop);
   game.update();
 }
-Env.events.emit('starting');
+Env.events.emit('start');
 loop();
 
 React.render(

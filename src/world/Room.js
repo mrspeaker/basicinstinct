@@ -5,59 +5,25 @@ const UUID = require('../items/UUID');
 class Room {
 
   constructor (DATA, viewer) {
-
     this.events = {
       keydown: [],
       keyup: []
     };
 
-
     this.scene = new THREE.Scene();
 
     this.items = [];
     (DATA.items || []).map(i => this.addItem(i));
-
-    this.viewer = viewer;
-
-    this.bindEvents();
     this.addLights();
 
-  }
-
-  dump () {
-    console.log("saved to window._dump: copy(_dump); for clipboard.");
-    window._dump = this.items.map(i => this.getDefn(i));
-  }
-
-  getDefn (inst) {
-    const {type, args, events} = inst.defn;
-    const roundy = a => {
-      const r = num => Math.floor(num * 10000)/10000;
-      return [r(a.x), r(a.y), r(a.z)];
-    };
-    const {position:pos, rotation:rot, scale} = inst.mesh;
-    const rscale = roundy(scale);
-    const rrot = roundy(rot);
-    const out = {
-      type,
-      args,
-      events,
-      pos: roundy(pos),
-      rot: rrot
-    };
-
-    // Don't include scale if 1
-    if (rscale[0] !== 1 || rscale[1] !== 1 || rscale[2] !== 1) {
-      // no 0 scales.
-      out.scale = rscale.map(i => i <= 0 ? 0.01 : i);
-    }
-
-    return out;
+    this.viewer = viewer;
+    this.bindEvents();
   }
 
   setViewer (viewer) {
     this.viewer = viewer;
     this.viewer.setSelected(null);
+    this.viewer.doSyncCam = true;
   }
 
   addItem (i) {
@@ -104,26 +70,55 @@ class Room {
 
   addLights () {
     const {scene} = this;
-    const ambLight = new THREE.AmbientLight(0xFFf7f1);
+    const ambLight = new THREE.AmbientLight(0x909090);
     scene.add(ambLight);
 
     //var hemLight = new THREE.HemisphereLight(0xffe5bb, 0xFFBF00, .1);
     //scene.add(hemLight)
 
-    var point = new THREE.PointLight(0xFEFFDE, 3, 7);
-    point.position.set( 1, 3, 3 );
+    const point = new THREE.PointLight(0xFCEAD5, 2.5, 7.5);
+    point.position.set(1, 2.5, 3);
     scene.add(point);
-    scene.add(new THREE.PointLightHelper(point, 1));
+    scene.add(new THREE.PointLightHelper(point, 0.1));
   }
 
   update (renderer, camera, controls) {
     this.viewer.update(renderer, camera, this, controls);
-
     this.items.forEach(i => i.update());
     renderer.render(this.scene, camera);
+  }
 
-    /*
-    */
+  onLeave () {}
+
+  getDefn (inst) {
+    const {type, args, events} = inst.defn;
+    const roundy = a => {
+      const r = num => Math.floor(num * 10000)/10000;
+      return [r(a.x), r(a.y), r(a.z)];
+    };
+    const {position:pos, rotation:rot, scale} = inst.mesh;
+    const rscale = roundy(scale);
+    const rrot = roundy(rot);
+    const out = {
+      type,
+      args,
+      events,
+      pos: roundy(pos),
+      rot: rrot
+    };
+
+    // Don't include scale if 1
+    if (rscale[0] !== 1 || rscale[1] !== 1 || rscale[2] !== 1) {
+      // no 0 scales.
+      out.scale = rscale.map(i => i === 0 ? 0.01 : i);
+    }
+
+    return out;
+  }
+
+  dump () {
+    console.log("saved to window._dump: copy(_dump); for clipboard.");
+    window._dump = this.items.map(i => this.getDefn(i));
   }
 
 }

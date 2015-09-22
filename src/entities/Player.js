@@ -26,6 +26,12 @@ class Player {
     Env.events.emit('selectionChange', this.selected);
   }
 
+  syncCam (camera) {
+    camera.position.x = this.mesh.position.x;
+    camera.position.z = this.mesh.position.z;
+    camera.position.y = this.mesh.position.y + 1;
+  }
+
   update (renderer, camera, room, {mouse, keys}) {
     const {left, right, forward, backward, up, down} = keys.move;
     const obj = this.mesh;
@@ -35,7 +41,7 @@ class Player {
       });
     } else {
 
-      if (left || right || forward || backward || up || down) {
+      if (this.doSyncCam || left || right || forward || backward || up || down) {
         const amount = 0.05;
 
         if (left) obj.translateX(-amount);
@@ -45,9 +51,7 @@ class Player {
         if (up) obj.translateY(-amount);
         if (down) obj.translateY(amount);
 
-        camera.position.x = obj.position.x;
-        camera.position.z = obj.position.z;
-        camera.position.y = obj.position.y + 1;
+        this.syncCam(camera);
 
       }
     }
