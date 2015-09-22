@@ -258,6 +258,9 @@ const DATA = {
       "args": {
         "color": 10066329
       },
+      "ons": {
+        "itemSelected": [{name:"toggleLight", to:16}]
+      },
       "pos": [
         3.6597,
         0.4291, -0.4768

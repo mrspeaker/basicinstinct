@@ -67,7 +67,7 @@ class Room {
     this.onKeyUp = this.onKeyUp.bind(this);
 
     Env.events.on('action', a => {
-      console.log(this.viewer.type)
+      // Don't fire room events in Editor mode.
       if (this.viewer.type !== "Player") {
         return;
       }
@@ -97,10 +97,12 @@ class Room {
     //var hemLight = new THREE.HemisphereLight(0xffe5bb, 0xFFBF00, .1);
     //scene.add(hemLight)
 
-  /*  const point = new THREE.PointLight(0xFCEAD5, 2.5, 7.5);
+    /*
+    const point = new THREE.PointLight(0xFCEAD5, 2.5, 7.5);
     point.position.set(1, 2.5, 3);
     scene.add(point);
-    scene.add(new THREE.PointLightHelper(point, 0.1));*/
+    scene.add(new THREE.PointLightHelper(point, 0.1));
+    */
   }
 
   update (renderer, camera, controls) {
@@ -114,7 +116,7 @@ class Room {
   getDefn (inst) {
     const {type, args, events} = inst.defn;
     const roundy = a => {
-      const r = num => Math.floor(num * 10000)/10000;
+      const r = num => Math.floor(num * 10000) / 10000;
       return [r(a.x), r(a.y), r(a.z)];
     };
     const {position:pos, rotation:rot, scale} = inst.mesh;

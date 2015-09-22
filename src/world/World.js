@@ -18,8 +18,10 @@ class World {
 
   createWorldBus () {
     this.bus = {
+      // Hmmm... this should get pushed into the Actions system.
       fire: args => {
-        if (args.type === 'set') {
+        switch (args.type) {
+        case 'set':
           const {id, attr, value} = args;
           const item = this.room.items.find(i => i.id == id);
           if (item) {
@@ -27,8 +29,15 @@ class World {
             const axis = attr[attr.length - 1];
             item.mesh[type][axis] = value;
           }
+          break;
+        case 'programEnded':
+          console.log('Computer stopped!');
+          break;
+        default:
+          console.log('unhandled world bus msg:', args);
         }
       },
+
       get: (id, attr) => {
         const item = this.room.items.find(i => i.id == id);
         var retVal = 0;

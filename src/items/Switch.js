@@ -21,12 +21,15 @@ class Switch extends Item {
     this.mesh.add(this.b1);
     this.mesh.add(this.b2);
 
-    this.up = true;
+    this.togState = true;
 
     this.ons = {
       // When I get 'itemSelected', I want to send a 'toggleLight' to pointLight(4);
       'itemSelected': [{name:'toggleLight', to:16}],
-      'itemDeselected': [{name:'toggleLight', to:16}]
+      // how to do: if i get 'X' and I'm ON, send ....
+      // how to do: if i get 'X' and [16, 8, 12] ON, send ....
+      // how to do: if i get 'X' and I'm ON and 12 ENABLED, send ....
+      // how to do: if i get 'X' 3 times, send ....
     };
 
   }
@@ -36,8 +39,8 @@ class Switch extends Item {
 
     if (name === 'itemSelected') {
       // onClick fires!
-      this.up = !this.up;
-      this.b2.position.y = this.up ? 1 : 0.4;
+      this.togState = !this.togState;
+      this.b2.position.y = this.togState ? 1 : 0.4;
     }
 
     if (name === 'itemDeselected') {
