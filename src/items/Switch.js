@@ -31,6 +31,7 @@ class Switch extends Item {
   switchIt() {
     this.up = !this.up;
     this.b2.position.y = this.up ? 1 : 0.4;
+    Env.events.emit('switch', this);
   }
 
   get color () {

@@ -71,6 +71,15 @@ class Room {
         s.switchIt();
       }
     });
+
+    Env.events.on('switch', s => {
+      if (s.id === 15) {
+        const isOn = s.up;
+        // Switch id4 is on.
+        console.log('switch id15 is ', isOn);
+        this.light.visible = isOn;
+      }
+    });
   }
 
   onKeyDown (e) {
@@ -92,6 +101,7 @@ class Room {
     point.position.set(1, 2.5, 3);
     scene.add(point);
     scene.add(new THREE.PointLightHelper(point, 0.1));
+    this.light = point;
   }
 
   update (renderer, camera, controls) {
