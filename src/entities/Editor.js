@@ -5,6 +5,7 @@ class Editor {
   constructor () {
     this.hovering = null;
     this.selected = null;
+    this.mode = "position";
 
     this.type = "Player";
     const geometry = new THREE.BoxGeometry(1, 1, 1);
@@ -13,10 +14,6 @@ class Editor {
     this.mesh = new THREE.Mesh(geometry, material);
 
     this.raycaster = new THREE.Raycaster();
-    this.intersection = null;
-
-    //Env.events.on('starting', () => console.log('i got it.'))
-
   }
 
   setSelected (selected) {
@@ -27,6 +24,7 @@ class Editor {
     if (this.selected) {
       this.selected.isSelected = true;
     }
+    this.mode = "position";
     Env.events.emit('selectionChange', this.selected);
   }
 
@@ -34,18 +32,50 @@ class Editor {
     const {left, right, forward, backward, up, down} = keys.move;
 
     if (left || right || forward || backward || up || down) {
-      const obj = this.selected ? this.selected.mesh : this.mesh;
+      const isViewer = !this.selected;
+      const obj = isViewer ? this.mesh : this.selected.mesh;
+      const mode = this.mode;
+      var amount = mode === "rotation" ? Math.PI / 20 : 0.05;
 
+      // Move camera fast by default, slow with shift
+      if (isViewer) {
+        amount *= keys.move.shift ? 0.05: 1;
+      } else {
+        amount *= keys.move.shift ? 1: 0.05;
+      }
 
-      const amount = 0.05;
-      if (left) obj.translateX(-amount);
-      if (right) obj.translateX(amount);
-      if (forward) obj.translateZ(-amount);
-      if (backward) obj.translateZ(amount);
-      if (up) obj.translateY(-amount);
-      if (down) obj.translateY(amount);
+      if (left) {
+        if (mode === "position") obj.translateX(-amount);
+        else obj[mode].x -= amount;
+      }
+      if (right) {
+        if (mode === "position") obj.translateX(amount);
+        else obj[mode].x += amount;
+      }
+      if (forward) {
+        if (mode === "position") obj.translateZ(-amount);
+        else obj[mode].z -= amount;
+      }
+      if (backward) {
+        if (mode === "position") obj.translateZ(amount);
+        else obj[mode].z += amount;
+      }
+      if (up) {
+        if (mode === "position") obj.translateY(-amount);
+        else obj[mode].y -= amount;
+      }
+      if (down) {
+        if (mode === "position") obj.translateY(amount);
+        else obj[mode].y += amount;
+      }
+      if (mode === "scale") {
+        // No 0 size!
+        obj.scale.x = Math.max(0.01, obj.scale.x);
+        obj.scale.y = Math.max(0.01, obj.scale.y);
+        obj.scale.z = Math.max(0.01, obj.scale.z);
+      }
 
-      if (!this.selected) {
+      if (isViewer) {
         camera.position.x = obj.position.x;
         camera.position.z = obj.position.z;
         camera.position.y = obj.position.y + 1;
@@ -79,6 +109,26 @@ class Editor {
 
     if (mouse.left.clicked) {
       this.setSelected(this.hovering);
+    }
+
+    if (this.selected) {
+
+      keys.pressed.forEach(k => {
+        switch (k.which) {
+        case 27: /*esc*/
+          this.setSelected(null);
+          break;
+        case 90:
+          // Duplicate selected object
+          this.setSelected(room.addItem(room.getDefn(this.selected)));
+          this.selected.mesh.position.y += 0.2;
+          break;
+        case 49: this.mode = "position"; break;
+        case 50: this.mode = "scale"; break;
+        case 51: this.mode = "rotation"; break;
+
+        }
+      });
     }
 
   }

@@ -1,5 +1,5 @@
 const React = require('react');
-const Controls = require('./Controls');
+
 
 const {Component} = React;
 
@@ -8,7 +8,7 @@ class SideBar extends Component {
   render () {
     const {selected} = this.props;
 
-    if (!selected) { return <div><Controls /></div>; }
+    if (!selected) { return <div></div>; }
 
     const {position:pos, rotation:rot, scale} = selected.mesh;
     const ts = {pos, rot, scale};
@@ -40,20 +40,17 @@ class SideBar extends Component {
         const val = e.currentTarget.value;
         selected.color = val;
         selected.defn.args.color = parseInt(val, 16);
-        console.log(selected.defn.args);
         this.forceUpdate();
       }
     } />;
 
     return (
       <div>
-        <Controls />
-        <span>Type: {selected.type}. ID: {selected.id}</span><br/>
-        <br/>
         {transforms}
         <hr />
         <textarea value={JSON.stringify(selected.defn.args)} />
         {col}
+        <br/>
       </div>
     );
   }

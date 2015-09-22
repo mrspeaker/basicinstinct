@@ -1,5 +1,6 @@
 const React = require('react');
 const SideBar = require('./SideBar');
+const Controls = require('./Controls');
 
 const {Component} = React;
 
@@ -18,7 +19,28 @@ class Editor extends Component {
   }
 
   render () {
-    return <SideBar selected={this.state.selected} />;
+    const selected = this.state.selected;
+    const type = selected ? selected.type : "-";
+    const id = selected ? selected.id : "-";
+
+    return <div>
+      <span>Type: {type}. ID: {id}</span><br/>
+      <br/>
+      <Controls />
+      <SideBar selected={this.state.selected} />
+      <div>
+        <br/>
+        <strong>Notes:</strong>
+        <div>
+          <strong>backtick key:</strong> switches between Player and Editor.<br/>
+          In Player mode you can type on puter. <br/>
+          In Editor mode it pushes things around (shift moves things faster).<br/>
+        </div>
+        <div>1/2/3 keys switch between modes: pos, rot, scale.</div>
+        <div>z key duplicates current selected</div>
+      </div>
+
+    </div>
   }
 
 }

@@ -13,10 +13,6 @@ class Player {
     this.mesh = new THREE.Mesh(geometry, material);
 
     this.raycaster = new THREE.Raycaster();
-    this.intersection = null;
-
-    //Env.events.on('starting', () => console.log('i got it.'))
-
   }
 
   setSelected (selected) {
@@ -35,9 +31,6 @@ class Player {
     const obj = this.mesh;
     if (this.selected && this.selected.type === "Computer") {
       keys.pressed.forEach(k => {
-        if (k.which === 27 /*esc*/) {
-          this.setSelected(null);
-        }
         room.onKeyDown(k);
       });
     } else {
