@@ -3,6 +3,7 @@ const Room = require('./world/Room');
 const DATA = require('./DATA');
 const Player = require('./entities/Player');
 const {EventEmitter} = require('events');
+const MouseControls = require('./MouseControls');
 
 class Game {
 
@@ -14,14 +15,15 @@ class Game {
     if (this.selected) {
       this.selected.isSelected = true;
     }
-
+    this.domFocused = true;
     this.events.emit('selectionChange', this.selected);
   }
 
   constructor (dom) {
+    this.dom = dom;
     this.events = new EventEmitter();
     this.player = new Player();
-    this.dom = dom;
+    this.mouse = new MouseControls();
 
     this.move = {
       forward: false,
@@ -81,76 +83,13 @@ class Game {
     this.camera.position.z = 3;
 
     this.raycaster = new THREE.Raycaster();
-    this.mouse = new THREE.Vector2();
     this.intersection = null;
-
-    this.mouseDownTime = null;
 
     this.dom.appendChild(this.renderer.domElement);
 
   }
 
   bindUI () {
-    const dom = this.dom;
-    dom.addEventListener('mousedown', e => {
-      const x = (e.clientX / this.dom.clientWidth) * 2 - 1;
-      const y = -(e.clientY / window.innerHeight) * 2 + 1;
-
-      const rmb = e.which === 3;
-      this.mouseDownTime = Date.now();
-      this.mouseDownPos = {x, y, rmb};
-
-    }, false);
-    dom.addEventListener('mouseup', () => {
-      if (Date.now() - this.mouseDownTime > 300) {
-        this.mouseDownTime = null;
-        return;
-      }
-      this.mouseDownTime = null;
-
-      // Click
-      this.mode = "position";
-      if (this.hovering) {
-        if (this.mouseDownPos.rmb) {
-          // Right click!
-          console.log('do something with:', this.hovering);
-        } else {
-          this.setSelected(this.hovering);
-        }
-      } else {
-        this.setSelected();
-      }
-
-    }, false);
-    dom.addEventListener('mouseenter', () => {
-      this.domFocused = true;
-      this.mouseDownTime = null;
-    });
-    dom.addEventListener('mouseleave', () => {
-      this.domFocused = false;
-      this.mouseDownTime = null;
-    });
-    dom.addEventListener('mousemove', e => {
-      e.preventDefault();
-
-      this.mouse.x = (e.clientX / this.dom.clientWidth) * 2 - 1;
-      this.mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
-
-      // Drag
-      if (!this.mouseDownPos || !this.mouseDownTime) {
-        return;
-      }
-      const diffX = this.mouseDownPos.x - this.mouse.x;
-      const diffY = this.mouseDownPos.y - this.mouse.y;
-      if (diffX !== 0) {
-        this.camera.rotation.y += (diffX > 0 ? -0.01 : 0.01) * Math.abs(diffX * 80);
-        this.mouseDownPos.x = this.mouse.x;
-      }
-      if (diffY !== 0) {
-        this.camera.rotation.x += (diffY > 0 ? 0.01 : -0.01) * Math.abs(diffY * 80);
-        this.mouseDownPos.y = this.mouse.y;
-      }
-    }, false);
 
     document.body.addEventListener('keydown', e => {
       if (!this.domFocused) {
@@ -169,6 +108,7 @@ class Game {
       if (which === 69) { this.move.down = true; }
 
     }, false);
+    
     document.body.addEventListener('keyup', e => {
       if (!this.domFocused) {
         return;
@@ -211,11 +151,11 @@ class Game {
   }
 
   update () {
-    const {renderer, camera, raycaster, mouse, room} = this;
+    const {renderer, camera, mouse, raycaster, room, move} = this;
+
     room.update(renderer, camera);
 
-    raycaster.setFromCamera(mouse, camera);
-
+    raycaster.setFromCamera(mouse.pos, camera);
     const intersections = raycaster.intersectObjects(room.scene.children);
     if (intersections.length) {
       this.hovering = intersections[0].object.userData.inst;
@@ -223,9 +163,9 @@ class Game {
       this.hovering = null;
     }
 
-    const {left, right, forward, backward, up, down} = this.move;
+    const {left, right, forward, backward, up, down} = move;
     if (left || right || forward || backward || up || down) {
-      const obj = this.camera;
+      const obj = camera;
       const amount = 0.05;
 
       if (left) obj.translateX(-amount);
@@ -235,6 +175,22 @@ class Game {
       if (up) obj.translateY(-amount);
       if (down) obj.translateY(amount);
     }
+
+    if (mouse.left.dragging) {
+      const {dx, dy} = mouse.pos;
+      if (dx) {
+        camera.rotation.y += (dx > 0 ? -0.01 : 0.01) * Math.abs(dx * 80);
+      }
+      if (dy) {
+        camera.rotation.x += (dy > 0 ? 0.01 : -0.01) * Math.abs(dy * 80);
+      }
+    }
+
+    if (mouse.left.clicked) {
+      this.setSelected(this.hovering);
+    }
+
+    mouse.update();
 
   }
 

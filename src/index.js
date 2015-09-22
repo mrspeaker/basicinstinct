@@ -6,6 +6,8 @@ const Game = require('./Game');
 const Env = require('./Env');
 Env.dom = document.querySelector('#main');
 Env.events.emit('mousedown');
+Env.width = Env.dom.clientWidth;
+Env.height = window.innerHeight;
 
 const game = new Game(document.querySelector('#main'));
 
