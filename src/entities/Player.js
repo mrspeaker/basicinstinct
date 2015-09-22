@@ -51,6 +51,11 @@ class Player {
         if (backward) obj.translateZ(amount);
         if (up) obj.translateY(-amount);
         if (down) obj.translateY(amount);
+
+        camera.position.x = obj.position.x;
+        camera.position.z = obj.position.z;
+        camera.position.y = obj.position.y + 1;
+
       }
     }
 

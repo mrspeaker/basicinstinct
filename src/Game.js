@@ -3,6 +3,7 @@ const Env = require('./Env');
 const Room = require('./world/Room');
 const DATA = require('./DATA');
 const Player = require('./entities/Player');
+const Editor = require('./entities/Editor');
 const MouseControls = require('./MouseControls');
 const KeyControls = require('./KeyControls');
 
@@ -12,7 +13,11 @@ class Game {
     this.dom = dom;
     this.events = Env.events;
     this.player = new Player();
+    this.editor = new Editor();
+
     this.player.mesh.position.set(1, 0, 4);
+    this.editor.mesh.position.set(1, 0, 4);
+
     this.controls = {
       mouse: new MouseControls(),
       keys: new KeyControls()
@@ -56,7 +61,7 @@ class Game {
       }
     };
 
-    this.room = new Room(DATA.bedroom, this.player);
+    this.loadRoom(DATA.bedroom);
 
     this.renderer = new THREE.WebGLRenderer({antialias:true});
     this.camera = new THREE.PerspectiveCamera( 65, 1, 0.1, 300);
@@ -87,19 +92,24 @@ class Game {
     if (this.room) {
       this.room.onLeave();
     }
-    this.room = new Room(data);
+    this.room = new Room(data, this.player);
+    this.room.scene.add(this.player.mesh);
+    this.room.scene.add(this.editor.mesh);
   }
 
   update () {
     const {renderer, camera, controls, raycaster, room} = this;
     room.update(renderer, camera, controls);
+    controls.keys.pressed.forEach(p => {
+      if (p.which === 192) {
+        console.log("switch")
+        room.setViewer(room.viewer === this.player ? this.editor : this.player);
+      }
+    });
 
-    this.controls.mouse.update();
-    this.controls.keys.update();
-
-    this.camera.position.x = this.player.mesh.position.x;
-    this.camera.position.z = this.player.mesh.position.z;
-
+    controls.mouse.update();
+    controls.keys.update();
+    
   }
 
 }

@@ -18,8 +18,6 @@ class Room {
     (DATA.items || []).map(i => this.addItem(i));
 
     this.viewer = viewer;
-    console.log(viewer)
-    this.scene.add(viewer.mesh);
 
     this.bindEvents();
     this.addLights();
@@ -55,6 +53,10 @@ class Room {
     }
 
     return out;
+  }
+
+  setViewer (viewer) {
+    this.viewer = viewer;
   }
 
   addItem (i) {
