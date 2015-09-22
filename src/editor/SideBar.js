@@ -48,7 +48,8 @@ class SideBar extends Component {
       <div>
         {transforms}
         <hr />
-        <textarea value={JSON.stringify(selected.defn.args)} />
+        <textarea value={JSON.stringify(selected.defn.args)} /><br/>
+        <textarea value={JSON.stringify(selected.ons)} />
         {col}
         <br/>
       </div>

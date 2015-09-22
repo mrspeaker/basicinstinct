@@ -22,16 +22,29 @@ class Switch extends Item {
     this.mesh.add(this.b2);
 
     this.up = true;
+
+    this.ons = {
+      // When I get 'itemSelected', I want to send a 'toggleLight' to pointLight(4);
+      'itemSelected': [{name:'toggleLight', to:16}],
+      'itemDeselected': [{name:'toggleLight', to:16}]
+    };
+
   }
 
-  update () {
+  fire (name) {
+    const toEmit = this.ons[name] || [];
 
-  }
+    if (name === 'itemSelected') {
+      // onClick fires!
+      this.up = !this.up;
+      this.b2.position.y = this.up ? 1 : 0.4;
+    }
 
-  switchIt() {
-    this.up = !this.up;
-    this.b2.position.y = this.up ? 1 : 0.4;
-    Env.events.emit('switch', this);
+    if (name === 'itemDeselected') {
+      console.log('I was unselected');
+    }
+
+    toEmit.forEach(msg => Env.events.emit('action', {...msg, from:this.id}));
   }
 
   get color () {

@@ -17,15 +17,19 @@ class Editor {
   }
 
   setSelected (selected) {
-    if (this.selected) {
+    if (this.selected && this.selected !== selected) {
       this.selected.isSelected = false;
+
+      Env.events.emit('itemSelected', this.selected);
+      this.selected.fire('itemDeselected');
     }
     this.selected = selected || null;
     if (this.selected) {
       this.selected.isSelected = true;
+      this.selected.fire('itemSelected');
     }
-    this.mode = "position";
-    Env.events.emit('selectionChange', this.selected);
+    //Env.events.emit('selectionChange', this.selected);
+    Env.events.emit('itemSelected', this.selected);
   }
 
   syncCam (camera) {

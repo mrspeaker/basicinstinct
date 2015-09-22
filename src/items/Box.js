@@ -13,10 +13,6 @@ class Box extends Item {
     this.mesh = new THREE.Mesh(geometry, material);
   }
 
-  update () {
-
-  }
-
   get color () {
     return '0x' + this.mesh.material.color.getHexString();
   }

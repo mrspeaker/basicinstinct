@@ -66,20 +66,16 @@ class Room {
     this.onKeyDown = this.onKeyDown.bind(this);
     this.onKeyUp = this.onKeyUp.bind(this);
 
-    Env.events.on('itemSelected', s => {
-      if (s && s.type === 'Switch') {
-        s.switchIt();
+    Env.events.on('action', a => {
+      const {name, to, from} = a;
+      const item = this.items.find(i => i.id === to);
+      if (item) {
+        item.fire(name, {from});
+      } else {
+        console.log('item not found.');
       }
     });
 
-    Env.events.on('switch', s => {
-      if (s.id === 15) {
-        const isOn = s.up;
-        // Switch id4 is on.
-        console.log('switch id15 is ', isOn);
-        this.light.visible = isOn;
-      }
-    });
   }
 
   onKeyDown (e) {
@@ -97,11 +93,10 @@ class Room {
     //var hemLight = new THREE.HemisphereLight(0xffe5bb, 0xFFBF00, .1);
     //scene.add(hemLight)
 
-    const point = new THREE.PointLight(0xFCEAD5, 2.5, 7.5);
+  /*  const point = new THREE.PointLight(0xFCEAD5, 2.5, 7.5);
     point.position.set(1, 2.5, 3);
     scene.add(point);
-    scene.add(new THREE.PointLightHelper(point, 0.1));
-    this.light = point;
+    scene.add(new THREE.PointLightHelper(point, 0.1));*/
   }
 
   update (renderer, camera, controls) {
