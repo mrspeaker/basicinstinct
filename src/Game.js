@@ -1,9 +1,11 @@
 const {THREE} = require('three');
+const Env = require('./Env');
 const Room = require('./world/Room');
 const DATA = require('./DATA');
 const Player = require('./entities/Player');
 const {EventEmitter} = require('events');
 const MouseControls = require('./MouseControls');
+const KeyControls = require('./KeyControls');
 
 class Game {
 
@@ -24,16 +26,7 @@ class Game {
     this.events = new EventEmitter();
     this.player = new Player();
     this.mouse = new MouseControls();
-
-    this.move = {
-      forward: false,
-      backward: false,
-      left: false,
-      right: false,
-      up: false,
-      down: false,
-      shift: false
-    };
+    this.keys = new KeyControls();
 
     this.bindUI();
 
@@ -76,71 +69,30 @@ class Game {
     this.room = new Room(DATA.bedroom, this.player);
 
     this.renderer = new THREE.WebGLRenderer({antialias:true});
-    this.renderer.setSize(this.dom.clientWidth, window.innerHeight);
-
-    this.camera = new THREE.PerspectiveCamera( 65, this.dom.clientWidth / window.innerHeight, 0.1, 300);
+    this.camera = new THREE.PerspectiveCamera( 65, 1, 0.1, 300);
     this.camera.position.x = 1;
     this.camera.position.z = 3;
+    this.resize();
 
     this.raycaster = new THREE.Raycaster();
     this.intersection = null;
 
     this.dom.appendChild(this.renderer.domElement);
-
   }
 
   bindUI () {
-
-    document.body.addEventListener('keydown', e => {
-      if (!this.domFocused) {
-        return;
-      }
-      this.room.onKeyDown(e);
-
-      const {which} = e;
-      if (e.shiftKey) this.move.shift = true;
-      // WSAD / Keys
-      if (which === 38 || which === 87) { this.move.forward = true; }
-      if (which === 40 || which === 83) { this.move.backward = true; }
-      if (which === 37 || which === 65) { this.move.left = true; }
-      if (which === 39 || which === 68) { this.move.right = true; }
-      if (which === 81) { this.move.up = true; }
-      if (which === 69) { this.move.down = true; }
-
-    }, false);
-    
-    document.body.addEventListener('keyup', e => {
-      if (!this.domFocused) {
-        return;
-      }
-
-      this.room.onKeyUp(e);
-      const {which} = e;
-      if (!e.shiftKey) this.move.shift = false;
-      const forward = which === 38 || which === 87;
-      const backward = which === 40 || which === 83;
-      const left = which === 37 || which === 65;
-      const right = which === 39 || which === 68;
-      const up = which === 81;
-      const down = which === 69;
-      if (forward) { this.move.forward = false; }
-      if (backward) { this.move.backward = false; }
-      if (left) { this.move.left = false; }
-      if (right) { this.move.right = false; }
-      if (up) { this.move.up = false; }
-      if (down) { this.move.down = false; }
-    }, false);
-
     window.addEventListener('contextmenu', e => { e.preventDefault(); }, false);
     window.addEventListener('resize', this.resize.bind(this), false);
   }
 
   resize () {
     const {camera, renderer} = this;
-    camera.aspect = this.dom.clientWidth / window.innerHeight;
-    camera.updateProjectionMatrix();
+    Env.width = Env.dom.clientWidth;
+    Env.height = window.innerHeight;
 
-    renderer.setSize(this.dom.clientWidth, window.innerHeight);
+    camera.aspect = Env.width / Env.height;
+    camera.updateProjectionMatrix();
+    renderer.setSize(Env.width, Env.height);
   }
 
   loadRoom (data) {
@@ -151,8 +103,7 @@ class Game {
   }
 
   update () {
-    const {renderer, camera, mouse, raycaster, room, move} = this;
-
+    const {renderer, camera, mouse, keys, raycaster, room} = this;
     room.update(renderer, camera);
 
     raycaster.setFromCamera(mouse.pos, camera);
@@ -162,18 +113,21 @@ class Game {
     } else {
       this.hovering = null;
     }
+    if (this.selected && this.selected.type === "Computer") {
+      keys.pressed.forEach(k => this.room.onKeyDown(k));
+    } else {
+      const {left, right, forward, backward, up, down} = keys.move;
+      if (left || right || forward || backward || up || down) {
+        const obj = camera;
+        const amount = 0.05;
 
-    const {left, right, forward, backward, up, down} = move;
-    if (left || right || forward || backward || up || down) {
-      const obj = camera;
-      const amount = 0.05;
-
-      if (left) obj.translateX(-amount);
-      if (right) obj.translateX(amount);
-      if (forward) obj.translateZ(-amount);
-      if (backward) obj.translateZ(amount);
-      if (up) obj.translateY(-amount);
-      if (down) obj.translateY(amount);
+        if (left) obj.translateX(-amount);
+        if (right) obj.translateX(amount);
+        if (forward) obj.translateZ(-amount);
+        if (backward) obj.translateZ(amount);
+        if (up) obj.translateY(-amount);
+        if (down) obj.translateY(amount);
+      }
     }
 
     if (mouse.left.dragging) {
@@ -191,6 +145,7 @@ class Game {
     }
 
     mouse.update();
+    keys.update();
 
   }
 
