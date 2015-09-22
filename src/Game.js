@@ -102,14 +102,13 @@ class Game {
     room.update(renderer, camera, controls);
     controls.keys.pressed.forEach(p => {
       if (p.which === 192) {
-        console.log("switch")
         room.setViewer(room.viewer === this.player ? this.editor : this.player);
       }
     });
 
     controls.mouse.update();
     controls.keys.update();
-    
+
   }
 
 }

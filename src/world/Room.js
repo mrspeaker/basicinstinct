@@ -57,6 +57,7 @@ class Room {
 
   setViewer (viewer) {
     this.viewer = viewer;
+    this.viewer.setSelected(null);
   }
 
   addItem (i) {

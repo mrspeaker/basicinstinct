@@ -49,6 +49,8 @@ class Editor {
         camera.position.x = obj.position.x;
         camera.position.z = obj.position.z;
         camera.position.y = obj.position.y + 1;
+      } else {
+        Env.events.emit('selectionChange', this.selected);
       }
 
     }
