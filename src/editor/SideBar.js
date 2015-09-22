@@ -35,21 +35,25 @@ class SideBar extends Component {
       return all;
     }, []);
 
-    const col = selected.type !== 'Box' ? null : <input defaultValue={selected.color} onBlur={
+    const col = selected.color === undefined ? null : (<input defaultValue={selected.color} onBlur={
       e => {
         const val = e.currentTarget.value;
         selected.color = val;
         selected.defn.args.color = parseInt(val, 16);
         this.forceUpdate();
       }
-    } />;
+    } />);
+
+    const ons = Object.keys(selected.ons).map(k => selected.ons[k]).map(i => {
+      return <div>{i.map(h => `-${JSON.stringify(h)}-`)}</div>;
+    });
 
     return (
       <div>
         {transforms}
         <hr />
         <textarea value={JSON.stringify(selected.defn.args)} /><br/>
-        <textarea value={JSON.stringify(selected.ons)} />
+        {ons}
         {col}
         <br/>
       </div>

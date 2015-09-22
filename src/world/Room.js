@@ -67,6 +67,10 @@ class Room {
     this.onKeyUp = this.onKeyUp.bind(this);
 
     Env.events.on('action', a => {
+      console.log(this.viewer.type)
+      if (this.viewer.type !== "Player") {
+        return;
+      }
       const {name, to, from} = a;
       const item = this.items.find(i => i.id === to);
       if (item) {

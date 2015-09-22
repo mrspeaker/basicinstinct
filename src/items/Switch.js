@@ -48,11 +48,11 @@ class Switch extends Item {
   }
 
   get color () {
-    return '0x' + this.b1.mesh.material.color.getHexString();
+    return '0x' + this.b1.material.color.getHexString();
   }
 
   set color (col) {
-    this.b1.mesh.material.color.setHex(col);
+    this.b1.material.color.setHex(col);
   }
 
 }

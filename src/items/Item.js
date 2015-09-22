@@ -1,6 +1,8 @@
 class Item {
 
-  constructor () {}
+  constructor () {
+    this.ons = [];
+  }
 
   fire (name, data) {
     console.log('unhandled', name, data);

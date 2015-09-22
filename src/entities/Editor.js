@@ -7,7 +7,7 @@ class Editor {
     this.selected = null;
     this.mode = "position";
 
-    this.type = "Player";
+    this.type = "Editor";
     const geometry = new THREE.BoxGeometry(1, 1, 1);
     const material = new THREE.MeshLambertMaterial({color: 0x00dd00, wireframe:true});
     //this.mesh = new THREE.Object3D();
