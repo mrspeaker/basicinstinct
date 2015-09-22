@@ -1,6 +1,8 @@
 const DomEvents = new (require('events').EventEmitter)();
+const WorldEvents = new (require('events').EventEmitter)();
 
 module.exports = {
   dom: document.body, // Overwrite me!
-  events: DomEvents
+  domEvents: DomEvents,
+  events: WorldEvents
 };

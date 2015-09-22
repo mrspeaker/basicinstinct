@@ -11,11 +11,14 @@ class Room {
       keyup: []
     };
 
+
     this.scene = new THREE.Scene();
 
     this.items = [];
     (DATA.items || []).map(i => this.addItem(i));
 
+    this.viewer = viewer;
+    console.log(viewer)
     this.scene.add(viewer.mesh);
 
     this.bindEvents();
@@ -110,9 +113,14 @@ class Room {
     scene.add(new THREE.PointLightHelper(point, 1));
   }
 
-  update (renderer, camera) {
+  update (renderer, camera, controls) {
+    this.viewer.update(renderer, camera, this, controls);
+
     this.items.forEach(i => i.update());
     renderer.render(this.scene, camera);
+
+    /*
+    */
   }
 
 }

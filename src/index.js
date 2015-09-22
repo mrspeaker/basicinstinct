@@ -5,7 +5,7 @@ const Game = require('./Game');
 /* All external things should be in Env */
 const Env = require('./Env');
 Env.dom = document.querySelector('#main');
-Env.events.emit('mousedown');
+Env.domEvents.emit('mousedown');
 Env.width = Env.dom.clientWidth;
 Env.height = window.innerHeight;
 
@@ -18,6 +18,7 @@ function loop () {
   requestAnimationFrame(loop);
   game.update();
 }
+Env.events.emit('starting');
 loop();
 
 React.render(

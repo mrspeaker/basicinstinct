@@ -18,7 +18,7 @@ class Editor extends Component {
   }
 
   render () {
-    return <SideBar selected={this.props.game.selected} />;
+    return <SideBar selected={this.state.selected} />;
   }
 
 }

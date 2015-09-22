@@ -3,30 +3,20 @@ const Env = require('./Env');
 const Room = require('./world/Room');
 const DATA = require('./DATA');
 const Player = require('./entities/Player');
-const {EventEmitter} = require('events');
 const MouseControls = require('./MouseControls');
 const KeyControls = require('./KeyControls');
 
 class Game {
 
-  setSelected (selected) {
-    if (this.selected) {
-      this.selected.isSelected = false;
-    }
-    this.selected = selected || null;
-    if (this.selected) {
-      this.selected.isSelected = true;
-    }
-    this.domFocused = true;
-    this.events.emit('selectionChange', this.selected);
-  }
-
   constructor (dom) {
     this.dom = dom;
-    this.events = new EventEmitter();
+    this.events = Env.events;
     this.player = new Player();
-    this.mouse = new MouseControls();
-    this.keys = new KeyControls();
+    this.player.mesh.position.set(1, 0, 4);
+    this.controls = {
+      mouse: new MouseControls(),
+      keys: new KeyControls()
+    };
 
     this.bindUI();
 
@@ -70,12 +60,10 @@ class Game {
 
     this.renderer = new THREE.WebGLRenderer({antialias:true});
     this.camera = new THREE.PerspectiveCamera( 65, 1, 0.1, 300);
-    this.camera.position.x = 1;
-    this.camera.position.z = 3;
+    //this.player.mesh.add(this.camera);
+    this.camera.position.y = 1.1;
+    this.camera.position.x = -2;
     this.resize();
-
-    this.raycaster = new THREE.Raycaster();
-    this.intersection = null;
 
     this.dom.appendChild(this.renderer.domElement);
   }
@@ -103,49 +91,14 @@ class Game {
   }
 
   update () {
-    const {renderer, camera, mouse, keys, raycaster, room} = this;
-    room.update(renderer, camera);
+    const {renderer, camera, controls, raycaster, room} = this;
+    room.update(renderer, camera, controls);
 
-    raycaster.setFromCamera(mouse.pos, camera);
-    const intersections = raycaster.intersectObjects(room.scene.children);
-    if (intersections.length) {
-      this.hovering = intersections[0].object.userData.inst;
-    } else {
-      this.hovering = null;
-    }
-    if (this.selected && this.selected.type === "Computer") {
-      keys.pressed.forEach(k => this.room.onKeyDown(k));
-    } else {
-      const {left, right, forward, backward, up, down} = keys.move;
-      if (left || right || forward || backward || up || down) {
-        const obj = camera;
-        const amount = 0.05;
+    this.controls.mouse.update();
+    this.controls.keys.update();
 
-        if (left) obj.translateX(-amount);
-        if (right) obj.translateX(amount);
-        if (forward) obj.translateZ(-amount);
-        if (backward) obj.translateZ(amount);
-        if (up) obj.translateY(-amount);
-        if (down) obj.translateY(amount);
-      }
-    }
-
-    if (mouse.left.dragging) {
-      const {dx, dy} = mouse.pos;
-      if (dx) {
-        camera.rotation.y += (dx > 0 ? -0.01 : 0.01) * Math.abs(dx * 80);
-      }
-      if (dy) {
-        camera.rotation.x += (dy > 0 ? 0.01 : -0.01) * Math.abs(dy * 80);
-      }
-    }
-
-    if (mouse.left.clicked) {
-      this.setSelected(this.hovering);
-    }
-
-    mouse.update();
-    keys.update();
+    this.camera.position.x = this.player.mesh.position.x;
+    this.camera.position.z = this.player.mesh.position.z;
 
   }
 

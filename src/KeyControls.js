@@ -4,7 +4,7 @@ class KeyControls {
 
     this.keys = {};
     this.pressed = [];
-    
+
     this.move = {
       forward: false,
       backward: false,
@@ -21,6 +21,10 @@ class KeyControls {
   bind () {
     document.body.addEventListener('keydown', e => {
       const {which} = e;
+
+      if ([8, 191, 32].indexOf(which) > -1) {
+        e.preventDefault();
+      }
 
       this.keys[which] = {
         down: true,
