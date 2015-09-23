@@ -1,6 +1,7 @@
 const {THREE} = require('three');
 const Item = require('./Item');
 
+
 const geometry = new THREE.BoxGeometry(1, 1, 1);
 
 class Box extends Item {
@@ -11,6 +12,17 @@ class Box extends Item {
     this.type = "Box";
     const material = new THREE.MeshLambertMaterial({ color });
     this.mesh = new THREE.Mesh(geometry, material);
+  }
+
+  fire (name) {
+    if (name === 'itemSelected') {
+      // onClick fires!
+    }
+
+    if (name === 'itemDeselected') {
+      // onCilck somewhere ele
+    }
+
   }
 
   get color () {

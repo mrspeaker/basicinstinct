@@ -9,6 +9,7 @@ class Light extends Item {
     this.mesh = new THREE.Object3D();
 
     this.point = new THREE.PointLight(  0xFCEAD5, 2.5, 7.5);
+    this.point.visible = false;
     this.mesh.add(this.point);
     this.mesh.add(new THREE.PointLightHelper(this.point, 0.1));
   }

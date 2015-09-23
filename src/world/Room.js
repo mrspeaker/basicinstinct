@@ -40,7 +40,7 @@ class Room {
     const args = i.args || {};
     const itemInst = new item(args);
     itemInst.mesh.userData.inst = itemInst;
-    itemInst.id = UUID();
+    itemInst.id = i.id !== undefined ? i.id : UUID();
     itemInst.defn = Object.assign({}, i);
 
     i.pos && itemInst.mesh.position.set(...i.pos);
@@ -55,6 +55,11 @@ class Room {
       }
     });
 
+    console.log("im ons:", i.ons);
+    if (i.ons) {
+      itemInst.ons = i.ons;
+    }
+
     // Add to scene and items
     this.scene.add(itemInst.mesh);
     this.items.push(itemInst);
@@ -62,9 +67,27 @@ class Room {
     return itemInst;
   }
 
+  removeItem (item) {
+    if (typeof item === 'number') {
+      // Handle removing by id.
+    }
+
+    this.scene.remove(item.mesh);
+    this.items = this.items.filter(i => i !== item);
+  }
+
+  getItem (id) {
+    return this.items.find(i => i.id === id);
+  }
+
   bindEvents () {
     this.onKeyDown = this.onKeyDown.bind(this);
     this.onKeyUp = this.onKeyUp.bind(this);
+
+    // Eh, delegating ALL world events is not good.
+    Env.events.on('WorldCreated', () => {
+      this.items.forEach(i => i.fireItem('WorldCreated'));
+    });
 
     Env.events.on('action', a => {
       // Don't fire room events in Editor mode.
@@ -72,9 +95,43 @@ class Room {
         return;
       }
       const {name, to, from} = a;
-      const item = this.items.find(i => i.id === to);
+      var item;
+      if (to === 'room') {
+        // room event.
+          console.log(name)
+        switch (name) {
+        case 'itemSelected':
+          console.log('oh, in action selected')
+          break;
+        case 'toggle':
+          item = this.getItem(a.item);
+          item.mesh.visible = !item.mesh.visible;
+          break;
+        case 'removeItem':
+          item = this.getItem(a.item);
+          this.removeItem(item);
+          break;
+        case 'addItem':
+          if (a.relativeTo) {
+            const item = this.getItem(a.relativeTo);
+            if (item) {
+              a.defn.pos[0] += item.mesh.position.x;
+              a.defn.pos[1] += item.mesh.position.y;
+              a.defn.pos[2] += item.mesh.position.z;
+            }
+          }
+          console.log("adding from additem", a.defn);
+          this.addItem(a.defn);
+          break;
+        default:
+          console.log('unknown room event', name);
+        }
+        return;
+      }
+
+      item = this.getItem(to);
       if (item) {
-        item.fire(name, {from});
+        item.fireItem(name, {from});
       } else {
         console.log('item not found.');
       }
@@ -114,7 +171,8 @@ class Room {
   onLeave () {}
 
   getDefn (inst) {
-    const {type, args, events} = inst.defn;
+    const {id, defn} = inst;
+    const {type, args, events} = defn;
     const roundy = a => {
       const r = num => Math.floor(num * 10000) / 10000;
       return [r(a.x), r(a.y), r(a.z)];
@@ -123,12 +181,17 @@ class Room {
     const rscale = roundy(scale);
     const rrot = roundy(rot);
     const out = {
+      id,
       type,
       args,
       events,
       pos: roundy(pos),
       rot: rrot
     };
+
+    if (Object.keys(inst.ons).length) {
+      out.ons = inst.ons;
+    }
 
     // Don't include scale if 1
     if (rscale[0] !== 1 || rscale[1] !== 1 || rscale[2] !== 1) {

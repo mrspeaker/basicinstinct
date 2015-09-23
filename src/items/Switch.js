@@ -25,7 +25,7 @@ class Switch extends Item {
 
     this.ons = {
       // When I get 'itemSelected', I want to send a 'toggleLight' to pointLight(4);
-      'itemSelected': [{name:'toggleLight', to:16}],
+      //'itemSelected': [{name:'toggleLight', to:16}],
       // how to do: if i get 'X' and I'm ON, send ....
       // how to do: if i get 'X' and [16, 8, 12] ON, send ....
       // how to do: if i get 'X' and I'm ON and 12 ENABLED, send ....
@@ -38,16 +38,19 @@ class Switch extends Item {
     const toEmit = this.ons[name] || [];
 
     if (name === 'itemSelected') {
+      console.log("Switch selected...")
       // onClick fires!
       this.togState = !this.togState;
       this.b2.position.y = this.togState ? 1 : 0.4;
     }
 
     if (name === 'itemDeselected') {
-      console.log('I was unselected');
+      console.log('switch was unselected');
     }
 
-    toEmit.forEach(msg => Env.events.emit('action', {...msg, from:this.id}));
+    console.log(toEmit.length);
+
+    //toEmit.forEach(msg => Env.events.emit('action', {...msg, from:this.id}));
   }
 
   get color () {

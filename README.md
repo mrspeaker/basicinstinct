@@ -13,27 +13,31 @@
 
 ## Rules engine? how could it work?
 
-class Rule {
-  constructor (condition, action) {
-    this.condition = condition;
-    this.action = action;
-  }
+*** Just copy Blender idea...
+Sensors -> Controllers -> Actuators
 
-  exec () {
-    if (this.condition()) this.action();
-  }
+EG: Always sensor. The Always sensor is used for things that need to be done every logic tick, or at every x logic tick, or at start-up (with Tap).
+
+
+var always5 = Always(5 ticks) ->
+var always3 = Always(3 ticks) ->
+
+cube
+  : always3 -> |
+               + -> toggle (20)
+  : always5 -> |
+
+  --- produces stream: fizzbuzz
+
+Property sensor would be good: The Property sensor detect changes in the objects properties
+
+class Sensor {}
+class Always extends Sensor {
+  constructor ()
 }
+//class Property extends Sensor()
 
-const ifPlayerDead = () => {
-  return player.health <= 0;
-}
-const removePlayerFromWorld = () => {
-  world.remove(player);
-}
 
-const r = new Rule(ifPlayerDead, removePlayerFromWorld)
-
-r.exec();
 
 ####
 

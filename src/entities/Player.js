@@ -20,12 +20,12 @@ class Player {
       this.selected.isSelected = false;
 
       Env.events.emit('itemSelected', this.selected);
-      this.selected.fire('itemDeselected');
+      this.selected.fireItem('itemDeselected');
     }
     this.selected = selected || null;
     if (this.selected) {
       this.selected.isSelected = true;
-      this.selected.fire('itemSelected');
+      this.selected.fireItem('itemSelected');
     }
     //Env.events.emit('selectionChange', this.selected);
     Env.events.emit('itemSelected', this.selected);

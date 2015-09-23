@@ -2,6 +2,7 @@ const DATA = {
 
   'bedroom': {
     'items': [{
+      "id": 1,
       "type": "Computer",
       "args": {},
       "events": [
@@ -18,6 +19,7 @@ const DATA = {
         0
       ]
     }, {
+      "id": 2,
       "type": "Box",
       "args": {
         "color": 10066329
@@ -36,6 +38,7 @@ const DATA = {
         0.9999
       ]
     }, {
+      "id": 3,
       "type": "Box",
       "args": {
         "color": 10066329
@@ -54,6 +57,7 @@ const DATA = {
         0.01
       ]
     }, {
+      "id": 4,
       "type": "Box",
       "args": {
         "color": 5587985
@@ -72,6 +76,7 @@ const DATA = {
         2.2
       ]
     }, {
+      "id": 5,
       "type": "Box",
       "args": {
         "color": 10066329
@@ -91,6 +96,7 @@ const DATA = {
         0.0299
       ]
     }, {
+      "id": 6,
       "type": "Box",
       "args": {
         "color": 5587985
@@ -107,6 +113,7 @@ const DATA = {
         1
       ]
     }, {
+      "id": 7,
       "type": "Box",
       "args": {
         "color": 8418677
@@ -125,6 +132,7 @@ const DATA = {
         4.0999
       ]
     }, {
+      "id": 8,
       "type": "Box",
       "args": {
         "color": 10066329
@@ -144,6 +152,7 @@ const DATA = {
         0.0299
       ]
     }, {
+      "id": 9,
       "type": "Box",
       "args": {
         "color": 2245666
@@ -162,6 +171,7 @@ const DATA = {
         0.5499
       ]
     }, {
+      "id": 10,
       "type": "Box",
       "args": {
         "color": 2245666
@@ -181,6 +191,7 @@ const DATA = {
         0.5499
       ]
     }, {
+      "id": 11,
       "type": "Box",
       "args": {
         "color": 3355460
@@ -199,6 +210,7 @@ const DATA = {
         0.5498
       ]
     }, {
+      "id": 12,
       "type": "Box",
       "args": {
         "color": 2236962
@@ -217,6 +229,7 @@ const DATA = {
         0.01
       ]
     }, {
+      "id": 13,
       "type": "Box",
       "args": {
         "color": 3355460
@@ -236,6 +249,7 @@ const DATA = {
         4.0999
       ]
     }, {
+      "id": 14,
       "type": "Box",
       "args": {
         "color": 3355460
@@ -254,12 +268,10 @@ const DATA = {
         0.3373
       ]
     }, {
+      "id": 15,
       "type": "Switch",
       "args": {
         "color": 10066329
-      },
-      "ons": {
-        "itemSelected": [{name:"toggleLight", to:16}]
       },
       "pos": [
         3.6597,
@@ -270,18 +282,32 @@ const DATA = {
         0.7457,
         1.555
       ],
+      "ons": {
+        "itemSelected": [{
+          "name": "toggleLight",
+          "to": 16
+        }]
+      },
       "scale": [
         0.32,
         0.0974,
         0.2025
       ]
-    },
-    {
+    }, {
+      "id": 16,
       "type": "Light",
       "args": {},
-      "pos": [-0.9347, 1, 0.9 ]
-    }
-  ]
+      "pos": [
+        1,
+        2.5,
+        3
+      ],
+      "rot": [
+        0,
+        0,
+        0
+      ]
+    }]
   },
 
   'bedroom2': {

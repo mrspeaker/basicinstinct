@@ -44,8 +44,10 @@ class SideBar extends Component {
       }
     } />);
 
-    const ons = Object.keys(selected.ons).map(k => selected.ons[k]).map(i => {
-      return <div>{i.map(h => `-${JSON.stringify(h)}-`)}</div>;
+    const ons = Object.keys(selected.ons).map(k => [k, selected.ons[k]]).map(([v, i]) => {
+      return <div><div>{v}</div>{i.map(h => {
+        return <input style={{width:300}} value={JSON.stringify(h)} />;
+      })}</div>;
     });
 
     return (
