@@ -7,7 +7,7 @@ class Player {
     this.selected = null;
 
     this.type = "Player";
-    const geometry = new THREE.BoxGeometry(1, 1, 1);
+    const geometry = new THREE.BoxGeometry(1, 0.5, 1);
     const material = new THREE.MeshLambertMaterial({color: 0x777777, wireframe:true});
     //this.mesh = new THREE.Object3D();
     this.mesh = new THREE.Mesh(geometry, material);
@@ -34,7 +34,7 @@ class Player {
   syncCam (camera) {
     camera.position.x = this.mesh.position.x;
     camera.position.z = this.mesh.position.z;
-    camera.position.y = this.mesh.position.y + 1;
+    camera.position.y = this.mesh.position.y + 0.8;
   }
 
   update (renderer, camera, room, {mouse, keys}) {
@@ -45,7 +45,7 @@ class Player {
         room.onKeyDown(k);
       });
     } else {
-
+      const y = obj.position.y;
       if (this.doSyncCam || left || right || forward || backward || up || down) {
         const amount = 0.05;
 
@@ -57,8 +57,9 @@ class Player {
         if (down) obj.translateY(amount);
 
         this.syncCam(camera);
-
       }
+      obj.position.y = Math.max(-2, y);
+
     }
 
     const raycaster = this.raycaster;
@@ -85,7 +86,9 @@ class Player {
         obj.rotation.y = camera.rotation.y;
       }
       if (dy) {
-        camera.rotation.x += (dy > 0 ? 0.01 : -0.01) * Math.abs(dy * 80);
+        var rotx = camera.rotation.x;
+        rotx += (dy > 0 ? 0.01 : -0.01) * Math.abs(dy * 80);
+        camera.rotation.x = Math.min(0.4, Math.max(-0.6, rotx));
       }
     }
 
