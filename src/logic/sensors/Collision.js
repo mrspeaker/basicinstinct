@@ -10,7 +10,7 @@ class Collision extends Sensor {
 
     Env.events.on('collision', ({b}) => {
       if (b.id === id) {
-        this.fire();
+        this.fire(b);
       }
     });
   }

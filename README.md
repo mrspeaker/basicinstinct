@@ -6,6 +6,8 @@
 --- broken:
 selecting nothing in editor
 dumping lights
+ten different flippin event systems...
+sensors don't un-listen.
 ----
 
 * git messages could be clues

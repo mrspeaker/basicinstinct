@@ -22,9 +22,11 @@ class Editor extends Component {
     const selected = this.state.selected;
     const type = selected ? selected.type : "-";
     const id = selected ? selected.id : "-";
+    const name = selected ? selected.name : "-";
 
     return <div>
       <span>Type: {type}. ID: {id}</span><br/>
+      <div><input value={name} /></div>
       <br/>
       <Controls />
       <SideBar selected={this.state.selected} />

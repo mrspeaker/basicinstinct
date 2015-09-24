@@ -58,7 +58,9 @@ class Room {
         });
       };
 
-      trig.add(() => onLeave(this.name));
+      trig.add(t => {
+        onLeave(this.name, t.onTrigger);
+      });
 
       const c1 = new And(s1, s2);
       const c2 = new Count(clicker, 5, true);
@@ -71,8 +73,13 @@ class Room {
     // =========================
 
     if (this.name === 'bedroom2') {
-      const trig = new Collision(3);
-      trig.add(() => onLeave(this.name));
+      const trig = new Collision(3); // Trig should do this automagically.
+      trig.add((t) => onLeave(this.name, t.onTrigger));
+    }
+
+    if (this.name === 'hall') {
+      const trig = new Collision(2); // Trig should do this automagically.
+      trig.add((t) => onLeave(this.name, t.onTrigger));
     }
   }
 
@@ -94,6 +101,7 @@ class Room {
     const itemInst = new item(args);
     itemInst.mesh.userData.inst = itemInst;
     itemInst.id = i.id !== undefined ? i.id : UUID();
+    itemInst.name = i.name;
     itemInst.defn = Object.assign({}, i);
 
     i.pos && itemInst.mesh.position.set(...i.pos);
@@ -281,10 +289,10 @@ class Room {
     const out = {
       id,
       type,
+      name,
       args,
       events,
-      pos: roundy(pos),
-      rot: rrot
+      pos: roundy(pos)
     };
 
     if (Object.keys(inst.ons).length) {
@@ -295,6 +303,9 @@ class Room {
     if (rscale[0] !== 1 || rscale[1] !== 1 || rscale[2] !== 1) {
       // no 0 scales.
       out.scale = rscale.map(i => i === 0 ? 0.01 : i);
+    }
+    if (rrot[0] !== 0 || rrot[1] !== 1 || rrot[2] !== 1) {
+      out.rot = rrot;
     }
 
     return out;

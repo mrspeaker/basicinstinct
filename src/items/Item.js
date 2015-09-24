@@ -7,9 +7,7 @@ class Item {
     this.worldsOns = {};
   }
 
-  fire (name, data) {
-    // console.log('unhandled', name, data);
-  }
+  fire (name, data) {}
 
   fireItem (name, data) {
     this.fire(name, data);

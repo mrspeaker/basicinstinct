@@ -99,11 +99,11 @@ class World {
       // Already laoded!
       this.room = this.rooms[data.name];
     } else {
-      this.room = new Room(data, this.player, (name) => {
+      this.room = new Room(data, this.player, (name, triggerLoc) => {
         this.room.scene.remove(this.player.mesh);
         this.room.scene.remove(this.editor.mesh);
         this.room.onLeave();
-        this.loadRoom(name === 'bedroom' ? DATA.bedroom2 : DATA.bedroom);
+        this.loadRoom(triggerLoc ? DATA[triggerLoc] : name === 'bedroom' ? DATA.bedroom2 : DATA.bedroom);
       });
       this.rooms[data.name] = this.room;
     }

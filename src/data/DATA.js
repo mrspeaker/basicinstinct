@@ -5,6 +5,7 @@ const DATA = {
     'items': [{
       "id": 1,
       "type": "Computer",
+      "name": "MyFirstComputer",
       "args": {},
       "events": [
         "keydown",
@@ -116,6 +117,7 @@ const DATA = {
     }, {
       "id": 7,
       "type": "Box",
+      "name": "carpet",
       "args": {
         "color": 8418677
       },
@@ -312,6 +314,9 @@ const DATA = {
     {
       "id": 17,
       "type": "Trigger",
+      "args": {
+        "onTrigger": "bedroom2"
+      },
       "pos": [
         -1.5,
         1,
@@ -358,6 +363,9 @@ const DATA = {
     {
       "id": 3,
       "type": "Trigger",
+      "args": {
+        "onTrigger": "hall"
+      },
       "pos": [
         1.5,
         1,
@@ -381,6 +389,17 @@ const DATA = {
     'items': [{
       type: 'Box',
       pos: [0, 2, -5]
+    },{
+      "id": 2,
+      "type": "Trigger",
+      "args": {
+        "onTrigger": "bedroom"
+      },
+      "pos": [
+        1.5,
+        1,
+        0
+      ],
     }]
   }
 

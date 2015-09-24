@@ -18,9 +18,6 @@ class Light extends Item {
     if (name === 'toggleLight') {
       this.point.visible = !this.point.visible;
     }
-    else {
-      // console.log('light knows not', name);
-    }
   }
 
 }

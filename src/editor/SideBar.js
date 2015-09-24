@@ -32,8 +32,10 @@ class SideBar extends Component {
         );
       });
       all.push(<br/>);
+
       return all;
     }, []);
+
 
     const col = selected.color === undefined ? null : (<input defaultValue={selected.color} onBlur={
       e => {
