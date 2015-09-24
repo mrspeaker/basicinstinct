@@ -3,9 +3,12 @@ const items = require('../items/');
 const UUID = require('../items/UUID');
 const Env = require('../Env');
 
+const {Always, Random, Click, Collision} = require('../logic/sensors/');
+const {And, Or, Count} = require('../logic/combiners/');
+
 class Room {
 
-  constructor (DATA, viewer) {
+  constructor (DATA, viewer, onLeave) {
     // This is to pass events down to interested items.
     // Might be better to move this out to a more global system
     // like in Env.
@@ -15,16 +18,64 @@ class Room {
     };
 
     this.scene = new THREE.Scene();
+    this.name = DATA.name;
 
     this.items = [];
     (DATA.items || []).map(i => this.addItem(i));
-    this.addLights();
+    this.addGlobalLights();
 
     this.viewer = viewer;
     this.bindEvents();
 
     this.isColliding = new Set();
+
+
+    // === testing sensors ===
+    this.sensors = [];
+    this.combiners = [];
+
+    const toggleItem = (id) => {
+      Env.events.emit('action', {
+        "name": "toggle",
+        "to": "room",
+        "item": id
+      });
+    };
+
+    if (this.name === 'bedroom') {
+
+      const s1 = new Always(3);
+      const s2 = new Always(100);
+      const clicker = new Click(13);
+      const rando = new Random(300);
+      const trig = new Collision(17);
+      this.sensors.push(s1, s2, clicker, rando);
+
+      const toggleLight = () => {
+        Env.events.emit('action', {
+          "name": "toggleLight",
+          "to": 16
+        });
+      };
+
+      trig.add(() => onLeave(this.name));
+
+      const c1 = new And(s1, s2);
+      const c2 = new Count(clicker, 5, true);
+      const c3 = new Or(c1, c2);
+      this.combiners.push(c1, c2, c3);
+
+      //c3.add(() => toggleItem(20));
+    }
+
+    // =========================
+
+    if (this.name === 'bedroom2') {
+      const trig = new Collision(3);
+      trig.add(() => onLeave(this.name));
+    }
   }
+
 
   setViewer (viewer) {
     this.viewer = viewer;
@@ -57,7 +108,6 @@ class Room {
       }
     });
 
-    console.log("im ons:", i.ons);
     if (i.ons) {
       itemInst.ons = i.ons;
     }
@@ -128,7 +178,6 @@ class Room {
               }
             }
           }
-          console.log("adding from additem", a.defn);
           this.addItem(a.defn);
           break;
         default:
@@ -154,7 +203,7 @@ class Room {
     this.events.keyup.forEach(i => i.on('keyup', e));
   }
 
-  addLights () {
+  addGlobalLights () {
     const {scene} = this;
     const ambLight = new THREE.AmbientLight(0x909090);
     scene.add(ambLight);
@@ -171,6 +220,7 @@ class Room {
   }
 
   update (renderer, camera, controls) {
+
     this.viewer.update(renderer, camera, this, controls);
 
     const newCollisions = new Set();
@@ -207,11 +257,15 @@ class Room {
         a: this.viewer,
         b: i
       });
-    })
+    });
+
+    this.sensors.forEach(s => s.update());
+    this.combiners.forEach(c => c.update());
 
     renderer.render(this.scene, camera);
   }
 
+  onEnter () {}
   onLeave () {}
 
   getDefn (inst) {

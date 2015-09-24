@@ -4,48 +4,10 @@ const Player = require('../entities/Player');
 const Editor = require('../entities/Editor');
 const Env = require('../Env');
 
-const {Always, Random, Click, Collision} = require('../logic/sensors/');
-const {And, Or, Count} = require('../logic/combiners/');
-
 class World {
 
   constructor () {
-    // === testing sensors ===
-    this.sensors = [];
-    this.combiners = [];
-
-    const s1 = new Always(3);
-    const s2 = new Always(100);
-    const clicker = new Click(13);
-    const rando = new Random(300);
-    const trig = new Collision(['Trigger']);
-    this.sensors.push(s1, s2, clicker, rando);
-
-    const toggleLight = () => {
-      Env.events.emit('action', {
-        "name": "toggleLight",
-        "to": 16
-      });
-    };
-    const toggleItem = (id) => {
-      Env.events.emit('action', {
-        "name": "toggle",
-        "to": "room",
-        "item": id
-      });
-    };
-
-    trig.add(() => this.loadRoom(DATA.bedroom2));
-
-    const c1 = new And(s1, s2);
-    const c2 = new Count(clicker, 5, true);
-    const c3 = new Or(c1, c2);
-    this.combiners.push(c1, c2, c3);
-
-    //c3.add(() => toggleItem(20));
-
-    // =========================
-
+    this.rooms = {};
     this.player = new Player();
     this.editor = new Editor();
     this.player.mesh.position.set(1, 0, 4);
@@ -84,10 +46,10 @@ class World {
           "item": 20
         }*/
         ],
-        "WorldCreated": [{
+        /*"WorldCreated": [{
           "name": "toggleLight",
           "to": 16,
-        }]
+        }]*/
       },
       "pos": [0.5, 1, 0],
       "scale": [0.3, 0.3, 0.3]
@@ -112,7 +74,7 @@ class World {
           }
           break;
         case 'programEnded':
-          console.log('Computer stopped!');
+          //console.log('Computer stopped!');
           break;
         default:
           console.log('unhandled world bus msg:', args);
@@ -133,20 +95,27 @@ class World {
   }
 
   loadRoom (data) {
-    if (this.room) {
-      this.room.onLeave && this.room.onLeave();
+    if (this.rooms[data.name]) {
+      // Already laoded!
+      this.room = this.rooms[data.name];
+    } else {
+      this.room = new Room(data, this.player, (name) => {
+        this.room.scene.remove(this.player.mesh);
+        this.room.scene.remove(this.editor.mesh);
+        this.room.onLeave();
+        this.loadRoom(name === 'bedroom' ? DATA.bedroom2 : DATA.bedroom);
+      });
+      this.rooms[data.name] = this.room;
     }
-    this.room = new Room(data, this.player);
+
     this.player.doSyncCam = true;
     this.room.scene.add(this.player.mesh);
     this.room.scene.add(this.editor.mesh);
+    this.room.onEnter();
   }
 
   update (renderer, camera, controls) {
     const {room} = this;
-
-    this.sensors.forEach(s => s.update());
-    this.combiners.forEach(c => c.update());
 
     room.update(renderer, camera, controls);
 

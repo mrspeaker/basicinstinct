@@ -8,7 +8,7 @@ class Item {
   }
 
   fire (name, data) {
-    console.log('unhandled', name, data);
+    // console.log('unhandled', name, data);
   }
 
   fireItem (name, data) {

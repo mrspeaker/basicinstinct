@@ -8,8 +8,8 @@ class Light extends Item {
     this.type = "Light";
     this.mesh = new THREE.Object3D();
 
-    this.point = new THREE.PointLight(  0xFCEAD5, 2.5, 7.5);
-    this.point.visible = false;
+    this.point = new THREE.PointLight(0xFCEAD5, 2.5, 7.5);
+    //this.point.visible = true;
     this.mesh.add(this.point);
     this.mesh.add(new THREE.PointLightHelper(this.point, 0.1));
   }
@@ -19,7 +19,7 @@ class Light extends Item {
       this.point.visible = !this.point.visible;
     }
     else {
-      console.log('light knows not', name);
+      // console.log('light knows not', name);
     }
   }
 

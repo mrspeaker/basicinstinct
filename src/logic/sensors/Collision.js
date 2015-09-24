@@ -3,20 +3,16 @@ const Env = require('../../Env');
 
 class Collision extends Sensor {
 
-  constructor (types) {
+
+  // Todo: handle id, ids, types...
+  constructor (id) {
     super();
 
-    Env.events.on('collision', ({a, b}) => {
-      console.log(a, b)
-      if (types.indexOf(b.type) > -1) {
-        console.log('fire!')
+    Env.events.on('collision', ({b}) => {
+      if (b.id === id) {
         this.fire();
       }
     });
-  }
-
-  update () {
-
   }
 
 }

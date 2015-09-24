@@ -38,17 +38,13 @@ class Switch extends Item {
     const toEmit = this.ons[name] || [];
 
     if (name === 'itemSelected') {
-      console.log("Switch selected...")
       // onClick fires!
       this.togState = !this.togState;
       this.b2.position.y = this.togState ? 1 : 0.4;
     }
 
     if (name === 'itemDeselected') {
-      console.log('switch was unselected');
     }
-
-    console.log(toEmit.length);
 
     //toEmit.forEach(msg => Env.events.emit('action', {...msg, from:this.id}));
   }

@@ -1,6 +1,7 @@
 const DATA = {
 
   'bedroom': {
+    'name': 'bedroom',
     'items': [{
       "id": 1,
       "type": "Computer",
@@ -325,6 +326,7 @@ const DATA = {
   },
 
   'bedroom2': {
+    'name': 'bedroom2',
     'items': [{
       type: 'Computer',
       args: {},
@@ -338,7 +340,13 @@ const DATA = {
       },
       pos: [0.2, -0.9, -1.4],
       rot: [0, Math.PI / 4, 0],
-      scale: [1, 1, 1.4]
+      scale: [1, 1, 1.4],
+      "ons": {
+        "itemSelected": [{
+          "name": "toggleLight",
+          "to": 4
+        }]
+      },
     }, {
       "type": "Box",
       args: {
@@ -346,11 +354,30 @@ const DATA = {
       },
       "rot": [0, 0.785, 0],
       "pos": [1.9, -0.9, -1.2]
-    }],
-    'lights': []
+    },
+    {
+      "id": 3,
+      "type": "Trigger",
+      "pos": [
+        1.5,
+        1,
+        -2.9
+      ],
+    },
+    {
+      "id": 4,
+      "type": "Light",
+      "args": {},
+      "pos": [
+        0,
+        1,
+        1.7
+      ],
+    }]
   },
 
   'hall': {
+    'name': 'hall',
     'items': [{
       type: 'Box',
       pos: [0, 2, -5]
