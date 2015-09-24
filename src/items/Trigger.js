@@ -4,13 +4,14 @@ const Item = require('./Item');
 
 const geometry = new THREE.BoxGeometry(1, 1, 1);
 
-class Box extends Item {
+class Trigger extends Item {
 
-  constructor ({color}) {
+  constructor () {
     super();
-    color = color || 0x956E46;
-    this.type = "Box";
-    const material = new THREE.MeshLambertMaterial({ color });
+    var color = 0x956Eff;
+    this.type = "Trigger";
+    this.collidable = true;
+    const material = new THREE.MeshLambertMaterial({ color, wireframe:true });
     this.mesh = new THREE.Mesh(geometry, material);
   }
 
@@ -26,14 +27,6 @@ class Box extends Item {
 
   }
 
-  get color () {
-    return '0x' + this.mesh.material.color.getHexString();
-  }
-
-  set color (col) {
-    this.mesh.material.color.setHex(col);
-  }
-
 }
 
-module.exports = Box;
+module.exports = Trigger;

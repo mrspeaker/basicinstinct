@@ -3,4 +3,5 @@ module.exports = {
   'Box': require('./Box'),
   'Switch': require('./Switch'),
   'Light': require('./Light'),
+  'Trigger': require('./Trigger'),
 };

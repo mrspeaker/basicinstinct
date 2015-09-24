@@ -3,29 +3,51 @@ const Room = require('./Room');
 const Player = require('../entities/Player');
 const Editor = require('../entities/Editor');
 const Env = require('../Env');
-const Always = require('../logic/sensors/Always');
-const Random = require('../logic/sensors/Random');
+
+const {Always, Random, Click, Collision} = require('../logic/sensors/');
+const {And, Or, Count} = require('../logic/combiners/');
 
 class World {
 
   constructor () {
-    this.player = new Player();
-    this.editor = new Editor();
-
-
+    // === testing sensors ===
     this.sensors = [];
-    const s1 = new Random();
+    this.combiners = [];
 
-    const act1 = () => {
+    const s1 = new Always(3);
+    const s2 = new Always(100);
+    const clicker = new Click(13);
+    const rando = new Random(300);
+    const trig = new Collision(['Trigger']);
+    this.sensors.push(s1, s2, clicker, rando);
+
+    const toggleLight = () => {
       Env.events.emit('action', {
         "name": "toggleLight",
-        "to": 16,
+        "to": 16
+      });
+    };
+    const toggleItem = (id) => {
+      Env.events.emit('action', {
+        "name": "toggle",
+        "to": "room",
+        "item": id
       });
     };
 
-    s1.add(act1);
-    this.sensors.push(s1);
+    trig.add(() => this.loadRoom(DATA.bedroom2));
 
+    const c1 = new And(s1, s2);
+    const c2 = new Count(clicker, 5, true);
+    const c3 = new Or(c1, c2);
+    this.combiners.push(c1, c2, c3);
+
+    //c3.add(() => toggleItem(20));
+
+    // =========================
+
+    this.player = new Player();
+    this.editor = new Editor();
     this.player.mesh.position.set(1, 0, 4);
     this.editor.mesh.position.set(1, -0.5, 6);
 
@@ -53,7 +75,8 @@ class World {
               }]
             }
           },
-          "relativeTo": 20
+          "relativeTo": 20,
+          "randomYo": true
         },
         /*{
           "name": "removeItem",
@@ -123,6 +146,7 @@ class World {
     const {room} = this;
 
     this.sensors.forEach(s => s.update());
+    this.combiners.forEach(c => c.update());
 
     room.update(renderer, camera, controls);
 

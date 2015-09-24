@@ -22,6 +22,8 @@ class Room {
 
     this.viewer = viewer;
     this.bindEvents();
+
+    this.isColliding = new Set();
   }
 
   setViewer (viewer) {
@@ -98,10 +100,9 @@ class Room {
       var item;
       if (to === 'room') {
         // room event.
-          console.log(name)
         switch (name) {
         case 'itemSelected':
-          console.log('oh, in action selected')
+          // THIS is if sent to room!
           break;
         case 'toggle':
           item = this.getItem(a.item);
@@ -115,9 +116,16 @@ class Room {
           if (a.relativeTo) {
             const item = this.getItem(a.relativeTo);
             if (item) {
-              a.defn.pos[0] += item.mesh.position.x;
-              a.defn.pos[1] += item.mesh.position.y;
-              a.defn.pos[2] += item.mesh.position.z;
+              const defn = Object.assign({}, a.defn);
+              if (a.randomYo) {
+                defn.pos[0] = item.mesh.position.x + (Math.random() * 4 - 2);
+                defn.pos[1] = item.mesh.position.y + (Math.random() * 4 - 2);
+                defn.pos[2] = item.mesh.position.z + (Math.random() * 4 - 2);
+              } else {
+                defn.pos[0] += item.mesh.position.x;
+                defn.pos[1] += item.mesh.position.y;
+                defn.pos[2] += item.mesh.position.z;
+              }
             }
           }
           console.log("adding from additem", a.defn);
@@ -133,7 +141,7 @@ class Room {
       if (item) {
         item.fireItem(name, {from});
       } else {
-        console.log('item not found.');
+        console.log('item not found.', to);
       }
     });
 
@@ -164,7 +172,43 @@ class Room {
 
   update (renderer, camera, controls) {
     this.viewer.update(renderer, camera, this, controls);
-    this.items.forEach(i => i.update());
+
+    const newCollisions = new Set();
+    const wasColliding = new Set();
+
+    this.items.forEach(i => {
+      i.update();
+      if (i.collidable) {
+        const dist = camera.position.distanceToSquared(i.mesh.position);
+        const already = this.isColliding.has(i);
+        if (dist < 1.0) {
+          if (!already) {
+            newCollisions.add(i);
+            this.isColliding.add(i);
+          }
+        } else {
+          if (already) {
+            this.isColliding.delete(i);
+            wasColliding.add(i);
+          }
+        }
+      }
+    });
+
+    newCollisions.forEach(i => {
+      Env.events.emit('collision', {
+        a: this.viewer,
+        b: i
+      });
+    });
+
+    wasColliding.forEach(i => {
+      Env.events.emit('collisionEnded', {
+        a: this.viewer,
+        b: i
+      });
+    })
+
     renderer.render(this.scene, camera);
   }
 

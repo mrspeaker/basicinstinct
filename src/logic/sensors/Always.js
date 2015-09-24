@@ -11,7 +11,7 @@ class Always extends Sensor {
   update () {
     this.ticks++;
     if (this.ticks % this.every === 0) {
-      this.fire();
+      this.fire(this.ticks);
     }
   }
 

@@ -23,7 +23,7 @@ class Player {
       this.selected.fireItem('itemDeselected');
     }
     this.selected = selected || null;
-    if (this.selected) {
+    if (this.selected && this.selected.mesh.visible) {
       this.selected.isSelected = true;
       this.selected.fireItem('itemSelected');
     }

@@ -11,6 +11,7 @@ class Compy extends Item {
     super();
     this.tick = Math.random() * 10 | 0;
     this.type = "Computer";
+    this.collidable = true;
 
     const computer = new Computer();
     const screen = CRT(computer);

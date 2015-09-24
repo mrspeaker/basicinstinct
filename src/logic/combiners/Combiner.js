@@ -1,6 +1,8 @@
-class Sensor {
+class Combiner {
 
-  constructor () {
+  constructor (inputs) {
+    // assert input length!
+    this.inputs = inputs;
     this.outputs = [];
   }
 
@@ -22,4 +24,4 @@ class Sensor {
 
 }
 
-module.exports = Sensor;
+module.exports = Combiner;
