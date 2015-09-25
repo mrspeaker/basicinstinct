@@ -29,7 +29,6 @@ class Room {
 
     this.isColliding = new Set();
 
-
     // === testing sensors ===
     this.sensors = [];
     this.combiners = [];

@@ -13,6 +13,7 @@ class Player {
     this.mesh = new THREE.Mesh(geometry, material);
 
     this.raycaster = new THREE.Raycaster();
+
   }
 
   setSelected (selected) {
@@ -65,7 +66,7 @@ class Player {
     const raycaster = this.raycaster;
 
     raycaster.setFromCamera(mouse.pos, camera);
-    const intersections = raycaster.intersectObjects(room.scene.children, true);
+    var intersections = raycaster.intersectObjects(room.scene.children, true);
     if (intersections.length) {
       const hovering = intersections[0].object.userData.inst ? intersections[0].object : intersections[0].object.parent;
       if (!hovering.userData.inst) {
@@ -76,6 +77,36 @@ class Player {
       }
     } else {
       this.hovering = null;
+    }
+
+    const feetPos = this.mesh.position.clone();
+    feetPos.y -= 0.5;
+    // Check up
+    raycaster.set(feetPos, new THREE.Vector3(0, 1, 0));
+    intersections = raycaster.intersectObjects(room.scene.children, true);
+    intersections = intersections.filter(i => i.object !== this.mesh);
+    if (intersections.length > 0) {
+      const inter = intersections[0].object;
+      const floor = inter.userData.inst ? inter : inter.parent;
+      if (floor.userData.inst) {
+        floor.geometry.computeBoundingBox();
+        const h = floor.geometry.boundingBox.max.y - floor.geometry.boundingBox.min.y;
+        this.mesh.position.y = floor.position.y + h + 0.25;
+      }
+    } else {
+      // Check down.
+      raycaster.set(feetPos, new THREE.Vector3(0, -1, 0));
+      intersections = raycaster.intersectObjects(room.scene.children, true);
+      intersections = intersections.filter(i => i.object !== this.mesh);
+      if (intersections.length > 0) {
+        const inter = intersections[0].object;
+        const floor = inter.userData.inst ? inter : inter.parent;
+        if (floor.userData.inst) {
+          floor.geometry.computeBoundingBox();
+          const h = floor.geometry.boundingBox.max.y - floor.geometry.boundingBox.min.y;
+          this.mesh.position.y = floor.position.y + h + 0.25;
+        }
+      }
     }
 
     if (mouse.left.dragging) {

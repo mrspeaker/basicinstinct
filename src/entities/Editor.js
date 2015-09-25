@@ -9,10 +9,9 @@ class Editor {
 
     this.type = "Editor";
     const geometry = new THREE.BoxGeometry(1, 1, 1);
-    const material = new THREE.MeshLambertMaterial({color: 0x00dd00, wireframe:true});
+    const material = new THREE.MeshBasicMaterial({color: 0x00dd00, wireframe:true});
     //this.mesh = new THREE.Object3D();
     this.mesh = new THREE.Mesh(geometry, material);
-
     this.raycaster = new THREE.Raycaster();
   }
 

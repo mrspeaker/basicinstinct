@@ -4,6 +4,9 @@ const Player = require('../entities/Player');
 const Editor = require('../entities/Editor');
 const Env = require('../Env');
 
+
+const {THREE} = require('three');
+
 class World {
 
   constructor () {
@@ -15,6 +18,14 @@ class World {
 
     this.createWorldBus();
     this.loadRoom(DATA.bedroom);
+
+    {
+      // Arror for ray caster
+      const dir = new THREE.Vector3(0, 1, 0);
+      const origin = new THREE.Vector3(0, 0, 0);
+      this.arrowHelper = new THREE.ArrowHelper(dir, origin, 5, 0xffff00, 0.1, 0.1);
+      this.room.scene.add(this.arrowHelper);
+    }
 
     this.room.addItem({
       "id": 20,
@@ -124,6 +135,19 @@ class World {
         room.setViewer(room.viewer === this.player ? this.editor : this.player);
       }
     });
+
+    {
+      // Arrow helper
+      const feetPos = this.editor.mesh.position.clone();
+      feetPos.y -= 0.5;
+      const a = this.arrowHelper;
+      //a.setOrigin(feetPos);
+      //const arrowPos = feetPos.clone().add(feetPos.multiplyScalar(-0.5));
+      //arrowPos.translateZ(a.length / 2);
+      //a.position.copy(arrowPos);
+      a.position.copy(feetPos);
+      a.setDirection(new THREE.Vector3(0, 1, 0));
+    }
   }
 
 }
