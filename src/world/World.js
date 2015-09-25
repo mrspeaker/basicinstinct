@@ -24,7 +24,7 @@ class World {
       const dir = new THREE.Vector3(0, 1, 0);
       const origin = new THREE.Vector3(0, 0, 0);
       this.arrowHelper = new THREE.ArrowHelper(dir, origin, 5, 0xffff00, 0.1, 0.1);
-      this.room.scene.add(this.arrowHelper);
+      //this.room.scene.add(this.arrowHelper);
     }
 
     this.room.addItem({
@@ -145,7 +145,7 @@ class World {
       //const arrowPos = feetPos.clone().add(feetPos.multiplyScalar(-0.5));
       //arrowPos.translateZ(a.length / 2);
       //a.position.copy(arrowPos);
-      a.position.copy(feetPos);
+      //a.position.copy(feetPos);
       a.setDirection(new THREE.Vector3(0, 1, 0));
     }
   }

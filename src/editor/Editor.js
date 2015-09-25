@@ -16,6 +16,10 @@ class Editor extends Component {
     props.game.events.on('selectionChange', s => {
       this.setState({selected:s});
     });
+
+    props.game.events.on('itemSelected', s => {
+      this.setState({selected:s});
+    });
   }
 
   render () {

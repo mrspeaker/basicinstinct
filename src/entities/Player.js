@@ -20,7 +20,7 @@ class Player {
     if (this.selected && this.selected !== selected) {
       this.selected.isSelected = false;
 
-      Env.events.emit('itemSelected', this.selected);
+      Env.events.emit('itemDeselected', this.selected);
       this.selected.fireItem('itemDeselected');
     }
     this.selected = selected || null;
@@ -112,13 +112,13 @@ class Player {
     if (mouse.left.dragging) {
       const {dx, dy} = mouse.pos;
       if (dx) {
-        camera.rotation.y += (dx > 0 ? -0.01 : 0.01) * Math.abs(dx * 80);
+        camera.rotation.y += (dx > 0 ? 0.01 : -0.01) * Math.abs(dx * 80);
         // TODO: figure out better way to sync...
         obj.rotation.y = camera.rotation.y;
       }
       if (dy) {
         var rotx = camera.rotation.x;
-        rotx += (dy > 0 ? 0.01 : -0.01) * Math.abs(dy * 80);
+        rotx += (dy > 0 ? -0.01 : 0.01) * Math.abs(dy * 80);
         camera.rotation.x = Math.min(0.4, Math.max(-0.6, rotx));
       }
     }

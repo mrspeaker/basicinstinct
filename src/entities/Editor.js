@@ -19,7 +19,7 @@ class Editor {
     if (this.selected && this.selected !== selected) {
       this.selected.isSelected = false;
 
-      Env.events.emit('itemSelected', this.selected);
+      Env.events.emit('itemDeselected', this.selected);
       this.selected.fireItem('itemDeselected');
     }
     this.selected = selected || null;
@@ -111,12 +111,12 @@ class Editor {
     if (mouse.left.dragging) {
       const {dx, dy} = mouse.pos;
       if (dx) {
-        camera.rotation.y += (dx > 0 ? -0.01 : 0.01) * Math.abs(dx * 80);
+        camera.rotation.y += (dx > 0 ? 0.01 : -0.01) * Math.abs(dx * 80);
         // TODO: figure out better way to sync...
         this.mesh.rotation.y = camera.rotation.y;
       }
       if (dy) {
-        camera.rotation.x += (dy > 0 ? 0.01 : -0.01) * Math.abs(dy * 80);
+        camera.rotation.x += (dy > 0 ? -0.01 : 0.01) * Math.abs(dy * 80);
       }
     }
 
