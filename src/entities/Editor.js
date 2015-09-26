@@ -1,5 +1,6 @@
 const {THREE} = require('three');
 const Env = require('../Env');
+const Items = require('../items/');
 
 class Editor {
   constructor () {
@@ -14,6 +15,21 @@ class Editor {
     //this.mesh = new THREE.Object3D();
     this.mesh = new THREE.Mesh(geometry, material);
     this.raycaster = new THREE.Raycaster();
+
+    this.ui = document.querySelector("#edui");
+    this.clickAdd = this.clickAdd.bind(this);
+    Object.keys(Items).map(k => {
+      const but = document.createElement('button');
+      but.setAttribute('data-name', k);
+      but.textContent = k;
+      but.addEventListener('click', this.clickAdd, false);
+      return but;
+    }).map(b => this.ui.appendChild(b));
+  }
+
+  clickAdd (e) {
+    const type = e.target.getAttribute('data-name');
+    console.log(type);
   }
 
   setSelected (selected) {
@@ -36,6 +52,12 @@ class Editor {
     camera.position.x = this.mesh.position.x;
     camera.position.z = this.mesh.position.z;
     camera.position.y = this.mesh.position.y + 1;
+  }
+
+  toggleUI (isOn) {
+    const dom = document.querySelector('#edui');
+    if (!dom) { return; }
+    dom.style.display = isOn ? 'block' : 'none';
   }
 
   update (renderer, camera, room, {mouse, keys}) {

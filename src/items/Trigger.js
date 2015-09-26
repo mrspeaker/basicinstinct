@@ -11,12 +11,13 @@ class Trigger extends Item {
 
     this.type = "Trigger";
     this.invisible = true;
-    
+
     var color = 0x956Eff;
     this.onTrigger = data.onTrigger;
     this.collidable = true;
     const material = new THREE.MeshBasicMaterial({ color, wireframe:true });
     this.mesh = new THREE.Mesh(geometry, material);
+    this.mesh.visible = false;
   }
 
   fire (name) {

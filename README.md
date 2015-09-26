@@ -3,15 +3,18 @@
 
 ## notes:
 
---- broken:
-switching to editor with keys down
-dumping lights
+--- broken/next todos:
+TEST AN ACHIEVEMENT!
+editor gets into self-edit break (key thing)
+snap to grid
+group and convert to "prop"
+collisions
 ten different flippin event systems...
 sensors don't un-listen.
 ----
 
 * git messages could be clues
-* thinkin' *Sneakers*, but with 85% less Robert Redford and 50% more *Hackers* (but like, legit).
+* thinkin' *Sneakers*, but with 85% less Robert Redford and 50% more *Hackers*. or the first Tron.
 * make things proc gen? and scriptable with ItsBasic
 * everything in the world can be controlled with ItsBasic.
   name things?

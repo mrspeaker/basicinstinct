@@ -146,6 +146,7 @@ class World {
       }
     });
     room.setViewer(newGuy);
+    editor.toggleUI(isEditor);
   }
 
   update (renderer, camera, controls) {
