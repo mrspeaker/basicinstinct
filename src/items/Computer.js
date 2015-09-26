@@ -58,4 +58,11 @@ class Compy extends Item {
   }
 
 }
+
+Computer.defn = {
+  args: {
+
+  }
+};
+
 module.exports = Compy;

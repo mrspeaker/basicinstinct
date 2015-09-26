@@ -6,9 +6,8 @@ const geometry = new THREE.BoxGeometry(1, 1, 1);
 
 class Switch extends Item {
 
-  constructor ({color}) {
+  constructor ({color=0x999999}={}) {
     super();
-    color = color || 0x956E46;
     this.type = "Switch";
     const material = new THREE.MeshLambertMaterial({ color });
     this.mesh = new THREE.Object3D();
@@ -45,8 +44,6 @@ class Switch extends Item {
 
     if (name === 'itemDeselected') {
     }
-
-    //toEmit.forEach(msg => Env.events.emit('action', {...msg, from:this.id}));
   }
 
   get color () {
@@ -58,5 +55,11 @@ class Switch extends Item {
   }
 
 }
+
+Switch.defn = {
+  args: {
+    color:0x999999
+  }
+};
 
 module.exports = Switch;

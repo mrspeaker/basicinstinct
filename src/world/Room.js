@@ -96,25 +96,25 @@ class Room {
     this.viewer.doSyncCam = true;
   }
 
-  addItem (i) {
-    const item = items[i.type];
+  addItem (defn) {
+    const item = items[defn.type];
     if (!item) {
-      console.log('unknown item:', i.type);
+      console.log('unknown item:', defn.type);
       return null;
     }
 
-    const args = i.args || {};
+    const args = defn.args || {};
     const itemInst = new item(args);
     itemInst.mesh.userData.inst = itemInst;
-    itemInst.id = i.id !== undefined ? i.id : UUID();
-    itemInst.name = i.name;
-    itemInst.defn = Object.assign({}, i);
+    itemInst.id = defn.id !== undefined ? defn.id : UUID();
+    itemInst.name = defn.name;
+    itemInst.defn = Object.assign({}, defn);
 
-    i.pos && itemInst.mesh.position.set(...i.pos);
-    i.rot && itemInst.mesh.rotation.set(...i.rot);
-    i.scale && itemInst.mesh.scale.set(...i.scale);
+    defn.pos && itemInst.mesh.position.set(...defn.pos);
+    defn.rot && itemInst.mesh.rotation.set(...defn.rot);
+    defn.scale && itemInst.mesh.scale.set(...defn.scale);
 
-    (i.events || []).forEach(name => {
+    (defn.events || []).forEach(name => {
       if (!this.events[name]) {
         console.error('no event called ', name);
       } else {
@@ -122,8 +122,8 @@ class Room {
       }
     });
 
-    if (i.ons) {
-      itemInst.ons = i.ons;
+    if (defn.ons) {
+      itemInst.ons = defn.ons;
     }
 
     // Add to scene and items
@@ -153,6 +153,16 @@ class Room {
     // Eh, delegating ALL world events is not good.
     Env.events.on('WorldCreated', () => {
       this.items.forEach(i => i.fireItem('WorldCreated'));
+    });
+
+    Env.events.on('addNewItem', (type) => {
+      const item = items[type];
+      const defn = Object.assign({}, item.defn);
+      const pos = this.viewer.mesh.position;
+      defn.type = type;
+      defn.pos = [pos.x, pos.y, pos.z];
+      console.log(defn);
+      this.addItem(defn);
     });
 
     Env.events.on('action', a => {

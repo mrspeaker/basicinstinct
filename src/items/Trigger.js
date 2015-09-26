@@ -6,14 +6,14 @@ const geometry = new THREE.BoxGeometry(1, 1, 1);
 
 class Trigger extends Item {
 
-  constructor (data) {
+  constructor ({onTrigger}) {
     super();
 
     this.type = "Trigger";
     this.invisible = true;
 
     var color = 0x956Eff;
-    this.onTrigger = data.onTrigger;
+    this.onTrigger = onTrigger;
     this.collidable = true;
     const material = new THREE.MeshBasicMaterial({ color, wireframe:true });
     this.mesh = new THREE.Mesh(geometry, material);
@@ -33,5 +33,11 @@ class Trigger extends Item {
   }
 
 }
+
+Trigger.defn = {
+  args: {
+    //onTrigger: () => {}
+  }
+};
 
 module.exports = Trigger;

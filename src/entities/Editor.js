@@ -29,7 +29,7 @@ class Editor {
 
   clickAdd (e) {
     const type = e.target.getAttribute('data-name');
-    console.log(type);
+    Env.events.emit('addNewItem', type);
   }
 
   setSelected (selected) {

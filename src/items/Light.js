@@ -10,7 +10,9 @@ class Light extends Item {
 
     this.point = new THREE.PointLight(0xFEFDCD, 1, 11);
     this.mesh.add(this.point);
-    this.mesh.add(new THREE.PointLightHelper(this.point, 0.1));
+    const ph = new THREE.PointLightHelper(this.point, 0.1);
+    ph.matrix = this.point.matrix;
+    this.mesh.add(ph);
   }
 
   fire (name) {
@@ -20,5 +22,11 @@ class Light extends Item {
   }
 
 }
+
+Light.defn = {
+  args: {
+
+  }
+};
 
 module.exports = Light;

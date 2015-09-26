@@ -83,9 +83,19 @@ class World {
           const {id, attr, value} = args;
           const item = this.room.items.find(i => i.id == id);
           if (item) {
-            const type = {p:'position', r:'rotation', s:'scale'}[attr[0]];
-            const axis = attr[attr.length - 1];
-            item.mesh[type][axis] = value;
+            if (attr === "toggle") {
+              console.log(item, item.type === "Light")
+              if (item.type === "Light") {
+                Env.events.emit('action', {
+                  "name": "toggleLight",
+                  "to": item.id
+                });
+              }
+            } else {
+              const type = {p:'position', r:'rotation', s:'scale'}[attr[0]];
+              const axis = attr[attr.length - 1];
+              item.mesh[type][axis] = value;
+            }
           }
           break;
         case 'programEnded':
