@@ -19,7 +19,7 @@ class Compy extends Item {
     this.mesh = new THREE.Mesh( geometry, material );
 
     const screenTexture = new THREE.Texture(screen);
-    const screenMaterial = new THREE.MeshLambertMaterial({
+    const screenMaterial = new THREE.MeshBasicMaterial({
       map : screenTexture,
       side: THREE.DoubleSide
     });

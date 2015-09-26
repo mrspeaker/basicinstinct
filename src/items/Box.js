@@ -6,12 +6,14 @@ const geometry = new THREE.BoxGeometry(1, 1, 1);
 
 class Box extends Item {
 
-  constructor ({color}) {
+  constructor ({color, roof}) {
     super();
     color = color || 0x956E46;
     this.type = "Box";
-    const material = new THREE.MeshLambertMaterial({ color });
+    const material = new THREE.MeshPhongMaterial({ color });
+    material.shininess = 5;
     this.mesh = new THREE.Mesh(geometry, material);
+    this.isRoof = roof;
   }
 
   fire (name) {

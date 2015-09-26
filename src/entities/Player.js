@@ -11,7 +11,7 @@ class Player {
     const material = new THREE.MeshLambertMaterial({color: 0x777777, wireframe:true});
     //this.mesh = new THREE.Object3D();
     this.mesh = new THREE.Mesh(geometry, material);
-
+    this.mesh.visible = false;
     this.raycaster = new THREE.Raycaster();
 
   }
@@ -79,21 +79,26 @@ class Player {
       this.hovering = null;
     }
 
+
     const feetPos = this.mesh.position.clone();
     feetPos.y -= 0.5;
     // Check up
+    var hitAbove = false;
     raycaster.set(feetPos, new THREE.Vector3(0, 1, 0));
     intersections = raycaster.intersectObjects(room.scene.children, true);
     intersections = intersections.filter(i => i.object !== this.mesh);
     if (intersections.length > 0) {
       const inter = intersections[0].object;
       const floor = inter.userData.inst ? inter : inter.parent;
-      if (floor.userData.inst) {
+      if (floor.userData.inst && !floor.userData.inst.isRoof) {
         floor.geometry.computeBoundingBox();
         const h = floor.geometry.boundingBox.max.y - floor.geometry.boundingBox.min.y;
         this.mesh.position.y = floor.position.y + h + 0.25;
+        hitAbove = true;
       }
-    } else {
+    }
+
+    if (!hitAbove) {
       // Check down.
       raycaster.set(feetPos, new THREE.Vector3(0, -1, 0));
       intersections = raycaster.intersectObjects(room.scene.children, true);
@@ -111,15 +116,16 @@ class Player {
 
     if (mouse.left.dragging) {
       const {dx, dy} = mouse.pos;
+      const dragSpeed = -1.3;
       if (dx) {
-        camera.rotation.y += (dx > 0 ? 0.01 : -0.01) * Math.abs(dx * 80);
+        camera.rotation.y += dx * dragSpeed;
         // TODO: figure out better way to sync...
         obj.rotation.y = camera.rotation.y;
       }
       if (dy) {
         var rotx = camera.rotation.x;
-        rotx += (dy > 0 ? -0.01 : 0.01) * Math.abs(dy * 80);
-        camera.rotation.x = Math.min(0.4, Math.max(-0.6, rotx));
+        rotx -= dy * dragSpeed;
+        camera.rotation.x = Math.min(0.7, Math.max(-0.7, rotx));
       }
     }
 

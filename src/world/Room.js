@@ -22,6 +22,9 @@ class Room {
 
     this.items = [];
     (DATA.items || []).map(i => this.addItem(i));
+
+    this.entities = [];
+
     this.addGlobalLights();
 
     this.viewer = viewer;
@@ -82,6 +85,10 @@ class Room {
     }
   }
 
+  addEntity (entity) {
+    this.entities.push(entity);
+    this.scene.add(entity.mesh);
+  }
 
   setViewer (viewer) {
     this.viewer = viewer;
@@ -212,10 +219,13 @@ class Room {
 
   addGlobalLights () {
     const {scene} = this;
-    const ambLight = new THREE.AmbientLight(0x909090);
+
+    scene.fog = new THREE.Fog(0x050500, 8, 15);
+
+    const ambLight = new THREE.AmbientLight(0x202020);
     scene.add(ambLight);
 
-    //var hemLight = new THREE.HemisphereLight(0xffe5bb, 0xFFBF00, .1);
+    //var hemLight = new THREE.HemisphereLight(0xffe5bb, 0xFFBF00, 1);
     //scene.add(hemLight)
 
     /*
@@ -228,43 +238,47 @@ class Room {
 
   update (renderer, camera, controls) {
 
-    this.viewer.update(renderer, camera, this, controls);
+    if (controls) {
 
-    const newCollisions = new Set();
-    const wasColliding = new Set();
+      this.viewer.update(renderer, camera, this, controls);
 
-    this.items.forEach(i => {
-      i.update();
-      if (i.collidable) {
-        const dist = camera.position.distanceToSquared(i.mesh.position);
-        const already = this.isColliding.has(i);
-        if (dist < 1.0) {
-          if (!already) {
-            newCollisions.add(i);
-            this.isColliding.add(i);
-          }
-        } else {
-          if (already) {
-            this.isColliding.delete(i);
-            wasColliding.add(i);
+      const newCollisions = new Set();
+      const wasColliding = new Set();
+
+      this.items.forEach(i => {
+        i.update();
+        if (i.collidable) {
+          const dist = camera.position.distanceToSquared(i.mesh.position);
+          const already = this.isColliding.has(i);
+          if (dist < 1.0) {
+            if (!already) {
+              newCollisions.add(i);
+              this.isColliding.add(i);
+            }
+          } else {
+            if (already) {
+              this.isColliding.delete(i);
+              wasColliding.add(i);
+            }
           }
         }
-      }
-    });
-
-    newCollisions.forEach(i => {
-      Env.events.emit('collision', {
-        a: this.viewer,
-        b: i
       });
-    });
 
-    wasColliding.forEach(i => {
-      Env.events.emit('collisionEnded', {
-        a: this.viewer,
-        b: i
+      newCollisions.forEach(i => {
+        Env.events.emit('collision', {
+          a: this.viewer,
+          b: i
+        });
       });
-    });
+
+      wasColliding.forEach(i => {
+        Env.events.emit('collisionEnded', {
+          a: this.viewer,
+          b: i
+        });
+      });
+
+    }
 
     this.sensors.forEach(s => s.update());
     this.combiners.forEach(c => c.update());

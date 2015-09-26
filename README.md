@@ -4,7 +4,7 @@
 ## notes:
 
 --- broken:
-selecting nothing in editor
+switching to editor with keys down
 dumping lights
 ten different flippin event systems...
 sensors don't un-listen.

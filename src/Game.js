@@ -12,6 +12,7 @@ class Game {
     // Add renderer and camera
     this.renderer = new THREE.WebGLRenderer({antialias:true});
     this.camera = new THREE.PerspectiveCamera(65, 1, 0.1, 300);
+    this.camera.rotation.order = "YXZ";
     Env.dom.appendChild(this.renderer.domElement);
     this.resize();
 

@@ -6,6 +6,7 @@ class Editor {
     this.hovering = null;
     this.selected = null;
     this.mode = "position";
+    this.invisible = true;
 
     this.type = "Editor";
     const geometry = new THREE.BoxGeometry(1, 1, 1);
@@ -48,7 +49,7 @@ class Editor {
 
       // Move camera fast by default, slow with shift
       if (isViewer) {
-        amount *= keys.move.shift ? 0.05: 1;
+        amount *= keys.move.shift ? 0.08: 1;
       } else {
         amount *= keys.move.shift ? 1: 0.05;
       }
@@ -110,13 +111,14 @@ class Editor {
 
     if (mouse.left.dragging) {
       const {dx, dy} = mouse.pos;
+      const dragSpeed = -1.3;
       if (dx) {
-        camera.rotation.y += (dx > 0 ? 0.01 : -0.01) * Math.abs(dx * 80);
+        camera.rotation.y += dx * dragSpeed;
         // TODO: figure out better way to sync...
         this.mesh.rotation.y = camera.rotation.y;
       }
       if (dy) {
-        camera.rotation.x += (dy > 0 ? -0.01 : 0.01) * Math.abs(dy * 80);
+        camera.rotation.x -= dy * dragSpeed;
       }
     }
 
@@ -135,6 +137,11 @@ class Editor {
           // Duplicate selected object
           this.setSelected(room.addItem(room.getDefn(this.selected)));
           this.selected.mesh.position.y += 0.2;
+          break;
+        case 88:
+          room.removeItem(this.selected);
+          this.setSelected(null);
+          // Remove selected.
           break;
         case 49: this.mode = "position"; break;
         case 50: this.mode = "scale"; break;

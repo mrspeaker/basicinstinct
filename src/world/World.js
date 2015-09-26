@@ -14,7 +14,8 @@ class World {
     this.player = new Player();
     this.editor = new Editor();
     this.player.mesh.position.set(1, 0, 4);
-    this.editor.mesh.position.set(1, -0.5, 6);
+    this.editor.mesh.position.set(1, -0.5, 5);
+    this.hasFocus = true;
 
     this.createWorldBus();
     this.loadRoom(DATA.bedroom);
@@ -27,6 +28,12 @@ class World {
       //this.room.scene.add(this.arrowHelper);
     }
 
+    Env.events.emit('WorldCreated');
+    this.toggleEditor(); // Go to editor mode first.
+
+  }
+
+  addTestItem() {
     this.room.addItem({
       "id": 20,
       "type": "Box",
@@ -65,9 +72,6 @@ class World {
       "pos": [0.5, 1, 0],
       "scale": [0.3, 0.3, 0.3]
     });
-
-    Env.events.emit('WorldCreated');
-
   }
 
   createWorldBus () {
@@ -120,21 +124,41 @@ class World {
     }
 
     this.player.doSyncCam = true;
-    this.room.scene.add(this.player.mesh);
-    this.room.scene.add(this.editor.mesh);
+
+    this.room.addEntity(this.player);
+    this.room.addEntity(this.editor);
     this.room.onEnter();
+  }
+
+  toggleEditor () {
+    const {room, player, editor} = this;
+    const current = room.viewer;
+    const newGuy = current === player ? editor : player;
+    const isEditor = newGuy === editor; // will be toggled at the end!
+    room.items.forEach(i => {
+      if (i.invisible) {
+        i.mesh.visible = isEditor;
+      }
+    });
+    room.entities.forEach(i => {
+      if (i.invisible) {
+        i.mesh.visible = isEditor;
+      }
+    });
+    room.setViewer(newGuy);
   }
 
   update (renderer, camera, controls) {
     const {room} = this;
 
-    room.update(renderer, camera, controls);
-
-    controls.keys.pressed.forEach(p => {
-      if (p.which === 192 /*backtick*/) {
-        room.setViewer(room.viewer === this.player ? this.editor : this.player);
-      }
-    });
+    room.update(renderer, camera, this.hasFocus ? controls : null);
+    if (this.hasFocus) {
+      controls.keys.pressed.forEach(p => {
+        if (p.which === 192 /*backtick*/) {
+          this.toggleEditor();
+        }
+      });
+    }
 
     {
       // Arrow helper
