@@ -35,6 +35,12 @@ class Compy extends Item {
     this.mesh.add(screenMesh);
     this.texture = screenTexture;
     this.computer = computer;
+    setTimeout(() => {
+      //his.computer.execInstructionLine('load("spin")');
+      this.computer.execInstructionLine('print("hello. ' + Math.random() + '")');
+      this.computer.run();
+    }, 100);
+
   }
 
   on (eventName, event) {

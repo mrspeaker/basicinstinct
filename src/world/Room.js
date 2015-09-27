@@ -2,6 +2,7 @@ const {THREE} = require('three');
 const items = require('../items/');
 const UUID = require('../items/UUID');
 const Env = require('../Env');
+const Cursor = require('./Cursor');
 
 const {Always, Random, Click, Collision} = require('../logic/sensors/');
 const {And, Or, Count} = require('../logic/combiners/');
@@ -20,8 +21,12 @@ class Room {
     this.scene = new THREE.Scene();
     this.name = DATA.name;
 
+
     this.items = [];
     (DATA.items || []).map(i => this.addItem(i));
+
+    this.cursor = new Cursor();
+    this.scene.add(this.cursor.mesh);
 
     this.entities = [];
 
@@ -153,6 +158,10 @@ class Room {
     // Eh, delegating ALL world events is not good.
     Env.events.on('WorldCreated', () => {
       this.items.forEach(i => i.fireItem('WorldCreated'));
+    });
+
+    Env.events.on('itemSelected', (i) => {
+      this.cursor.wrapItem(i);
     });
 
     Env.events.on('addNewItem', (type) => {
