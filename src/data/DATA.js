@@ -7,7 +7,9 @@ const DATA = {
     "id": 1,
     "type": "Computer",
     "name": "",
-    "args": {},
+    "args": {
+
+    },
     "events": [
       "keydown",
       "keyup"
@@ -757,10 +759,21 @@ const DATA = {
     ]
   },
   {
-    "id": 1,
+    "id": 100,
     "type": "Computer",
-    "name": "",
-    "args": {},
+    "name": "hallComputer",
+    "args": {
+      program: `1 # its a trap
+20 poke 0, 11
+30 cls()
+25 poke 1, 3
+30 print"it's a trap", 15, 9
+31 poke 1, 0
+35 print"it's a trap", 15, 11
+38 poke 1, 5
+40 print"it's a trap", 15, 13
+`
+    },
     "events": [
       "keydown",
       "keyup"
@@ -791,7 +804,17 @@ const DATA = {
     "id": 1,
     "type": "Computer",
     "name": "",
-    "args": {},
+    "args": {
+      program: `1 # the light
+20 poke 0, 3
+30 cls()
+25 poke 1, 0
+30 print"come to the light", 12, 9
+31 poke 1, 1
+36 print"come to the light", 12, 11
+37 poke 1, 2
+38 print"come to the light", 12, 13`
+    },
     "events": [
       "keydown",
       "keyup"

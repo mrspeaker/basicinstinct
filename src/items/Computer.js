@@ -7,7 +7,7 @@ const material = new THREE.MeshLambertMaterial( { color: 0x252526 } );
 
 class Compy extends Item {
 
-  constructor () {
+  constructor ({program}) {
     super();
     this.tick = Math.random() * 10 | 0;
     this.type = "Computer";
@@ -37,8 +37,12 @@ class Compy extends Item {
     this.computer = computer;
     setTimeout(() => {
       //his.computer.execInstructionLine('load("spin")');
-      this.computer.execInstructionLine('print("hello. ' + Math.random() + '")');
-      this.computer.run();
+      //this.computer.execInstructionLine('print("hello. ' + Math.random() + '")');
+      //this.computer.run();
+      if (program) {
+        this.computer.load(program);
+        this.computer.run();
+      }
     }, 100);
 
   }
