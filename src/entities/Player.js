@@ -36,6 +36,7 @@ class Player {
     camera.position.x = this.mesh.position.x;
     camera.position.z = this.mesh.position.z;
     camera.position.y = this.mesh.position.y + 0.8;
+    this.doSyncCam = false;
   }
 
   update (renderer, camera, room, {mouse, keys}) {

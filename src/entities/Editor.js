@@ -52,6 +52,7 @@ class Editor {
     camera.position.x = this.mesh.position.x;
     camera.position.z = this.mesh.position.z;
     camera.position.y = this.mesh.position.y + 1;
+    this.doSyncCam = false;
   }
 
   toggleUI (isOn) {

@@ -119,18 +119,30 @@ class World {
     };
   }
 
-  loadRoom (data) {
+  loadRoom (data, transform) {
+    console.log(data, transform)
     if (this.rooms[data.name]) {
       // Already laoded!
       this.room = this.rooms[data.name];
     } else {
-      this.room = new Room(data, this.player, (name, triggerLoc) => {
+      this.room = new Room(data, this.player, (name, trigger) => {
+        console.log(trigger);
         this.room.scene.remove(this.player.mesh);
         this.room.scene.remove(this.editor.mesh);
         this.room.onLeave();
-        this.loadRoom(triggerLoc ? DATA[triggerLoc] : name === 'bedroom' ? DATA.bedroom2 : DATA.bedroom);
+        this.loadRoom(DATA[trigger.room], trigger.transform);
       });
       this.rooms[data.name] = this.room;
+    }
+
+    if (transform) {
+      const {mesh} = this.player;
+      const {pos, rot} = transform;
+      console.log("Settings...", rot)
+      mesh.position.set(pos[0], pos[1], pos[2]);
+      // LOL... global! fix this shit!
+      game.camera.rotation.set(rot[0], rot[1], rot[2]);
+      this.player.doSyncCam = true;
     }
 
     this.player.doSyncCam = true;

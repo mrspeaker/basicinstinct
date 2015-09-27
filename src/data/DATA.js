@@ -376,7 +376,14 @@ const DATA = {
     "type": "Trigger",
     "name": "",
     "args": {
-      "onTrigger": "bedroom2"
+      "onTrigger": {
+        type: "changeRoom",
+        room: "bedroom2",
+        transform: {
+          pos: [7.388, 0.35, 4.383],
+          rot: [-0.077, 0.278, 0]
+        }
+      }
     },
     "pos": [
       3.8022,
@@ -800,120 +807,158 @@ const DATA = {
   'bedroom2': {
     'name': 'bedroom2',
     'items': [
-  {
-    "id": 1,
-    "type": "Computer",
-    "name": "",
-    "args": {
-      program: `1 # the light
-20 poke 0, 3
-30 cls()
-25 poke 1, 0
-30 print"come to the light", 12, 9
-31 poke 1, 1
-36 print"come to the light", 12, 11
-37 poke 1, 2
-38 print"come to the light", 12, 13`
-    },
-    "events": [
-      "keydown",
-      "keyup"
-    ],
-    "pos": [
-      4.0733,
-      0.2,
-      -7.7316
-    ],
-    "rot": [
-      0,
-      0.15,
-      0
+      {
+        "id": 1,
+        "type": "Computer",
+        "name": "",
+        "args": {
+          "program": "1 # the light\n20 poke 0, 3\n30 cls()\n25 poke 1, 0\n30 print\"come to the light\", 12, 9\n31 poke 1, 1\n36 print\"come to the light\", 12, 11\n37 poke 1, 2\n38 print\"come to the light\", 12, 13"
+        },
+        "events": [
+          "keydown",
+          "keyup"
+        ],
+        "pos": [
+          4.0733,
+          0.2,
+          -7.7316
+        ],
+        "rot": [
+          0,
+          0.15,
+          0
+        ]
+      },
+      {
+        "id": 2,
+        "type": "Box",
+        "name": "",
+        "args": {
+          "color": 5514002
+        },
+        "pos": [
+          3.0796,
+          -0.9,
+          -7.4299
+        ],
+        "ons": {
+          "itemSelected": [
+            {
+              "name": "toggleLight",
+              "to": 4
+            }
+          ]
+        },
+        "scale": [
+          1,
+          1,
+          1.4
+        ],
+        "rot": [
+          0,
+          0.7853,
+          0
+        ]
+      },
+      {
+        "id": 3,
+        "type": "Box",
+        "name": "",
+        "args": {
+          "color": 7829369
+        },
+        "pos": [
+          4.7912,
+          -0.9,
+          -8.0472
+        ],
+        "rot": [
+          0,
+          0.785,
+          0
+        ]
+      },
+      {
+        "id": 3,
+        "type": "Trigger",
+        "name": "",
+        "args": {
+          "onTrigger": {
+            "type": "changeRoom",
+            "room": "hall",
+            "transform": {
+              "pos": [
+                0,
+                0,
+                0
+              ],
+              "rot": [
+                0,
+                0,
+                0
+              ]
+            }
+          }
+        },
+        "pos": [
+          4.1274,
+          0.4499,
+          -7.3501
+        ],
+        "rot": [
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "id": 4,
+        "type": "Light",
+        "name": "",
+        "args": {},
+        "pos": [
+          4.3999,
+          2.5499,
+          -3.6226
+        ],
+        "rot": [
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "id": 2,
+        "type": "Box",
+        "name": "",
+        "args": {
+          "color": 5514002
+        },
+        "pos": [
+          5.2007,
+          -1.425,
+          -5.3084
+        ],
+        "ons": {
+          "itemSelected": [
+            {
+              "name": "toggleLight",
+              "to": 4
+            }
+          ]
+        },
+        "scale": [
+          13.7,
+          0.1949,
+          12.95
+        ],
+        "rot": [
+          0,
+          0.7853,
+          0
+        ]
+      }
     ]
-  },
-  {
-    "id": 2,
-    "type": "Box",
-    "name": "",
-    "args": {
-      "color": 7829369
-    },
-    "pos": [
-      3.0796,
-      -0.9,
-      -7.4299
-    ],
-    "ons": {
-      "itemSelected": [
-        {
-          "name": "toggleLight",
-          "to": 4
-        }
-      ]
-    },
-    "scale": [
-      1,
-      1,
-      1.4
-    ],
-    "rot": [
-      0,
-      0.7853,
-      0
-    ]
-  },
-  {
-    "id": 3,
-    "type": "Box",
-    "name": "",
-    "args": {
-      "color": 7829369
-    },
-    "pos": [
-      4.7912,
-      -0.9,
-      -8.0472
-    ],
-    "rot": [
-      0,
-      0.785,
-      0
-    ]
-  },
-  {
-    "id": 3,
-    "type": "Trigger",
-    "name": "",
-    "args": {
-      "onTrigger": "hall"
-    },
-    "pos": [
-      4.1274,
-      0.4499,
-      -7.3501
-    ],
-    "rot": [
-      0,
-      0,
-      0
-    ]
-  },
-  {
-    "id": 4,
-    "type": "Light",
-    "name": "",
-    "args": {},
-    "pos": [
-      1.3,
-      1,
-      -1.2226
-    ],
-    "rot": [
-      0,
-      0,
-      0
-    ]
-  }
-]
   },
 
   'hall': {
@@ -927,9 +972,9 @@ const DATA = {
       "color": 7829369
     },
     "pos": [
-      0,
-      2,
-      -5
+      1,
+      4.8499,
+      -8.4502
     ],
     "rot": [
       0,
@@ -942,12 +987,27 @@ const DATA = {
     "type": "Trigger",
     "name": "",
     "args": {
-      "onTrigger": "bedroom"
+      "onTrigger": {
+        "type": "changeRoom",
+        "room": "bedroom",
+        "transform": {
+          "pos": [
+            1.4795,
+            -0.24,
+            0.615
+          ],
+          "rot": [
+            -0.216,
+            0.843,
+            0
+          ]
+        }
+      }
     },
     "pos": [
-      0.0875,
-      0.7499,
-      -4.8
+      0.8875,
+      3.5498,
+      -6.6002
     ],
     "rot": [
       0,
@@ -980,14 +1040,230 @@ const DATA = {
       "roof": false
     },
     "pos": [
-      1.07,
+      1.02,
       -0.66,
-      -5.55
+      -4.2501
     ],
     "scale": [
-      9.0499,
+      9.0498,
       0.21,
-      8.5499
+      8.5498
+    ],
+    "rot": [
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "id": 4,
+    "type": "Box",
+    "name": "",
+    "args": {
+      "color": 5598790,
+      "roof": false
+    },
+    "pos": [
+      0.3775,
+      -0.46,
+      0.0225
+    ],
+    "scale": [
+      4.3997,
+      0.21,
+      3.2498
+    ],
+    "rot": [
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "id": 4,
+    "type": "Box",
+    "name": "",
+    "args": {
+      "color": 5598790,
+      "roof": false
+    },
+    "pos": [
+      0.8775,
+      2.5449,
+      -6.8775
+    ],
+    "scale": [
+      1.0497,
+      0.4224,
+      1.4498
+    ],
+    "rot": [
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "id": 4,
+    "type": "Box",
+    "name": "",
+    "args": {
+      "color": 5598790,
+      "roof": false
+    },
+    "pos": [
+      0.8775,
+      2.1448,
+      -6.1575
+    ],
+    "scale": [
+      1.0497,
+      0.4224,
+      1.4498
+    ],
+    "rot": [
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "id": 4,
+    "type": "Box",
+    "name": "",
+    "args": {
+      "color": 5598790,
+      "roof": false
+    },
+    "pos": [
+      0.8775,
+      1.7574,
+      -5.475
+    ],
+    "scale": [
+      1.0497,
+      0.4224,
+      1.4498
+    ],
+    "rot": [
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "id": 4,
+    "type": "Box",
+    "name": "",
+    "args": {
+      "color": 5598790,
+      "roof": false
+    },
+    "pos": [
+      0.88,
+      1.3449,
+      -4.8575
+    ],
+    "scale": [
+      1.0497,
+      0.4224,
+      1.4498
+    ],
+    "rot": [
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "id": 4,
+    "type": "Box",
+    "name": "",
+    "args": {
+      "color": 5598790,
+      "roof": false
+    },
+    "pos": [
+      0.88,
+      0.9448,
+      -4.1577
+    ],
+    "scale": [
+      1.0497,
+      0.4224,
+      1.4498
+    ],
+    "rot": [
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "id": 4,
+    "type": "Box",
+    "name": "",
+    "args": {
+      "color": 5598790,
+      "roof": false
+    },
+    "pos": [
+      0.88,
+      0.5372,
+      -3.4077
+    ],
+    "scale": [
+      1.0497,
+      0.4224,
+      1.4498
+    ],
+    "rot": [
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "id": 4,
+    "type": "Box",
+    "name": "",
+    "args": {
+      "color": 5598790,
+      "roof": false
+    },
+    "pos": [
+      0.88,
+      0.1372,
+      -2.7079
+    ],
+    "scale": [
+      1.0497,
+      0.4224,
+      1.4498
+    ],
+    "rot": [
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "id": 4,
+    "type": "Box",
+    "name": "",
+    "args": {
+      "color": 5598790,
+      "roof": false
+    },
+    "pos": [
+      0.88,
+      -0.2128,
+      -1.9579
+    ],
+    "scale": [
+      1.0497,
+      0.4224,
+      1.4498
     ],
     "rot": [
       0,
