@@ -162,6 +162,12 @@ module.exports = {
     "args": {
       "color": 2245666
     },
+    "ons": {
+      "itemSelected": [{
+        "name": "showListing",
+        "to": "room"
+      }]
+    },
     "pos": [
       0.9062, -0.435, -1.309
     ],

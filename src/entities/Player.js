@@ -14,6 +14,13 @@ class Player {
     this.mesh.visible = false;
     this.raycaster = new THREE.Raycaster();
 
+    this.gui = document.querySelector('#gui');
+    this.guiListing = this.gui.querySelector('#listing');
+    this.guiListing.style.display = 'none';
+    this.guiListing.querySelector('.close').addEventListener('click', () => {
+      this.guiListing.style.display = 'none';
+    }, false);
+
   }
 
   setSelected (selected) {
@@ -37,6 +44,14 @@ class Player {
     camera.position.z = this.mesh.position.z;
     camera.position.y = this.mesh.position.y + 0.8;
     this.doSyncCam = false;
+  }
+
+  toggleUI (isOn) {
+    this.gui.style.display = isOn ? 'block' : 'none';
+  }
+
+  showListing () {
+    this.gui.querySelector('#listing').style.display = 'block';
   }
 
   update (renderer, camera, room, {mouse, keys}) {

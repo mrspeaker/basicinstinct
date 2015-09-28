@@ -188,6 +188,9 @@ class Room {
       if (to === 'room') {
         // room event.
         switch (name) {
+        case 'showListing':
+          this.viewer.showListing();
+          break;
         case 'itemSelected':
           // THIS is if sent to room!
           break;
@@ -322,6 +325,7 @@ class Room {
     const {position:pos, rotation:rot, scale} = inst.mesh;
     const rscale = roundy(scale);
     const rrot = roundy(rot);
+
     const out = {
       id,
       type,
@@ -345,11 +349,6 @@ class Room {
     }
 
     return out;
-  }
-
-  dump () {
-    console.log("saved to window._dump: copy(_dump); for clipboard.");
-    window._dump = this.items.map(i => this.getDefn(i));
   }
 
 }

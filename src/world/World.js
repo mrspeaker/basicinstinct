@@ -84,7 +84,6 @@ class World {
           const item = this.room.items.find(i => i.id == id);
           if (item) {
             if (attr === "toggle") {
-              console.log(item, item.type === "Light")
               if (item.type === "Light") {
                 Env.events.emit('action', {
                   "name": "toggleLight",
@@ -99,7 +98,7 @@ class World {
           }
           break;
         case 'programEnded':
-          //console.log('Computer stopped!');
+          console.log('Computer stopped.');
           break;
         default:
           console.log('unhandled world bus msg:', args);
@@ -125,7 +124,6 @@ class World {
       this.room = this.rooms[data.name];
     } else {
       this.room = new Room(data, this.player, (name, trigger) => {
-        console.log(trigger);
         this.room.scene.remove(this.player.mesh);
         this.room.scene.remove(this.editor.mesh);
         this.room.onLeave();
@@ -168,6 +166,7 @@ class World {
     });
     room.setViewer(newGuy);
     editor.toggleUI(isEditor);
+    player.toggleUI(!isEditor);
   }
 
   update (renderer, camera, controls) {

@@ -4,6 +4,7 @@ const Item = require('./Item');
 const Env = require('../Env');
 
 const geometry = new THREE.BoxGeometry( 1.8, 1.2, 1 );
+
 const material = new THREE.MeshLambertMaterial( { color: 0x252526 } );
 
 class Compy extends Item {
@@ -17,7 +18,10 @@ class Compy extends Item {
     const computer = new Computer();
     const screen = CRT(computer);
 
-    this.mesh = new THREE.Mesh( geometry, material );
+    this.mesh = new THREE.Object3D();
+
+    const box = new THREE.Mesh(geometry, material);
+    this.mesh.add(box);
 
     const screenTexture = new THREE.Texture(screen);
     const screenMaterial = new THREE.MeshBasicMaterial({
@@ -25,17 +29,15 @@ class Compy extends Item {
       side: THREE.DoubleSide
     });
     screenMaterial.map.minFilter = THREE.LinearFilter;
-    const screenMesh = new THREE.Mesh(
-      new THREE.PlaneBufferGeometry(screen.width, screen.height),
-      screenMaterial);
-    screenMesh.scale.set(0.005  , 0.005, 1);
-    screenMesh.position.x = 0;
-    screenMesh.position.y = 0;
-    screenMesh.position.z = 0.501;
-
+    const screenGeometry = new THREE.PlaneBufferGeometry(screen.width, screen.height);
+    const screenMesh = new THREE.Mesh(screenGeometry, screenMaterial);
+    screenMesh.scale.set(0.005, 0.005, 1);
+    screenMesh.position.set(0, 0, 0.501);
     this.mesh.add(screenMesh);
+
     this.texture = screenTexture;
     this.computer = computer;
+
     setTimeout(() => {
       //his.computer.execInstructionLine('load("spin")');
       //this.computer.execInstructionLine('print("hello. ' + Math.random() + '")');

@@ -21,6 +21,7 @@
     flex-direction: row;
   }
   #main {
+    position: relative;
     flex:1;
   }
   #sidebar {
@@ -33,17 +34,45 @@
     border: 0;
     width: 60px;
   }
-  #edui {
+  #edui{
     position: absolute;
     left: 10px;
     top: 10px;
+  }
+
+  #gui {
+    position: absolute;
+    right: 230px;
+    top: 10px;
+  }
+
+  #listing {
+    position: absolute;
+    border: 1px solid #555;
+    border-radius: 10px;
+    padding: 5px;
+    background-color: rgba(0, 0, 0, 0.3);
+    width: 200px;
+    height: 300px;
+  }
+  #listing .close {
+    float: right;
   }
   </style>
 </head>
 <body>
   <div id="screen">
-    <div id="main"></div>
-    <div id="edui"></div>
+    <div id="main">
+      <div id="board"></div>
+      <div id="edui"></div>
+      <div id="gui">
+        <div id="listing">
+          <button class="close">X</button><br/>
+          10 PRINT "HEY"<br/>
+          20 GOTO 10
+        </div>
+      </div>
+    </div>
     <div id="sidebar">
       Sidebar.
     </div>

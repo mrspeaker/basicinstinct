@@ -6,8 +6,9 @@ class Cursor {
 
   constructor () {
     this.type = "Cursor";
+    const geom = new THREE.EdgesGeometry(geometry, 0.1);
     this.mesh = new THREE.LineSegments(
-      new THREE.EdgesGeometry(geometry, 0.1),
+      geom,
       new THREE.LineBasicMaterial({
         color: 0xffffff,
         opacity: 0.3,
