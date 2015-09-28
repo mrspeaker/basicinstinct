@@ -120,7 +120,6 @@ class World {
   }
 
   loadRoom (data, transform) {
-    console.log(data, transform)
     if (this.rooms[data.name]) {
       // Already laoded!
       this.room = this.rooms[data.name];
@@ -138,7 +137,6 @@ class World {
     if (transform) {
       const {mesh} = this.player;
       const {pos, rot} = transform;
-      console.log("Settings...", rot)
       mesh.position.set(pos[0], pos[1], pos[2]);
       // LOL... global! fix this shit!
       game.camera.rotation.set(rot[0], rot[1], rot[2]);
@@ -146,6 +144,7 @@ class World {
     }
 
     this.player.doSyncCam = true;
+    this.player.setSelected(null);
 
     this.room.addEntity(this.player);
     this.room.addEntity(this.editor);
