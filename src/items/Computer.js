@@ -1,6 +1,7 @@
 const {THREE} = require('three');
 const {Computer, CRT} = require('ITSBasic');
 const Item = require('./Item');
+const Env = require('../Env');
 
 const geometry = new THREE.BoxGeometry( 1.8, 1.2, 1 );
 const material = new THREE.MeshLambertMaterial( { color: 0x252526 } );
@@ -53,6 +54,11 @@ class Compy extends Item {
     }
     switch (eventName) {
     case 'keydown':
+      if (event.which === 27) {
+        if (!this.computer.running) {
+          Env.events.emit('itemClearSelect');
+        }
+      }
       this.computer.keys.down(event);
       break;
     case 'keyup':

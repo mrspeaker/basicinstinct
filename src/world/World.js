@@ -1,4 +1,4 @@
-const DATA = require('../data/DATA');
+const DATA = require('../data/');
 const Room = require('./Room');
 const Player = require('../entities/Player');
 const Editor = require('../entities/Editor');

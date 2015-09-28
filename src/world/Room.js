@@ -164,6 +164,10 @@ class Room {
       this.cursor.wrapItem(i);
     });
 
+    Env.events.on('itemClearSelect', () => {
+      this.viewer.setSelected(null);
+    });
+
     Env.events.on('addNewItem', (type) => {
       const item = items[type];
       const defn = Object.assign({}, item.defn);
