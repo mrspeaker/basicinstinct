@@ -3,6 +3,7 @@ const Room = require('./Room');
 const Player = require('../entities/Player');
 const Editor = require('../entities/Editor');
 const Env = require('../Env');
+const store = require('../data/store');
 
 const achievements = require('../data/achievements');
 
@@ -19,7 +20,7 @@ class World {
     this.hasFocus = true;
 
     this.createWorldBus();
-    this.loadRoom(DATA.bedroom);
+    this.loadRoom('bedroom');
 
     {
       // Arror for ray caster
@@ -53,6 +54,16 @@ class World {
       const pop = document.querySelector("#popup");
       pop.querySelector(".content").innerHTML = msg;
       pop.style.display = "block";
+    });
+
+    Env.events.on('saveRoom', () => {
+      const room = this.room;
+      const {items} = room;
+      const out = {
+        name: room.name,
+        items: items.map(i => room.getDefn(i))
+      };
+      store.saveRoom(out);
     });
   }
 
@@ -143,18 +154,19 @@ class World {
     };
   }
 
-  loadRoom (data, transform) {
-    if (this.rooms[data.name]) {
+  loadRoom (roomName, transform) {
+    if (this.rooms[roomName]) {
       // Already laoded!
-      this.room = this.rooms[data.name];
+      this.room = this.rooms[roomName];
     } else {
+      const data = store.loadRoom(roomName) || DATA[roomName];
       this.room = new Room(data, this.player, (name, trigger) => {
         this.room.scene.remove(this.player.mesh);
         this.room.scene.remove(this.editor.mesh);
         this.room.onLeave();
-        this.loadRoom(DATA[trigger.room], trigger.transform);
+        this.loadRoom(trigger.room, trigger.transform);
       });
-      this.rooms[data.name] = this.room;
+      this.rooms[roomName] = this.room;
     }
 
     if (transform) {
@@ -173,7 +185,7 @@ class World {
     this.room.addEntity(this.editor);
     this.room.onEnter();
 
-    Env.events.emit('changeRoom', data.name);
+    Env.events.emit('changeRoom', roomName);
   }
 
   toggleEditor () {

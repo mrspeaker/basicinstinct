@@ -4,8 +4,9 @@
 ## notes:
 
 --- broken/next todos:
-TEST AN ACHIEVEMENT!
 editor gets into self-edit break (key thing)
+save to localstorage
+... with undo.
 snap to grid
 group and convert to "prop"
 collisions
@@ -18,6 +19,7 @@ sensors don't un-listen.
 * make things proc gen? and scriptable with ItsBasic
 * everything in the world can be controlled with ItsBasic.
   name things?
+* JSON => itsbasic code and ITSBasic => JSON!
 * goal is not to teach BASIC: player should alwyas be out of their depth, and has no help from anyone else in the gaem. Fumbling always forward and learning stuff the hardest of hard ways.
 * World can be controlled by BASIC - but also... moving things in the world could set memory locations in the computer!
 

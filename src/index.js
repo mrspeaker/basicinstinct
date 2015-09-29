@@ -19,11 +19,7 @@ window.dumpRoom = function () {
   const {items} = room;
   const out = items.map(i => room.getDefn(i));
   window._dump = out;
-  var jsony = JSON.stringify(out, (k, v) => {
-    return v;
-  }, 2);
-  //console.log(jsony);
-}
+};
 
 function loop () {
   requestAnimationFrame(loop);
