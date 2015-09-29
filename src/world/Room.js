@@ -79,7 +79,7 @@ class Room {
 
     // =========================
 
-    if (this.name === 'bedroom2') {
+    if (this.name === 'pergatory') {
       const trig = new Collision(3); // Trig should do this automagically.
       trig.add((t) => onLeave(this.name, t.onTrigger));
     }
@@ -189,7 +189,7 @@ class Room {
         // room event.
         switch (name) {
         case 'showListing':
-          this.viewer.showListing();
+          this.viewer.showListing(a.text);
           break;
         case 'itemSelected':
           // THIS is if sent to room!

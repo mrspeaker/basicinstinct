@@ -50,8 +50,9 @@ class Player {
     this.gui.style.display = isOn ? 'block' : 'none';
   }
 
-  showListing () {
-    this.gui.querySelector('#listing').style.display = 'block';
+  showListing (text) {
+    this.guiListing.style.display = 'block';
+    this.guiListing.querySelector('.content').innerHTML = text.replace(/\n/g, '<br/>');
   }
 
   update (renderer, camera, room, {mouse, keys}) {

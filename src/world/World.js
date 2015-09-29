@@ -4,6 +4,7 @@ const Player = require('../entities/Player');
 const Editor = require('../entities/Editor');
 const Env = require('../Env');
 
+const achievements = require('../data/achievements');
 
 const {THREE} = require('three');
 
@@ -28,9 +29,19 @@ class World {
       //this.room.scene.add(this.arrowHelper);
     }
 
+    this.bind();
+
     Env.events.emit('WorldCreated');
     this.toggleEditor(); // Go to editor mode first.
 
+  }
+
+  setAchievements () {
+
+  }
+
+  bind () {
+    Env.events.on('WorldCreated', () => achievements['hw'].start());
   }
 
   addTestItem() {
@@ -99,6 +110,7 @@ class World {
           break;
         case 'programEnded':
           console.log('Computer stopped.');
+          Env.events.emit('programEnded', args);
           break;
         default:
           console.log('unhandled world bus msg:', args);
@@ -147,6 +159,8 @@ class World {
     this.room.addEntity(this.player);
     this.room.addEntity(this.editor);
     this.room.onEnter();
+
+    Env.events.emit('changeRoom', data.name);
   }
 
   toggleEditor () {

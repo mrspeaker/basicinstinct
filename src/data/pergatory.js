@@ -1,5 +1,5 @@
 module.exports = {
-  'name': 'bedroom2',
+  'name': 'pergatory',
   'items': [{
     "id": 1,
     "type": "Computer",
@@ -25,7 +25,7 @@ module.exports = {
     "type": "Box",
     "name": "",
     "args": {
-      "color": 5514002
+      "color": 7829369
     },
     "pos": [
       3.0796, -0.9, -7.4299
@@ -107,21 +107,15 @@ module.exports = {
       0
     ]
   }, {
-    "id": 2,
+    "id": 5,
     "type": "Box",
     "name": "",
     "args": {
-      "color": 5514002
+      "color": 9514002
     },
     "pos": [
       5.2007, -1.425, -5.3084
     ],
-    "ons": {
-      "itemSelected": [{
-        "name": "toggleLight",
-        "to": 4
-      }]
-    },
     "scale": [
       20.6549,
       0.1949,

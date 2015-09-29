@@ -3,43 +3,19 @@
 <head>
   <meta charset="UTF-8">
   <title>ItsBasic</title>
-  <style>
-  html, body {
-    margin: 0;
-    overflow: hidden;
-  }
-  body {
-    margin: 0;
-    padding: 0;
-    background: #000;
-    color: #fff;
-    font-family: monospace;
-    font-size: 8pt;
-  }
-  #screen {
-    display: flex;
-    flex-direction: row;
-  }
-  #workArea {
-    flex:1;
-  }
-  #ui {
-    position: absolute;
-    left: 10px;
-    top: 10px;
-  }
-  input {
-    border: 0;
-    width: 60px;
-  }
-  </style>
+  <link rel="stylesheet" href="./res/main.css" />
+  <link rel="stylesheet" href="./res/gui.css" />
 </head>
 <body>
   <div id="screen">
-    <div id="workArea">
-      <div id="ui">
+    <div id="main">
+      <div id="board"></div>
+      <div id="gui">
+        <div id="listing">
+          <button class="close">X</button><br/>
+          <div class="content"></div>
+        </div>
       </div>
-      <div id="main"></div>
     </div>
   </div>
   <script src="bundle.js"></script>

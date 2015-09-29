@@ -165,7 +165,20 @@ module.exports = {
     "ons": {
       "itemSelected": [{
         "name": "showListing",
-        "to": "room"
+        "to": "room",
+        "text": `*** Achievement #1 ***
+
+Enter the following program:
+
+--------------
+10 PRINT "HEY"
+20 GOTO 10
+RUN
+--------------
+
+Then hit 'escape' to complete.
+
+`
       }]
     },
     "pos": [
@@ -187,6 +200,17 @@ module.exports = {
     "name": "",
     "args": {
       "color": 2245666
+    },
+    "ons": {
+      "itemSelected": [{
+        "name": "showListing",
+        "to": "room",
+        "text": `*** Achievement #2 ***
+
+It's a secret.
+
+`
+      }]
     },
     "pos": [
       1.5048, -0.4351, -1.1661
@@ -328,7 +352,7 @@ module.exports = {
     "args": {
       "onTrigger": {
         type: "changeRoom",
-        room: "bedroom2",
+        room: "pergatory",
         transform: {
           pos: [7.388, 0.35, 4.383],
           rot: [-0.077, 0.278, 0]

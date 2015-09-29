@@ -1,0 +1,15 @@
+#sidebar {
+  width: 300px;
+  padding: 10px;
+  background-color: #F3F3F3;
+  color: #888888;
+}
+#sidebar input {
+  border: 0;
+  width: 60px;
+}
+#edui{
+  position: absolute;
+  left: 10px;
+  top: 10px;
+}
