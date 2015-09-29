@@ -48,6 +48,12 @@ class World {
     Env.events.on('achievement-init', name => {
       achievements[name].start();
     });
+
+    Env.events.on('popup', msg => {
+      const pop = document.querySelector("#popup");
+      pop.querySelector(".content").innerHTML = msg;
+      pop.style.display = "block";
+    });
   }
 
   addTestItem() {

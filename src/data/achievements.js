@@ -40,6 +40,7 @@ achievements.hw = new Achievement(
   }),
   () => {
     //Env.events.emit('addItem', {trigger})
+    Env.events.emit('popup', "Multi-run!");
     Env.events.emit('achievement-init', 'goToPurgatory');
   }
 );
@@ -60,7 +61,7 @@ achievements.goToPurgatory = new Achievement(
     Env.events.removeListener(nf.name, nf.func);
   }),
   () => {
-    alert("@nd Achievement get");
+    Env.events.emit('popup', '@nd Achievement get:<br/>Entered purgatory.');
   }
 );
 

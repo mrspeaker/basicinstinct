@@ -32,8 +32,8 @@ function loop () {
 Env.events.emit('start');
 loop();
 
-//Env.dom.addEventListener('mouseenter', () => { game.world.hasFocus = true; }, false);
-//Env.dom.addEventListener('mouseleave', () => { game.world.hasFocus = false; }, false);
+Env.dom.addEventListener('mouseenter', () => { game.world.hasFocus = true; }, false);
+Env.dom.addEventListener('mouseleave', () => { game.world.hasFocus = false; }, false);
 
 React.render(
   <Editor game={game} />,
