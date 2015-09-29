@@ -41,7 +41,13 @@ class World {
   }
 
   bind () {
-    Env.events.on('WorldCreated', () => achievements['hw'].start());
+    Env.events.on('WorldCreated', () => {
+      Env.events.emit('achievement-init', 'hw');
+    });
+
+    Env.events.on('achievement-init', name => {
+      achievements[name].start();
+    });
   }
 
   addTestItem() {
@@ -86,6 +92,7 @@ class World {
   }
 
   createWorldBus () {
+    // todo - add computer id
     this.bus = {
       // Hmmm... this should get pushed into the Actions system.
       fire: args => {

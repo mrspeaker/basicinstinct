@@ -1,5 +1,5 @@
 module.exports = {
-  'name': 'pergatory',
+  'name': 'purgatory',
   'items': [{
     "id": 1,
     "type": "Computer",

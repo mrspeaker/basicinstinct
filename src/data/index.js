@@ -1,5 +1,5 @@
 module.exports = {
   bedroom: require('./bedroom'),
-  pergatory: require('./pergatory'),
+  purgatory: require('./purgatory'),
   hall: require('./hall'),
 };

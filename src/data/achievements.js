@@ -2,14 +2,35 @@ const Env = require('../Env');
 const Achievement = require('../world/Achievement');
 const achievements = {};
 
+/*
+1. helloWorld
+  OnProgRun: if (hellow world program) success!
+  on success:
+      add trigger to purgatory
+      listen(gotToPurgatory)
+
+2: gotToPurgatory
+  OnRoomChange: if (helloWolrd.ulocked) success!
+  OnSuccess: listent(changeScreenColorInPurgatory)
+
+3: changeScreenColorInPurgatory
+  state: {inRoom: null}
+  OnRoomChange: this.inRoom = room;
+  OnProgRun: if (changescreencoll && this.inRoom === purg) success!
+*/
+
 achievements.hw = new Achievement(
   "Hello, World",
-  function () {
-    achievements.hw.listeners = [{name:'programEnded', func: a => {
-      if (a.len === 2) {
-        this.unlock();
+  (onUnlock, state) => {
+    state.count = 0;
+    achievements.hw.listeners = [{
+      name:'programEnded',
+      func: () => {
+        if (state.count++ > 3) {
+          onUnlock();
+        }
       }
-    }}].map(nf => {
+    }].map(nf => {
       Env.events.on(nf.name, nf.func);
       return nf;
     });
@@ -18,19 +39,17 @@ achievements.hw = new Achievement(
     Env.events.removeListener(nf.name, nf.func);
   }),
   () => {
-    alert("Achievement get!");
-    achievements.goToPurgatory.start();
     //Env.events.emit('addItem', {trigger})
-    //Env.events.emit('listenAchievement', {name:'goToPurgatory'})
+    Env.events.emit('achievement-init', 'goToPurgatory');
   }
 );
 
 achievements.goToPurgatory = new Achievement(
   "Go To Purgatory",
-  function () {
-    achievements.hw.listeners = [{name:'programEnded', func: a => {
-      if (a.len === 3) {
-        this.unlock();
+  (onUnlock) => {
+    achievements.hw.listeners = [{name:'changeRoom', func: room => {
+      if (room === 'purgatory') {
+        onUnlock();
       }
     }}].map(nf => {
       Env.events.on(nf.name, nf.func);

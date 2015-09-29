@@ -352,7 +352,7 @@ It's a secret.
     "args": {
       "onTrigger": {
         type: "changeRoom",
-        room: "pergatory",
+        room: "purgatory",
         transform: {
           pos: [7.388, 0.35, 4.383],
           rot: [-0.077, 0.278, 0]

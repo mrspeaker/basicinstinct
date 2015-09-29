@@ -20,6 +20,10 @@ class Player {
     this.guiListing.querySelector('.close').addEventListener('click', () => {
       this.guiListing.style.display = 'none';
     }, false);
+    this.guiPopup = this.gui.querySelector('#popup');
+    this.guiPopup.querySelector('.close').addEventListener('click', () => {
+      this.guiPopup.style.display = 'none';
+    }, false);
 
   }
 

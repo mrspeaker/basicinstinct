@@ -79,7 +79,7 @@ class Room {
 
     // =========================
 
-    if (this.name === 'pergatory') {
+    if (this.name === 'purgatory') {
       const trig = new Collision(3); // Trig should do this automagically.
       trig.add((t) => onLeave(this.name, t.onTrigger));
     }
