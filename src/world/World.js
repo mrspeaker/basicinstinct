@@ -6,8 +6,6 @@ const Env = require('../Env');
 const store = require('../data/store');
 const tasks = require('../data/tasks');
 
-const {THREE} = require('three');
-
 class World {
 
   constructor () {
@@ -21,18 +19,10 @@ class World {
     this.createSerialBus();
     this.loadRoom('bedroom');
 
-    {
-      // Arror for ray caster
-      const dir = new THREE.Vector3(0, 1, 0);
-      const origin = new THREE.Vector3(0, 0, 0);
-      this.arrowHelper = new THREE.ArrowHelper(dir, origin, 5, 0xffff00, 0.1, 0.1);
-      //this.room.scene.add(this.arrowHelper);
-    }
-
     this.bind();
 
     Env.events.emit('WorldCreated');
-    this.toggleEditor(); // Go to editor mode first.
+    //this.toggleEditor(); // Go to editor mode first.
 
   }
 
@@ -41,9 +31,7 @@ class World {
       Env.events.emit('task-init', 'hw');
     });
 
-    Env.events.on('task-init', name => {
-      tasks[name].start();
-    });
+    Env.events.on('task-init', name => tasks[name].start());
 
     Env.events.on('popup', msg => {
       const pop = document.querySelector("#popup");
@@ -51,16 +39,7 @@ class World {
       pop.style.display = "block";
     });
 
-    Env.events.on('saveRoom', () => {
-      const room = this.room;
-      const {items} = room;
-      const out = {
-        name: room.name,
-        version: room.version || 1,
-        items: items.map(i => room.getDefn(i))
-      };
-      store.saveRoom(out);
-    });
+    Env.events.on('saveRoom', () => this.saveRoom());
   }
 
   addTestItem() {
@@ -184,6 +163,16 @@ class World {
     Env.events.emit('changeRoom', roomName);
   }
 
+  saveRoom () {
+    const {room, room:{items}} = this;
+    const out = {
+      name: room.name,
+      version: room.version || 1,
+      items: items.map(i => room.getDefn(i))
+    };
+    store.saveRoom(out);
+  }
+
   toggleEditor () {
     const {room, player, editor} = this;
     const current = room.viewer;
@@ -214,19 +203,6 @@ class World {
           this.toggleEditor();
         }
       });
-    }
-
-    {
-      // Arrow helper
-      const feetPos = this.editor.mesh.position.clone();
-      feetPos.y -= 0.5;
-      const a = this.arrowHelper;
-      //a.setOrigin(feetPos);
-      //const arrowPos = feetPos.clone().add(feetPos.multiplyScalar(-0.5));
-      //arrowPos.translateZ(a.length / 2);
-      //a.position.copy(arrowPos);
-      //a.position.copy(feetPos);
-      a.setDirection(new THREE.Vector3(0, 1, 0));
     }
   }
 

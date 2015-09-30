@@ -11,7 +11,7 @@ Env.height = window.innerHeight;
 const game = new Game();
 window.game = game; // global for testin'
 
-window.dumpRoom = function () {
+window._dumpRoom = function () {
   console.log("saved to window._dump: copy(_dump); for clipboard.");
   const room = game.world.room;
   const {items} = room;
@@ -21,6 +21,7 @@ window.dumpRoom = function () {
 
 function loop () {
   requestAnimationFrame(loop);
+  // TODO: fixed update/delta
   game.update();
 }
 Env.events.emit('start');

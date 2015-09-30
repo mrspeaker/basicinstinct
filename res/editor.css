@@ -9,6 +9,7 @@
   width: 60px;
 }
 #edui{
+  display: none;
   position: absolute;
   left: 10px;
   top: 10px;

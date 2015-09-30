@@ -111,6 +111,7 @@ class Room {
     const args = defn.args || {};
     const itemInst = new item(args);
     itemInst.mesh.userData.inst = itemInst;
+    // TODO: ids are messed up. try again.
     itemInst.id = defn.id !== undefined ? defn.id : UUID();
     itemInst.name = defn.name;
     itemInst.defn = Object.assign({}, defn);
