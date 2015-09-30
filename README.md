@@ -5,8 +5,6 @@
 
 --- broken/next todos:
 editor gets into self-edit break (key thing)
-save to localstorage
-... with undo.
 snap to grid
 group and convert to "prop"
 collisions

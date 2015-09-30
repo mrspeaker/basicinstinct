@@ -6,7 +6,7 @@ const store = {
 
   loadRoom (name) {
     const ls = window.localStorage.getItem('room-' + name);
-    console.log('from ls:', name);
+    console.log('from ls:', ls ? ls.version : "?");
     return JSON.parse(ls);
   },
 
@@ -15,7 +15,7 @@ const store = {
     if (!data.name) {
       return;
     }
-    const old = this.loadRoom(data.name);
+    const old = this.loadRoom(data.name) || data;
     old.version = old.version || 1;
     data.version = old.version + 1;
     window.localStorage.setItem('room-' + data.name + '-' + old.version, JSON.stringify(old));

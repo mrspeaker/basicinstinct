@@ -1,6 +1,6 @@
 const Env = require('../Env');
-const Achievement = require('../world/Achievement');
-const achievements = {};
+const Task = require('../world/Task');
+const tasks = {};
 
 /*
 1. helloWorld
@@ -19,11 +19,11 @@ const achievements = {};
   OnProgRun: if (changescreencoll && this.inRoom === purg) success!
 */
 
-achievements.hw = new Achievement(
+tasks.hw = new Task(
   "Hello, World",
   (onUnlock, state) => {
     state.count = 0;
-    achievements.hw.listeners = [{
+    tasks.hw.listeners = [{
       name:'programEnded',
       func: () => {
         if (state.count++ > 3) {
@@ -35,20 +35,20 @@ achievements.hw = new Achievement(
       return nf;
     });
   },
-  () => achievements.hw.listeners.map(nf => {
+  () => tasks.hw.listeners.map(nf => {
     Env.events.removeListener(nf.name, nf.func);
   }),
   () => {
     //Env.events.emit('addItem', {trigger})
     Env.events.emit('popup', "Multi-run!");
-    Env.events.emit('achievement-init', 'goToPurgatory');
+    Env.events.emit('task-init', 'goToPurgatory');
   }
 );
 
-achievements.goToPurgatory = new Achievement(
+tasks.goToPurgatory = new Task(
   "Go To Purgatory",
   (onUnlock) => {
-    achievements.hw.listeners = [{name:'changeRoom', func: room => {
+    tasks.hw.listeners = [{name:'changeRoom', func: room => {
       if (room === 'purgatory') {
         onUnlock();
       }
@@ -57,12 +57,12 @@ achievements.goToPurgatory = new Achievement(
       return nf;
     });
   },
-  () => achievements.hw.listeners.map(nf => {
+  () => tasks.hw.listeners.map(nf => {
     Env.events.removeListener(nf.name, nf.func);
   }),
   () => {
-    Env.events.emit('popup', '@nd Achievement get:<br/>Entered purgatory.');
+    Env.events.emit('popup', '@nd task get:<br/>Entered purgatory.');
   }
 );
 
-module.exports = achievements;
+module.exports = tasks;

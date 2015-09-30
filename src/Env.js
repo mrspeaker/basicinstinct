@@ -4,5 +4,6 @@ module.exports = {
   dom: document.body, // Overwrite me!
   height: 0,
   width: 0,
-  events: WorldEvents
+  events: WorldEvents,
+  serialBus: null
 };

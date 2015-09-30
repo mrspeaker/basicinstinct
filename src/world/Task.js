@@ -1,6 +1,6 @@
 const Env = require('../Env');
 
-class Achievement {
+class Task {
   constructor (name, listen, unlisten, success) {
     this.name = name;
     this.listen = listen;
@@ -12,17 +12,17 @@ class Achievement {
     this.unlock = this.unlock.bind(this);
   }
   start () {
-    Env.events.emit('achievement-started', this.name);
-    console.log('achievement started:', this.name);
+    Env.events.emit('task-started', this.name);
+    console.log('task started:', this.name);
     this.listen.call(this, this.unlock, this.state);
   }
   unlock () {
-    console.log('Ach get:', this.name);
+    console.log('Task get:', this.name);
     this.locked = false;
     this.unlisten();
-    Env.events.emit('achievement-unlocked', this.name);
+    Env.events.emit('task-unlocked', this.name);
     this.success();
   }
 }
 
-module.exports = Achievement;
+module.exports = Task;

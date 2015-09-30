@@ -4,8 +4,7 @@ const Player = require('../entities/Player');
 const Editor = require('../entities/Editor');
 const Env = require('../Env');
 const store = require('../data/store');
-
-const achievements = require('../data/achievements');
+const tasks = require('../data/tasks');
 
 const {THREE} = require('three');
 
@@ -19,7 +18,7 @@ class World {
     this.editor.mesh.position.set(1, -0.5, 5);
     this.hasFocus = true;
 
-    this.createWorldBus();
+    this.createSerialBus();
     this.loadRoom('bedroom');
 
     {
@@ -37,17 +36,13 @@ class World {
 
   }
 
-  setAchievements () {
-
-  }
-
   bind () {
     Env.events.on('WorldCreated', () => {
-      Env.events.emit('achievement-init', 'hw');
+      Env.events.emit('task-init', 'hw');
     });
 
-    Env.events.on('achievement-init', name => {
-      achievements[name].start();
+    Env.events.on('task-init', name => {
+      tasks[name].start();
     });
 
     Env.events.on('popup', msg => {
@@ -61,6 +56,7 @@ class World {
       const {items} = room;
       const out = {
         name: room.name,
+        version: room.version || 1,
         items: items.map(i => room.getDefn(i))
       };
       store.saveRoom(out);
@@ -108,11 +104,11 @@ class World {
     });
   }
 
-  createWorldBus () {
+  createSerialBus () {
     // todo - add computer id
-    this.bus = {
+    Env.serialBus = {
       // Hmmm... this should get pushed into the Actions system.
-      fire: args => {
+      emit: args => {
         switch (args.type) {
         case 'set':
           const {id, attr, value} = args;

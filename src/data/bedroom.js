@@ -166,7 +166,7 @@ module.exports = {
       "itemSelected": [{
         "name": "showListing",
         "to": "room",
-        "text": `*** Achievement #1 ***
+        "text": `*** Task #1 ***
 
 Enter the following program:
 
@@ -205,7 +205,7 @@ Then hit 'escape' to complete.
       "itemSelected": [{
         "name": "showListing",
         "to": "room",
-        "text": `*** Achievement #2 ***
+        "text": `*** Task #2 ***
 
 It's a secret.
 

@@ -15,7 +15,7 @@ class Compy extends Item {
     this.type = "Computer";
     this.collidable = true;
 
-    const computer = new Computer();
+    const computer = new Computer(null, Env.serialBus);
     const screen = CRT(computer);
 
     this.mesh = new THREE.Object3D();

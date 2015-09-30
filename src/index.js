@@ -9,8 +9,6 @@ Env.width = Env.dom.clientWidth;
 Env.height = window.innerHeight;
 
 const game = new Game();
-game.events = Env.events;  // Used for editor to hook into game
-window.worldBus = game.world.bus; // For computer interactin'
 window.game = game; // global for testin'
 
 window.dumpRoom = function () {
