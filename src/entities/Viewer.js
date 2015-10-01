@@ -1,5 +1,6 @@
 const Env = require('../Env');
 const Raycastable = require('../behaviours/Raycastable');
+const Transformable = require('../behaviours/Transformable');
 
 class Viewer {
 
@@ -10,9 +11,9 @@ class Viewer {
   }
 
   syncCam (camera) {
-    camera.position.x = this.mesh.position.x;
-    camera.position.z = this.mesh.position.z;
-    camera.position.y = this.mesh.position.y + 0.8;
+    camera.position.x = this.position.x;
+    camera.position.z = this.position.z;
+    camera.position.y = this.position.y + 0.8;
     this.doSyncCam = false;
   }
 
@@ -34,4 +35,4 @@ class Viewer {
 
 }
 
-module.exports = Raycastable(Viewer);
+module.exports = Transformable(Raycastable(Viewer));

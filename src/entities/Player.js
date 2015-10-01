@@ -1,5 +1,7 @@
 const {THREE} = require('three');
 const Viewer = require('./Viewer');
+const translateWithKeys = require('../behaviours/translateWithKeys');
+const Fallable = require('../behaviours/Fallable');
 
 class Player extends Viewer {
   constructor () {
@@ -38,7 +40,6 @@ class Player extends Viewer {
 
   update (renderer, camera, room, {mouse, keys}) {
     const {selected, mesh} = this;
-    const {left, right, forward, backward, up, down} = keys.move;
     const usingComputer = selected && selected.type === "Computer";
     const children = room.scene.children;
 
@@ -47,19 +48,7 @@ class Player extends Viewer {
       keys.pressed.forEach(k => room.onKeyDown(k));
     } else {
       // Handle controls
-      const origY = mesh.position.y;
-      if (this.doSyncCam || left || right || forward || backward || up || down) {
-        const amount = 0.05;
-
-        if (left) mesh.translateX(-amount);
-        if (right) mesh.translateX(amount);
-        if (forward) mesh.translateZ(-amount);
-        if (backward) mesh.translateZ(amount);
-        if (up) mesh.translateY(-amount);
-        if (down) mesh.translateY(amount);
-      }
-      mesh.position.y = Math.max(-2, origY);
-
+      translateWithKeys(mesh, keys, 0.05);
     }
 
     // Drag view
@@ -135,7 +124,8 @@ class Player extends Viewer {
         geom.computeBoundingBox();
         const h = geom.boundingBox.max.y - geom.boundingBox.min.y;
         const curY = mesh.position.y;
-        mesh.position.y = Math.max(curY - 0.08, floor.mesh.position.y + h + 0.25);
+        const floorY = floor.mesh.position.y + h + 0.25;
+        this.fall(curY > floorY);
       }
     }
 
@@ -143,4 +133,4 @@ class Player extends Viewer {
   }
 }
 
-module.exports = Player;
+module.exports = Fallable(Player);

@@ -24,6 +24,8 @@ class World {
     Env.events.emit('WorldCreated');
     //this.toggleEditor(); // Go to editor mode first.
 
+    console.log(this.player.position);
+
   }
 
   bind () {
