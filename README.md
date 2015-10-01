@@ -13,7 +13,6 @@ sensors don't un-listen.
 ----
 
 * git messages could be clues
-* thinkin' *Sneakers*, but with 85% less Robert Redford and 50% more *Hackers*. or the first Tron.
 * make things proc gen? and scriptable with ItsBasic
 * everything in the world can be controlled with ItsBasic.
   name things?

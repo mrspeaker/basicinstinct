@@ -7,14 +7,11 @@ class Viewer {
   constructor () {
     this.hovering = null;
     this.selected = null;
-    this.doSyncCam = false;
   }
 
   syncCamera (camera) {
-    camera.position.x = this.position.x;
-    camera.position.z = this.position.z;
-    camera.position.y = this.position.y + 0.8;
-    this.doSyncCam = false;
+    const {position:pos} = this;
+    camera.position.set(pos.x, pos.y + 0.8, pos.z);
   }
 
   setSelected (selected) {

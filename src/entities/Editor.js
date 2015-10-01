@@ -73,7 +73,7 @@ class Editor extends Viewer {
     const {mode, selected, mesh, rotation} = this;
     const isViewer = !this.selected;
 
-    if (this.doSyncCam ||  left || right || forward || backward || up || down) {
+    if (left || right || forward || backward || up || down) {
       const obj = isViewer ? mesh : selected.mesh;
       var amount = mode === "rotation" ? Math.PI / 20 : 0.05;
       // Move camera fast by default, slow with shift
@@ -96,11 +96,7 @@ class Editor extends Viewer {
         obj.scale.z = Math.max(0.01, obj.scale.z);
       }
 
-      if (isViewer) {
-        this.syncCamera(camera);
-      } else {
-        Env.events.emit('selectionChange', this.selected);
-      }
+      if (!isViewer) { Env.events.emit('selectionChange', this.selected); }
 
     }
 
@@ -113,6 +109,7 @@ class Editor extends Viewer {
     dragView(mouse, rotation, camera.rotation);
 
     this.handleKeys(keys);
+    this.syncCamera(camera);
   }
 }
 

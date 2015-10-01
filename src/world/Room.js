@@ -98,7 +98,6 @@ class Room {
   setViewer (viewer) {
     this.viewer = viewer;
     this.viewer.setSelected(null);
-    this.viewer.doSyncCam = true;
   }
 
   addItem (defn) {
