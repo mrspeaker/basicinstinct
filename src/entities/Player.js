@@ -24,7 +24,6 @@ class Player {
     this.guiPopup.querySelector('.close').addEventListener('click', () => {
       this.guiPopup.style.display = 'none';
     }, false);
-
   }
 
   setSelected (selected) {
@@ -60,28 +59,61 @@ class Player {
   }
 
   update (renderer, camera, room, {mouse, keys}) {
+    const {selected, mesh} = this;
     const {left, right, forward, backward, up, down} = keys.move;
-    const obj = this.mesh;
-    if (this.selected && this.selected.type === "Computer") {
-      keys.pressed.forEach(k => {
-        room.onKeyDown(k);
-      });
+    const usingComputer = selected && selected.type === "Computer";
+
+    if (usingComputer) {
+      // Send keystrokes to computer
+      keys.pressed.forEach(k => room.onKeyDown(k));
     } else {
-      const y = obj.position.y;
+      // Handle controls
+      const origY = mesh.position.y;
       if (this.doSyncCam || left || right || forward || backward || up || down) {
         const amount = 0.05;
 
-        if (left) obj.translateX(-amount);
-        if (right) obj.translateX(amount);
-        if (forward) obj.translateZ(-amount);
-        if (backward) obj.translateZ(amount);
-        if (up) obj.translateY(-amount);
-        if (down) obj.translateY(amount);
+        if (left) mesh.translateX(-amount);
+        if (right) mesh.translateX(amount);
+        if (forward) mesh.translateZ(-amount);
+        if (backward) mesh.translateZ(amount);
+        if (up) mesh.translateY(-amount);
+        if (down) mesh.translateY(amount);
       }
-      obj.position.y = Math.max(-2, y);
+      mesh.position.y = Math.max(-2, origY);
 
     }
 
+    // Drag view
+    if (mouse.left.dragging) {
+      const {dx, dy} = mouse.pos;
+      const dragSpeed = -1.3;
+      if (dx) {
+        camera.rotation.y += dx * dragSpeed;
+        // TODO: figure out better way to sync...
+        mesh.rotation.y = camera.rotation.y;
+      }
+      if (dy) {
+        var rotx = camera.rotation.x;
+        rotx -= dy * dragSpeed;
+        camera.rotation.x = Math.min(0.7, Math.max(-0.7, rotx));
+      }
+    }
+
+    function meshToGame ({object}) {
+      return object.userData.inst || object.parent.userData.inst;
+    }
+
+    // Check under mouse
+    const raycaster = this.raycaster;
+    raycaster.setFromCamera(mouse.pos, camera);
+    const mouseInts = raycaster.intersectObjects(room.scene.children, true).map(meshToGame);
+    this.hovering = mouseInts.length ? mouseInts[0] : null;
+
+    if (mouse.left.clicked) {
+      this.setSelected(this.hovering);
+    }
+
+    // Some collisions...
 
     //      _____
     //     |     |
@@ -106,37 +138,23 @@ class Player {
     //     }
     // }
 
-
-    const raycaster = this.raycaster;
-
-    raycaster.setFromCamera(mouse.pos, camera);
-    var intersections = raycaster.intersectObjects(room.scene.children, true);
-    if (intersections.length) {
-      const hovering = intersections[0].object.userData.inst ? intersections[0].object : intersections[0].object.parent;
-      if (!hovering.userData.inst) {
-        //'didnt really fix this')
-        this.hovering = null;
-      } else {
-        this.hovering = hovering.userData.inst;
-      }
-    } else {
-      this.hovering = null;
-    }
-
-    const feetPos = this.mesh.position.clone();
+    const feetPos = mesh.position.clone();
     feetPos.y -= 0.5;
     // Check up
     var hitAbove = false;
     raycaster.set(feetPos, new THREE.Vector3(0, 1, 0));
-    intersections = raycaster.intersectObjects(room.scene.children, true);
-    intersections = intersections.filter(i => i.object !== this.mesh);
-    if (intersections.length > 0) {
-      const inter = intersections[0].object;
-      const floor = inter.userData.inst ? inter : inter.parent;
-      if (floor.userData.inst && !floor.userData.inst.isRoof) {
-        floor.geometry.computeBoundingBox();
-        const h = floor.geometry.boundingBox.max.y - floor.geometry.boundingBox.min.y;
-        this.mesh.position.y = floor.position.y + h + 0.25;
+    const headInts = raycaster
+      .intersectObjects(room.scene.children, true)
+      .map(meshToGame);
+
+    if (headInts.length) {
+      const floor = headInts[0];
+      if (!floor.isRoof) {
+        const geom = floor.mesh.geometry;
+        // FIXME: doesn't hit geom of complex obj...
+        geom.computeBoundingBox();
+        const h = geom.boundingBox.max.y - geom.boundingBox.min.y;
+        mesh.position.y = floor.mesh.position.y + h + 0.25;
         hitAbove = true;
       }
     }
@@ -144,38 +162,19 @@ class Player {
     if (!hitAbove) {
       // Check down.
       raycaster.set(feetPos, new THREE.Vector3(0, -1, 0));
-      intersections = raycaster.intersectObjects(room.scene.children, true);
-      intersections = intersections.filter(i => i.object !== this.mesh);
-      if (intersections.length > 0) {
-        const inter = intersections[0].object;
-        const floor = inter.userData.inst ? inter : inter.parent;
-        if (floor.userData.inst) {
-          floor.geometry.computeBoundingBox();
-          const h = floor.geometry.boundingBox.max.y - floor.geometry.boundingBox.min.y;
-          const curY = this.mesh.position.y;
-          this.mesh.position.y = Math.max(curY - 0.08, floor.position.y + h + 0.25);
-        }
+      const feetInts = raycaster
+        .intersectObjects(room.scene.children, true)
+        .map(meshToGame);
+      if (feetInts.length) {
+        const floor = feetInts[0];
+        const geom = floor.mesh.geometry;
+        geom.computeBoundingBox();
+        const h = geom.boundingBox.max.y - geom.boundingBox.min.y;
+        const curY = mesh.position.y;
+        mesh.position.y = Math.max(curY - 0.08, floor.mesh.position.y + h + 0.25);
       }
     }
 
-    if (mouse.left.dragging) {
-      const {dx, dy} = mouse.pos;
-      const dragSpeed = -1.3;
-      if (dx) {
-        camera.rotation.y += dx * dragSpeed;
-        // TODO: figure out better way to sync...
-        obj.rotation.y = camera.rotation.y;
-      }
-      if (dy) {
-        var rotx = camera.rotation.x;
-        rotx -= dy * dragSpeed;
-        camera.rotation.x = Math.min(0.7, Math.max(-0.7, rotx));
-      }
-    }
-
-    if (mouse.left.clicked) {
-      this.setSelected(this.hovering);
-    }
     this.syncCam(camera);
   }
 }

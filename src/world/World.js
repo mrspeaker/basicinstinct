@@ -1,4 +1,4 @@
-const DATA = require('../data/');
+const DATA = require('../data/rooms/');
 const Room = require('./Room');
 const Player = require('../entities/Player');
 const Editor = require('../entities/Editor');
@@ -40,82 +40,15 @@ class World {
     });
 
     Env.events.on('saveRoom', () => this.saveRoom());
-  }
 
-  addTestItem() {
-    this.room.addItem({
-      "id": 20,
-      "type": "Box",
-      "args": {
-        "color": 5066329
-      },
-      "ons": {
-        "itemSelected": [{
-          "name": "addItem",
-          "to": "room",
-          "defn": {
-            "type": "Box",
-            "pos": [0, 0, 2],
-            "scale": [0.3, 0.3, 0.3],
-            "ons": {
-              "itemSelected": [{
-                "name": "toggle",
-                "to": 20
-              }]
-            }
-          },
-          "relativeTo": 20,
-          "randomYo": true
-        },
-        /*{
-          "name": "removeItem",
-          "to": "room",
-          "item": 20
-        }*/
-        ],
-        /*"WorldCreated": [{
-          "name": "toggleLight",
-          "to": 16,
-        }]*/
-      },
-      "pos": [0.5, 1, 0],
-      "scale": [0.3, 0.3, 0.3]
-    });
+    Env.events.on('computer', args => this.processComputerCommand(args));
   }
 
   createSerialBus () {
     // todo - add computer id
     Env.serialBus = {
-      // Hmmm... this should get pushed into the Actions system.
-      emit: args => {
-        switch (args.type) {
-        case 'set':
-          const {id, attr, value} = args;
-          const item = this.room.items.find(i => i.id == id);
-          if (item) {
-            if (attr === "toggle") {
-              if (item.type === "Light") {
-                Env.events.emit('action', {
-                  "name": "toggleLight",
-                  "to": item.id
-                });
-              }
-            } else {
-              const type = {p:'position', r:'rotation', s:'scale'}[attr[0]];
-              const axis = attr[attr.length - 1];
-              item.mesh[type][axis] = value;
-            }
-          }
-          break;
-        case 'programEnded':
-          console.log('Computer stopped.');
-          Env.events.emit('programEnded', args);
-          break;
-        default:
-          console.log('unhandled world bus msg:', args);
-        }
-      },
-
+      emit: args => Env.events.emit("computer", args),
+      // 'get' has to be synchronous!
       get: (id, attr) => {
         const item = this.room.items.find(i => i.id == id);
         var retVal = 0;
@@ -127,6 +60,35 @@ class World {
         return retVal;
       }
     };
+  }
+
+  processComputerCommand (args) {
+    switch (args.type) {
+    case 'set':
+      const {id, attr, value} = args;
+      const item = this.room.items.find(i => i.id == id);
+      if (item) {
+        if (attr === "toggle") {
+          if (item.type === "Light") {
+            Env.events.emit('action', {
+              "name": "toggleLight",
+              "to": item.id
+            });
+          }
+        } else {
+          const type = {p:'position', r:'rotation', s:'scale'}[attr[0]];
+          const axis = attr[attr.length - 1];
+          item.mesh[type][axis] = value;
+        }
+      }
+      break;
+    case 'programEnded':
+      console.log('Computer stopped.');
+      Env.events.emit('programEnded', args);
+      break;
+    default:
+      console.log('unhandled world bus msg:', args);
+    }
   }
 
   loadRoom (roomName, transform) {
@@ -177,7 +139,7 @@ class World {
     const {room, player, editor} = this;
     const current = room.viewer;
     const newGuy = current === player ? editor : player;
-    const isEditor = newGuy === editor; // will be toggled at the end!
+    const isEditor = newGuy === editor;
     room.items.forEach(i => {
       if (i.invisible) {
         i.mesh.visible = isEditor;
@@ -188,11 +150,11 @@ class World {
         i.mesh.visible = isEditor;
       }
     });
-    room.setViewer(newGuy);
     editor.toggleUI(isEditor);
     player.toggleUI(!isEditor);
     player.mesh.visible = isEditor;
     editor.mesh.visible = false;
+    room.setViewer(newGuy);
   }
 
   update (renderer, camera, controls) {
@@ -206,6 +168,47 @@ class World {
         }
       });
     }
+  }
+
+  addTestItem() {
+    this.room.addItem({
+      "id": 20,
+      "type": "Box",
+      "args": {
+        "color": 5066329
+      },
+      "ons": {
+        "itemSelected": [{
+          "name": "addItem",
+          "to": "room",
+          "defn": {
+            "type": "Box",
+            "pos": [0, 0, 2],
+            "scale": [0.3, 0.3, 0.3],
+            "ons": {
+              "itemSelected": [{
+                "name": "toggle",
+                "to": 20
+              }]
+            }
+          },
+          "relativeTo": 20,
+          "randomYo": true
+        },
+        /*{
+          "name": "removeItem",
+          "to": "room",
+          "item": 20
+        }*/
+        ],
+        /*"WorldCreated": [{
+          "name": "toggleLight",
+          "to": 16,
+        }]*/
+      },
+      "pos": [0.5, 1, 0],
+      "scale": [0.3, 0.3, 0.3]
+    });
   }
 
 }

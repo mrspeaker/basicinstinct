@@ -146,7 +146,7 @@ class Editor {
       }
     }
 
-    if (mouse.left.clicked) {
+    if (mouse.right.clicked) {
       this.setSelected(this.hovering);
     }
 
