@@ -10,7 +10,7 @@ class Viewer {
     this.doSyncCam = false;
   }
 
-  syncCam (camera) {
+  syncCamera (camera) {
     camera.position.x = this.position.x;
     camera.position.z = this.position.z;
     camera.position.y = this.position.y + 0.8;

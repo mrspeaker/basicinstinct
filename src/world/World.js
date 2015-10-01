@@ -11,39 +11,27 @@ class World {
   constructor () {
     this.rooms = {};
     this.player = new Player();
+    this.player.position.set(1, 0, 4);
     this.editor = new Editor();
-    this.player.mesh.position.set(1, 0, 4);
-    this.editor.mesh.position.set(1, -0.5, 5);
+    this.editor.position.set(1, -0.5, 5);
     this.hasFocus = true;
 
     this.createSerialBus();
+    this.bindEvents();
     this.loadRoom('bedroom');
-
-    this.bind();
-
     Env.events.emit('WorldCreated');
-    //this.toggleEditor(); // Go to editor mode first.
-
-    console.log(this.player.position);
-
   }
 
-  bind () {
-    Env.events.on('WorldCreated', () => {
-      Env.events.emit('task-init', 'hw');
-    });
-
+  bindEvents () {
+    Env.events.on('WorldCreated', () => Env.events.emit('task-init', 'hw'));
+    Env.events.on('computer', args => this.processComputerCommand(args));
     Env.events.on('task-init', name => tasks[name].start());
-
+    Env.events.on('saveRoom', () => this.saveRoom());
     Env.events.on('popup', msg => {
       const pop = document.querySelector("#popup");
       pop.querySelector(".content").innerHTML = msg;
       pop.style.display = "block";
     });
-
-    Env.events.on('saveRoom', () => this.saveRoom());
-
-    Env.events.on('computer', args => this.processComputerCommand(args));
   }
 
   createSerialBus () {
@@ -94,35 +82,38 @@ class World {
   }
 
   loadRoom (roomName, transform) {
-    if (this.rooms[roomName]) {
+    const {player, editor, rooms} = this;
+
+    if (rooms[roomName]) {
       // Already laoded!
-      this.room = this.rooms[roomName];
+      this.room = rooms[roomName];
     } else {
       const data = store.loadRoom(roomName) || DATA[roomName];
       this.room = new Room(data, this.player, (name, trigger) => {
-        this.room.scene.remove(this.player.mesh);
-        this.room.scene.remove(this.editor.mesh);
-        this.room.onLeave();
+        const {room} = this;
+        room.scene.remove(player.mesh);
+        room.scene.remove(editor.mesh);
+        room.onLeave();
         this.loadRoom(trigger.room, trigger.transform);
       });
       this.rooms[roomName] = this.room;
     }
 
     if (transform) {
-      const {mesh} = this.player;
+      const {position} = player;
       const {pos, rot} = transform;
-      mesh.position.set(pos[0], pos[1], pos[2]);
+      position.set(pos[0], pos[1], pos[2]);
       // LOL... global! fix this shit!
       game.camera.rotation.set(rot[0], rot[1], rot[2]);
-      this.player.doSyncCam = true;
     }
 
-    this.player.doSyncCam = true;
-    this.player.setSelected(null);
+    player.doSyncCam = true;
+    player.setSelected(null);
 
-    this.room.addEntity(this.player);
-    this.room.addEntity(this.editor);
-    this.room.onEnter();
+    const {room} = this;
+    room.addEntity(player);
+    room.addEntity(editor);
+    room.onEnter();
 
     Env.events.emit('changeRoom', roomName);
   }
@@ -160,10 +151,10 @@ class World {
   }
 
   update (renderer, camera, controls) {
-    const {room} = this;
+    const {room, hasFocus} = this;
 
-    room.update(renderer, camera, this.hasFocus ? controls : null);
-    if (this.hasFocus) {
+    room.update(renderer, camera, hasFocus ? controls : null);
+    if (hasFocus) {
       controls.keys.pressed.forEach(p => {
         if (p.which === 192 /*backtick*/) {
           this.toggleEditor();

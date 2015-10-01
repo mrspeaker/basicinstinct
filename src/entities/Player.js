@@ -1,6 +1,7 @@
 const {THREE} = require('three');
 const Viewer = require('./Viewer');
 const translateWithKeys = require('../behaviours/translateWithKeys');
+const dragView = require('../behaviours/dragView');
 const Fallable = require('../behaviours/Fallable');
 
 class Player extends Viewer {
@@ -17,15 +18,16 @@ class Player extends Viewer {
   }
 
   initGUI () {
-    this.gui = document.querySelector('#gui');
-    this.guiListing = this.gui.querySelector('#listing');
-    this.guiListing.style.display = 'none';
-    this.guiListing.querySelector('.close').addEventListener('click', () => {
-      this.guiListing.style.display = 'none';
+    // TODO: move this to world. Communicate via events.
+    const gui = this.gui = document.querySelector('#gui');
+    const listing = this.guiListing = gui.querySelector('#listing');
+    listing.style.display = 'none';
+    listing.querySelector('.close').addEventListener('click', () => {
+      listing.style.display = 'none';
     }, false);
-    this.guiPopup = this.gui.querySelector('#popup');
-    this.guiPopup.querySelector('.close').addEventListener('click', () => {
-      this.guiPopup.style.display = 'none';
+    const popup = this.guiPopup = gui.querySelector('#popup');
+    popup.querySelector('.close').addEventListener('click', () => {
+      popup.style.display = 'none';
     }, false);
   }
 
@@ -38,42 +40,49 @@ class Player extends Viewer {
     this.guiListing.querySelector('.content').innerHTML = text.replace(/\n/g, '<br/>');
   }
 
-  update (renderer, camera, room, {mouse, keys}) {
-    const {selected, mesh} = this;
+  handleMoveAndComputerKeys (keys, room) {
+    const {mesh, selected} = this;
     const usingComputer = selected && selected.type === "Computer";
-    const children = room.scene.children;
 
     if (usingComputer) {
       // Send keystrokes to computer
       keys.pressed.forEach(k => room.onKeyDown(k));
-    } else {
-      // Handle controls
-      translateWithKeys(mesh, keys, 0.05);
+      return;
+    }
+    // Handle controls
+    translateWithKeys(mesh, keys, 0.05);
+  }
+
+  checkAboveAndBelowCollisions (children) {
+    const feetPos = Object.assign({}, this.position);
+    feetPos.y -= 0.5;
+    const UP = new THREE.Vector3(0, 1, 0);
+    const DOWN = new THREE.Vector3(0, -1, 0);
+
+    // Check up
+    const hitsAbove = this.raycast(children, feetPos, UP).filter(i => !i.isRoof);
+    const above = hitsAbove[0] || null;
+    if (above) {
+      const aboveMesh = above.mesh;
+      const geom = aboveMesh.geometry; // FIXME: doesn't hit geom of complex obj...
+      geom.computeBoundingBox();
+      const h = geom.boundingBox.max.y - geom.boundingBox.min.y;
+      this.position.y = aboveMesh.position.y + h + 0.25;
+      return;
     }
 
-    // Drag view
-    if (mouse.left.dragging) {
-      const {dx, dy} = mouse.pos;
-      const dragSpeed = -1.3;
-      if (dx) {
-        camera.rotation.y += dx * dragSpeed;
-        // TODO: figure out better way to sync...
-        mesh.rotation.y = camera.rotation.y;
-      }
-      if (dy) {
-        var rotx = camera.rotation.x;
-        rotx -= dy * dragSpeed;
-        camera.rotation.x = Math.min(0.7, Math.max(-0.7, rotx));
-      }
+    // Check down.
+    const below = this.raycast(children, feetPos, DOWN)[0] || null;
+    if (below) {
+      // FIXME: Not detecting correctly on steps.
+      const geom = below.mesh.geometry;
+      geom.computeBoundingBox();
+      const h = geom.boundingBox.max.y - geom.boundingBox.min.y;
+      const curY = this.position.y;
+      const floorY = below.mesh.position.y + h + 0.25;
+      this.fall(curY > floorY);
     }
 
-    // Check under mouse
-    this.hovering = this.raycast(room.scene.children, mouse.pos, camera)[0] || null;
-    if (mouse.left.clicked) {
-      this.setSelected(this.hovering);
-    }
-
-    // Some collisions...
 
     //      _____
     //     |     |
@@ -98,37 +107,22 @@ class Player extends Viewer {
     //     }
     // }
 
-    const feetPos = mesh.position.clone();
-    feetPos.y -= 0.5;
-    const UP = new THREE.Vector3(0, 1, 0);
-    const DOWN = new THREE.Vector3(0, -1, 0);
+  }
 
-    // Check up
-    const above = (this.raycast(children, feetPos, UP)
-        .filter(i => !i.isRoof)
-      )[0] || null;
+  update (renderer, camera, room, {mouse, keys}) {
+    const {rotation} = this;
+    const children = room.scene.children;
 
-    if (above) {
-      const aboveMesh = above.mesh;
-      const geom = aboveMesh.geometry; // FIXME: doesn't hit geom of complex obj...
-      geom.computeBoundingBox();
-      const h = geom.boundingBox.max.y - geom.boundingBox.min.y;
-      this.position.y = aboveMesh.position.y + h + 0.25;
-    }
-    else {
-      // Check down.
-      const below = this.raycast(children, feetPos, DOWN)[0] || null;
-      if (below) {
-        const geom = below.mesh.geometry;
-        geom.computeBoundingBox();
-        const h = geom.boundingBox.max.y - geom.boundingBox.min.y;
-        const curY = this.position.y;
-        const floorY = below.mesh.position.y + h + 0.25;
-        this.fall(curY > floorY);
-      }
+    dragView(mouse, rotation, camera.rotation);
+    this.handleMoveAndComputerKeys(keys, room);
+     // Get hovered / selected item
+    this.hovering = this.raycast(children, mouse.pos, camera)[0];
+    if (mouse.left.clicked) {
+      this.setSelected(this.hovering);
     }
 
-    this.syncCam(camera);
+    this.checkAboveAndBelowCollisions(children); // Some basic collisions...
+    this.syncCamera(camera);
   }
 }
 

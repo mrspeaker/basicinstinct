@@ -4,6 +4,7 @@ const Env = require('../Env');
 const Items = require('../items/');
 const translateWithKeys = require('../behaviours/translateWithKeys');
 const moveWithKeys = require('../behaviours/moveWithKeys');
+const dragView = require('../behaviours/dragView');
 
 class Editor extends Viewer {
   constructor () {
@@ -40,9 +41,36 @@ class Editor extends Viewer {
     dom.style.display = isOn ? 'block' : 'none';
   }
 
+  handleKeys (keys) {
+    const {selected, room} = this;
+
+    if (selected) {
+      keys.pressed.forEach(k => {
+        switch (k.which) {
+        case 27: /*esc*/
+          this.setSelected(null);
+          break;
+        case 90:
+          // Duplicate selected object
+          this.setSelected(room.addItem(room.getDefn(selected)));
+          selected.mesh.position.y += 0.2;
+          break;
+        case 88:
+          room.removeItem(selected);
+          this.setSelected(null);
+          // Remove selected.
+          break;
+        case 49: this.mode = "position"; break;
+        case 50: this.mode = "scale"; break;
+        case 51: this.mode = "rotation"; break;
+        }
+      });
+    }
+  }
+
   update (renderer, camera, room, {mouse, keys}) {
     const {left, right, forward, backward, up, down} = keys.move;
-    const {mode, selected, mesh} = this;
+    const {mode, selected, mesh, rotation} = this;
     const isViewer = !this.selected;
 
     if (this.doSyncCam ||  left || right || forward || backward || up || down) {
@@ -69,7 +97,7 @@ class Editor extends Viewer {
       }
 
       if (isViewer) {
-        this.syncCam(camera);
+        this.syncCamera(camera);
       } else {
         Env.events.emit('selectionChange', this.selected);
       }
@@ -82,42 +110,9 @@ class Editor extends Viewer {
       this.setSelected(this.hovering);
     }
 
-    if (mouse.left.dragging) {
-      const {dx, dy} = mouse.pos;
-      const dragSpeed = -1.3;
-      if (dx) {
-        camera.rotation.y += dx * dragSpeed;
-        // TODO: figure out better way to sync...
-        this.rotation.y = camera.rotation.y;
-      }
-      if (dy) {
-        camera.rotation.x -= dy * dragSpeed;
-      }
-    }
+    dragView(mouse, rotation, camera.rotation);
 
-    if (selected) {
-      keys.pressed.forEach(k => {
-        switch (k.which) {
-        case 27: /*esc*/
-          this.setSelected(null);
-          break;
-        case 90:
-          // Duplicate selected object
-          this.setSelected(room.addItem(room.getDefn(selected)));
-          selected.mesh.position.y += 0.2;
-          break;
-        case 88:
-          room.removeItem(selected);
-          this.setSelected(null);
-          // Remove selected.
-          break;
-        case 49: this.mode = "position"; break;
-        case 50: this.mode = "scale"; break;
-        case 51: this.mode = "rotation"; break;
-        }
-      });
-    }
-
+    this.handleKeys(keys);
   }
 }
 
