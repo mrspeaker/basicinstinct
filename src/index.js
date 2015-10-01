@@ -1,3 +1,4 @@
+/* @flow */
 const React = require('react');
 const Editor = require('./editor/Editor');
 const Game = require('./Game');
@@ -20,7 +21,7 @@ window._dumpRoom = function () {
 };
 
 function loop () {
-  requestAnimationFrame(loop);
+  window.requestAnimationFrame(loop);
   // TODO: fixed update/delta
   game.update();
 }

@@ -191,6 +191,8 @@ class World {
     room.setViewer(newGuy);
     editor.toggleUI(isEditor);
     player.toggleUI(!isEditor);
+    player.mesh.visible = isEditor;
+    editor.mesh.visible = false;
   }
 
   update (renderer, camera, controls) {

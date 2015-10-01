@@ -8,8 +8,8 @@ class Player {
 
     this.type = "Player";
     const geometry = new THREE.BoxGeometry(1, 0.5, 1);
-    const material = new THREE.MeshLambertMaterial({color: 0x777777, wireframe:true});
-    //this.mesh = new THREE.Object3D();
+    const material = new THREE.MeshBasicMaterial({color: 0x777777, wireframe:true});
+
     this.mesh = new THREE.Mesh(geometry, material);
     this.mesh.visible = false;
     this.raycaster = new THREE.Raycaster();
@@ -77,12 +77,35 @@ class Player {
         if (backward) obj.translateZ(amount);
         if (up) obj.translateY(-amount);
         if (down) obj.translateY(amount);
-
-        this.syncCam(camera);
       }
       obj.position.y = Math.max(-2, y);
 
     }
+
+
+    //      _____
+    //     |     |
+    //     |  .  |
+    //     | / \ |
+    //     |/___\|
+    //     /     \
+    //
+    // for (var vertexIndex = 0; vertexIndex < Player.geometry.vertices.length; vertexIndex++) {
+    //     var localVertex = Player.geometry.vertices[vertexIndex].clone();
+    //     var globalVertex = Player.matrix.multiplyVector3(localVertex);
+    //
+    //     //var vector = object.geometry.vertices[i].clone();
+    //     //vector.applyMatrix4(object.matrixWorld);
+    //
+    //     var directionVector = globalVertex.subSelf( Player.position );
+    //
+    //     var ray = new THREE.Ray( Player.position, directionVector.clone().normalize() );
+    //     var collisionResults = ray.intersectObjects(collidableMeshList);
+    //     if ( collisionResults.length > 0 && collisionResults[0].distance < directionVector.length() ) {
+    //         // a collision occurred... do something...
+    //     }
+    // }
+
 
     const raycaster = this.raycaster;
 
@@ -99,7 +122,6 @@ class Player {
     } else {
       this.hovering = null;
     }
-
 
     const feetPos = this.mesh.position.clone();
     feetPos.y -= 0.5;
@@ -130,7 +152,8 @@ class Player {
         if (floor.userData.inst) {
           floor.geometry.computeBoundingBox();
           const h = floor.geometry.boundingBox.max.y - floor.geometry.boundingBox.min.y;
-          this.mesh.position.y = floor.position.y + h + 0.25;
+          const curY = this.mesh.position.y;
+          this.mesh.position.y = Math.max(curY - 0.08, floor.position.y + h + 0.25);
         }
       }
     }
@@ -153,7 +176,7 @@ class Player {
     if (mouse.left.clicked) {
       this.setSelected(this.hovering);
     }
-
+    this.syncCam(camera);
   }
 }
 

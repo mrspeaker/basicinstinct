@@ -14,6 +14,7 @@ class Editor {
     const material = new THREE.MeshBasicMaterial({color: 0x00dd00, wireframe:true});
     //this.mesh = new THREE.Object3D();
     this.mesh = new THREE.Mesh(geometry, material);
+    this.mesh.visible = false;
     this.raycaster = new THREE.Raycaster();
 
     this.ui = document.querySelector("#edui");
