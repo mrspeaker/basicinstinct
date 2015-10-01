@@ -1,19 +1,20 @@
 const {THREE} = require('three');
-const Env = require('../Env');
+const Viewer = require('./Viewer');
 
-class Player {
+class Player extends Viewer {
   constructor () {
-    this.hovering = null;
-    this.selected = null;
-
+    super();
     this.type = "Player";
     const geometry = new THREE.BoxGeometry(1, 0.5, 1);
     const material = new THREE.MeshBasicMaterial({color: 0x777777, wireframe:true});
 
     this.mesh = new THREE.Mesh(geometry, material);
     this.mesh.visible = false;
-    this.raycaster = new THREE.Raycaster();
 
+    this.initGUI();
+  }
+
+  initGUI () {
     this.gui = document.querySelector('#gui');
     this.guiListing = this.gui.querySelector('#listing');
     this.guiListing.style.display = 'none';
@@ -24,29 +25,6 @@ class Player {
     this.guiPopup.querySelector('.close').addEventListener('click', () => {
       this.guiPopup.style.display = 'none';
     }, false);
-  }
-
-  setSelected (selected) {
-    if (this.selected && this.selected !== selected) {
-      this.selected.isSelected = false;
-
-      Env.events.emit('itemDeselected', this.selected);
-      this.selected.fireItem('itemDeselected');
-    }
-    this.selected = selected || null;
-    if (this.selected && this.selected.mesh.visible) {
-      this.selected.isSelected = true;
-      this.selected.fireItem('itemSelected');
-    }
-    //Env.events.emit('selectionChange', this.selected);
-    Env.events.emit('itemSelected', this.selected);
-  }
-
-  syncCam (camera) {
-    camera.position.x = this.mesh.position.x;
-    camera.position.z = this.mesh.position.z;
-    camera.position.y = this.mesh.position.y + 0.8;
-    this.doSyncCam = false;
   }
 
   toggleUI (isOn) {
@@ -62,6 +40,7 @@ class Player {
     const {selected, mesh} = this;
     const {left, right, forward, backward, up, down} = keys.move;
     const usingComputer = selected && selected.type === "Computer";
+    const children = room.scene.children;
 
     if (usingComputer) {
       // Send keystrokes to computer
@@ -99,16 +78,8 @@ class Player {
       }
     }
 
-    function meshToGame ({object}) {
-      return object.userData.inst || object.parent.userData.inst;
-    }
-
     // Check under mouse
-    const raycaster = this.raycaster;
-    raycaster.setFromCamera(mouse.pos, camera);
-    const mouseInts = raycaster.intersectObjects(room.scene.children, true).map(meshToGame);
-    this.hovering = mouseInts.length ? mouseInts[0] : null;
-
+    this.hovering = this.raycast(room.scene.children, mouse.pos, camera)[0] || null;
     if (mouse.left.clicked) {
       this.setSelected(this.hovering);
     }
@@ -140,33 +111,26 @@ class Player {
 
     const feetPos = mesh.position.clone();
     feetPos.y -= 0.5;
+    const UP = new THREE.Vector3(0, 1, 0);
+    const DOWN = new THREE.Vector3(0, -1, 0);
+
     // Check up
     var hitAbove = false;
-    raycaster.set(feetPos, new THREE.Vector3(0, 1, 0));
-    const headInts = raycaster
-      .intersectObjects(room.scene.children, true)
-      .map(meshToGame);
+    const floor = this.raycast(children, feetPos, UP)[0] || null;
 
-    if (headInts.length) {
-      const floor = headInts[0];
-      if (!floor.isRoof) {
-        const geom = floor.mesh.geometry;
-        // FIXME: doesn't hit geom of complex obj...
-        geom.computeBoundingBox();
-        const h = geom.boundingBox.max.y - geom.boundingBox.min.y;
-        mesh.position.y = floor.mesh.position.y + h + 0.25;
-        hitAbove = true;
-      }
+    if (floor && !floor.isRoof) {
+      const geom = floor.mesh.geometry;
+      // FIXME: doesn't hit geom of complex obj...
+      geom.computeBoundingBox();
+      const h = geom.boundingBox.max.y - geom.boundingBox.min.y;
+      mesh.position.y = floor.mesh.position.y + h + 0.25;
+      hitAbove = true;
     }
 
     if (!hitAbove) {
       // Check down.
-      raycaster.set(feetPos, new THREE.Vector3(0, -1, 0));
-      const feetInts = raycaster
-        .intersectObjects(room.scene.children, true)
-        .map(meshToGame);
-      if (feetInts.length) {
-        const floor = feetInts[0];
+      const floor = this.raycast(children, feetPos, DOWN)[0] || null;
+      if (floor) {
         const geom = floor.mesh.geometry;
         geom.computeBoundingBox();
         const h = geom.boundingBox.max.y - geom.boundingBox.min.y;

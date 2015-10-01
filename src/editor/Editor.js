@@ -48,7 +48,9 @@ class Editor extends Component {
         <div>
           <strong>backtick key:</strong> switches between Player and Editor.<br/>
           In Player mode you can type on puter. <br/>
-          In Editor mode it pushes things around (shift moves things faster).<br/>
+        <br/><strong>Editor MOde:</strong><br/>
+          right-click to select<br/>
+          WSAD/keys pushes things around (shift moves things faster).<br/>
         </div>
         <div>1/2/3 keys switch between modes: pos, rot, scale.</div>
         <div>z key duplicates current selected</div>

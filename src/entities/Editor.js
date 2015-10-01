@@ -1,21 +1,20 @@
 const {THREE} = require('three');
+const Viewer = require('./Viewer');
 const Env = require('../Env');
 const Items = require('../items/');
 
-class Editor {
+class Editor extends Viewer {
   constructor () {
-    this.hovering = null;
-    this.selected = null;
+    super();
     this.mode = "position";
-    this.invisible = true;
 
     this.type = "Editor";
     const geometry = new THREE.BoxGeometry(1, 1, 1);
     const material = new THREE.MeshBasicMaterial({color: 0x00dd00, wireframe:true});
     //this.mesh = new THREE.Object3D();
     this.mesh = new THREE.Mesh(geometry, material);
-    this.mesh.visible = false;
-    this.raycaster = new THREE.Raycaster();
+    this.invisible = true;
+    this.mesh.visible = !this.invisible;
 
     this.ui = document.querySelector("#edui");
     this.clickAdd = this.clickAdd.bind(this);
@@ -31,29 +30,6 @@ class Editor {
   clickAdd (e) {
     const type = e.target.getAttribute('data-name');
     Env.events.emit('addNewItem', type);
-  }
-
-  setSelected (selected) {
-    if (this.selected && this.selected !== selected) {
-      this.selected.isSelected = false;
-
-      Env.events.emit('itemDeselected', this.selected);
-      this.selected.fireItem('itemDeselected');
-    }
-    this.selected = selected || null;
-    if (this.selected) {
-      this.selected.isSelected = true;
-      this.selected.fireItem('itemSelected');
-    }
-    //Env.events.emit('selectionChange', this.selected);
-    Env.events.emit('itemSelected', this.selected);
-  }
-
-  syncCam (camera) {
-    camera.position.x = this.mesh.position.x;
-    camera.position.z = this.mesh.position.z;
-    camera.position.y = this.mesh.position.y + 1;
-    this.doSyncCam = false;
   }
 
   toggleUI (isOn) {
@@ -117,20 +93,10 @@ class Editor {
 
     }
 
-    const raycaster = this.raycaster;
-
-    raycaster.setFromCamera(mouse.pos, camera);
-    const intersections = raycaster.intersectObjects(room.scene.children, true);
-    if (intersections.length) {
-      const hovering = intersections[0].object.userData.inst ? intersections[0].object : intersections[0].object.parent;
-      if (!hovering.userData.inst) {
-        //'didnt really fix this')
-        this.hovering = null;
-      } else {
-        this.hovering = hovering.userData.inst;
-      }
-    } else {
-      this.hovering = null;
+    // Check under mouse
+    this.hovering = this.raycast(room.scene.children, mouse.pos, camera)[0] || null;
+    if (mouse.right.clicked) {
+      this.setSelected(this.hovering);
     }
 
     if (mouse.left.dragging) {
@@ -144,10 +110,6 @@ class Editor {
       if (dy) {
         camera.rotation.x -= dy * dragSpeed;
       }
-    }
-
-    if (mouse.right.clicked) {
-      this.setSelected(this.hovering);
     }
 
     if (this.selected) {
