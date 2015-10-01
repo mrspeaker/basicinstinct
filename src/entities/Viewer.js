@@ -29,7 +29,6 @@ class Viewer {
       this.selected.isSelected = true;
       this.selected.fireItem('itemSelected');
     }
-    //Env.events.emit('selectionChange', this.selected);
     Env.events.emit('itemSelected', this.selected);
   }
 

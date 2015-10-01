@@ -104,27 +104,26 @@ class Player extends Viewer {
     const DOWN = new THREE.Vector3(0, -1, 0);
 
     // Check up
-    var hitAbove = false;
-    const floor = this.raycast(children, feetPos, UP)[0] || null;
+    const above = (this.raycast(children, feetPos, UP)
+        .filter(i => !i.isRoof)
+      )[0] || null;
 
-    if (floor && !floor.isRoof) {
-      const geom = floor.mesh.geometry;
-      // FIXME: doesn't hit geom of complex obj...
+    if (above) {
+      const aboveMesh = above.mesh;
+      const geom = aboveMesh.geometry; // FIXME: doesn't hit geom of complex obj...
       geom.computeBoundingBox();
       const h = geom.boundingBox.max.y - geom.boundingBox.min.y;
-      mesh.position.y = floor.mesh.position.y + h + 0.25;
-      hitAbove = true;
+      this.position.y = aboveMesh.position.y + h + 0.25;
     }
-
-    if (!hitAbove) {
+    else {
       // Check down.
-      const floor = this.raycast(children, feetPos, DOWN)[0] || null;
-      if (floor) {
-        const geom = floor.mesh.geometry;
+      const below = this.raycast(children, feetPos, DOWN)[0] || null;
+      if (below) {
+        const geom = below.mesh.geometry;
         geom.computeBoundingBox();
         const h = geom.boundingBox.max.y - geom.boundingBox.min.y;
-        const curY = mesh.position.y;
-        const floorY = floor.mesh.position.y + h + 0.25;
+        const curY = this.position.y;
+        const floorY = below.mesh.position.y + h + 0.25;
         this.fall(curY > floorY);
       }
     }
