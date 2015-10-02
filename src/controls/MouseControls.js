@@ -11,6 +11,8 @@ class MouseControls {
       dy: 0
     };
 
+    this._downPos = {x: -1, y: -1};
+
     this.left = {
       _downAt: Date.now(),
       clicked: false, // press for < 300ms
@@ -32,18 +34,19 @@ class MouseControls {
 
   update () {
 
-    if (this.left.clicked) {
-      this.left.clicked = false;
-      this.left.released = true;
+    const {pos, left, right} = this;
+    if (left.clicked) {
+      left.clicked = false;
+      left.released = true;
     }
 
-    if (this.right.clicked) {
-      this.right.clicked = false;
-      this.right.released = true;
+    if (right.clicked) {
+      right.clicked = false;
+      right.released = true;
     }
 
-    this.pos.dx = 0;
-    this.pos.dy = 0;
+    pos.dx = 0;
+    pos.dy = 0;
 
   }
 
@@ -59,6 +62,9 @@ class MouseControls {
     this.pos.x = (e.clientX / Env.width) * 2 - 1;
     this.pos.y = -(e.clientY / Env.height) * 2 + 1;
 
+    this._downPos.x = this.pos.x;
+    this._downPos.y = this.pos.y;
+
     const rmb = e.which === 3;
     const obj = rmb ? this.right : this.left;
     obj._downAt = Date.now();
@@ -71,8 +77,12 @@ class MouseControls {
     obj.dragging = false;
 
     if (Date.now() - obj._downAt < 300) {
-      // TODO: if moved far from mousedown then not a click.
-      obj.clicked = true;
+      const dx = this.pos.x - this._downPos.x;
+      const dy = this.pos.y - this._downPos.y;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      if (dist < 0.008) {
+        obj.clicked = true;
+      }
     }
 
   }

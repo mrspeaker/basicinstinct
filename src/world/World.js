@@ -11,7 +11,7 @@ class World {
   constructor () {
     this.rooms = {};
     this.player = new Player();
-    this.player.position.set(1, 0, 4);
+    this.player.position.set(1, 1, 4);
     this.editor = new Editor();
     this.editor.position.set(1, -0.5, 5);
     this.hasFocus = true;
@@ -26,6 +26,7 @@ class World {
     Env.events.on('WorldCreated', () => Env.events.emit('task-init', 'hw'));
     Env.events.on('computer', args => this.processComputerCommand(args));
     Env.events.on('task-init', name => tasks[name].start());
+    Env.events.on('loadRoom', name => this.loadRoom(name));
     Env.events.on('saveRoom', () => this.saveRoom());
     Env.events.on('popup', msg => {
       const pop = document.querySelector("#popup");

@@ -54,33 +54,24 @@ class Player extends Viewer {
   }
 
   checkAboveAndBelowCollisions (children) {
-    const feetPos = Object.assign({}, this.position);
-    feetPos.y -= 0.5;
-    const UP = new THREE.Vector3(0, 1, 0);
+    const {position:pos} = this;
+    const playerHeight = 1.0;
+    const halfHeight = playerHeight / 2;
+
+    const headPos = {x: pos.x, y: pos.y + halfHeight, z: pos.z};
+    const feetPos = headPos.y - playerHeight;
     const DOWN = new THREE.Vector3(0, -1, 0);
 
-    // Check up
-    const hitsAbove = this.raycast(children, feetPos, UP).filter(i => !i.isRoof);
-    const above = hitsAbove[0] || null;
-    if (above) {
-      const aboveMesh = above.mesh;
-      const geom = aboveMesh.geometry; // FIXME: doesn't hit geom of complex obj...
-      geom.computeBoundingBox();
-      const h = geom.boundingBox.max.y - geom.boundingBox.min.y;
-      this.position.y = aboveMesh.position.y + h + 0.25;
-      return;
-    }
-
     // Check down.
-    const below = this.raycast(children, feetPos, DOWN)[0] || null;
+    const below = this.raycast(children, headPos, DOWN)[0] || null;
     if (below) {
-      // FIXME: Not detecting correctly on steps.
       const geom = below.mesh.geometry;
       geom.computeBoundingBox();
-      const h = geom.boundingBox.max.y - geom.boundingBox.min.y;
-      const curY = this.position.y;
-      const floorY = below.mesh.position.y + h + 0.25;
-      this.fall(curY > floorY);
+      const geomHalfHeight = (geom.boundingBox.max.y - geom.boundingBox.min.y) / 2;
+      const floorY = below.mesh.position.y + geomHalfHeight;
+      this.fall(feetPos > floorY);
+      const newFeetPos = pos.y - halfHeight;
+      this.position.y = Math.max(newFeetPos, floorY + halfHeight);
     }
 
 

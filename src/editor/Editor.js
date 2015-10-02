@@ -23,6 +23,10 @@ class Editor extends Component {
     });
   }
 
+  onChange (event) {
+    Env.events.emit('loadRoom', event.target.value);
+  }
+
   render () {
 
     const {selected} = this.state;
@@ -35,7 +39,12 @@ class Editor extends Component {
     const name = selected ? selected.name : "-";
 
     return <div>
-      <span>{room.name} {room.version}</span><br/>
+      <select value={room.name} onChange={this.onChange}>
+        <option value="purgatory">purgatory</option>
+        <option value="bedroom">bedroom</option>
+        <option value="hall">hall</option>
+      </select>
+      <span>{room.version}</span><br/>
       <Controls />
       <hr />
       <span>Type: {type}. ID: {id}.</span><br/>
