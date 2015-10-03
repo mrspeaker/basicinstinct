@@ -101,15 +101,17 @@ class Editor extends Viewer {
     }
 
     // Check under mouse
-    this.hovering = this.raycast(room.scene.children, mouse.pos, camera)[0] || null;
+    const hits = this.raycast(room.scene.children, mouse.pos, camera);
+    this.hovering = hits[0] ? hits[0].object : null;
     if (mouse.right.clicked) {
       this.setSelected(this.hovering);
     }
 
     dragView(mouse, rotation, camera.rotation);
-
     this.handleKeys(keys);
+
     this.syncCamera(camera);
+
   }
 }
 

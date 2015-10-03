@@ -13,7 +13,7 @@ class World {
     this.player = new Player();
     this.player.position.set(1, 1, 4);
     this.editor = new Editor();
-    this.editor.position.set(1, -0.5, 5);
+    this.editor.position.set(1, 0.8, 4);
     this.hasFocus = true;
 
     this.createSerialBus();

@@ -3,7 +3,7 @@ function Fallable(c) {
   var acc = 0;
 
   const fall = (dt) => {
-    acc += 0.005;
+    acc += 0.0005;
     vel += acc;
   };
 

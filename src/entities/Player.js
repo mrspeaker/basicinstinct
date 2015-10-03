@@ -2,6 +2,7 @@ const {THREE} = require('three');
 const Viewer = require('./Viewer');
 const translateWithKeys = require('../behaviours/translateWithKeys');
 const dragView = require('../behaviours/dragView');
+const vertexCollision = require('../behaviours/vertexCollision');
 const Fallable = require('../behaviours/Fallable');
 
 class Player extends Viewer {
@@ -53,7 +54,7 @@ class Player extends Viewer {
     translateWithKeys(mesh, keys, 0.05);
   }
 
-  checkAboveAndBelowCollisions (children) {
+  checkGroundCollisions (children) {
     const {position:pos} = this;
     const playerHeight = 1.0;
     const halfHeight = playerHeight / 2;
@@ -65,54 +66,52 @@ class Player extends Viewer {
     // Check down.
     const below = this.raycast(children, headPos, DOWN)[0] || null;
     if (below) {
-      const geom = below.mesh.geometry;
-      geom.computeBoundingBox();
-      const geomHalfHeight = (geom.boundingBox.max.y - geom.boundingBox.min.y) / 2;
-      const floorY = below.mesh.position.y + geomHalfHeight;
-      this.fall(feetPos > floorY);
-      const newFeetPos = pos.y - halfHeight;
-      this.position.y = Math.max(newFeetPos, floorY + halfHeight);
+      const {object} = below;
+      if (object) {
+        const belowMesh = object.mesh;
+        const geom = belowMesh.geometry;
+        geom.computeBoundingBox();
+        const geomHalfHeight = (geom.boundingBox.max.y - geom.boundingBox.min.y) / 2;
+        const floorY = belowMesh.position.y + geomHalfHeight;
+        //console.log(below.distance);
+        this.fall(feetPos > floorY);
+        const newFeetPos = pos.y - halfHeight;
+        if (newFeetPos < floorY + halfHeight) {
+          pos.y = floorY + halfHeight;
+        }
+      }
     }
-
-
-    //      _____
-    //     |     |
-    //     |  .  |
-    //     | / \ |
-    //     |/___\|
-    //     /     \
-    //
-    // for (var vertexIndex = 0; vertexIndex < Player.geometry.vertices.length; vertexIndex++) {
-    //     var localVertex = Player.geometry.vertices[vertexIndex].clone();
-    //     var globalVertex = Player.matrix.multiplyVector3(localVertex);
-    //
-    //     //var vector = object.geometry.vertices[i].clone();
-    //     //vector.applyMatrix4(object.matrixWorld);
-    //
-    //     var directionVector = globalVertex.subSelf( Player.position );
-    //
-    //     var ray = new THREE.Ray( Player.position, directionVector.clone().normalize() );
-    //     var collisionResults = ray.intersectObjects(collidableMeshList);
-    //     if ( collisionResults.length > 0 && collisionResults[0].distance < directionVector.length() ) {
-    //         // a collision occurred... do something...
-    //     }
-    // }
-
   }
 
   update (renderer, camera, room, {mouse, keys}) {
-    const {rotation} = this;
+    const {rotation, mesh} = this;
     const children = room.scene.children;
+    const origPos = mesh.position.clone();
 
     dragView(mouse, rotation, camera.rotation);
     this.handleMoveAndComputerKeys(keys, room);
      // Get hovered / selected item
-    this.hovering = this.raycast(children, mouse.pos, camera)[0];
+    const hits = this.raycast(children, mouse.pos, camera);
+    this.hovering = hits[0] ? hits[0].object : null;
     if (mouse.left.clicked) {
       this.setSelected(this.hovering);
     }
 
-    this.checkAboveAndBelowCollisions(children); // Some basic collisions...
+    this.checkGroundCollisions(children); // Some basic collisions...
+
+    // var head = h[0] || h[1] || h[4] || h[5] ; // [ true, true, false, false, true, true, false, false ]
+    // var foot = h[2] || h[3] || h[6] || h[7] ; // [ false, false, true, true, false, false, true, true ]
+    // var rr = h[0] || h[1] || h[2] || h[3] ; // [ true, true, true, true, false, false, false, false ]
+    // var ll = h[4] || h[5] || h[6] || h[7] ; // [ false, false, false, false, true, true, true, true ]
+    // var back = h[0] || h[2] || h[5] || h[7] ; // [ true, false, true, false, false, true, false, true ]
+    // var fwd = h[1] || h[3] || h[4] || h[6] ; // [ false, true, false, true, true, false, true, false ]
+
+    mesh.updateMatrixWorld();
+    const h = vertexCollision(mesh, children);
+    if (h.some(v => !!v)) {
+      mesh.position.copy(origPos);
+    }
+
     this.syncCamera(camera);
   }
 }

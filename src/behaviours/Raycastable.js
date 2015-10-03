@@ -6,8 +6,12 @@ function Raycastable(c) {
   const getHits = children => {
     return raycaster
       .intersectObjects(children, true)
-      .map(({object}) => {
-        return object.userData.inst || object.parent.userData.inst;
+      .map(({point, distance, object}) => {
+        return {
+          object: object.userData.inst || object.parent.userData.inst,
+          point,
+          distance
+        };
       })
       .filter(i => !!i);
   };

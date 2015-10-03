@@ -268,7 +268,7 @@ class Room {
 
       this.viewer.update(renderer, camera, this, controls);
 
-      const newCollisions = new Set();
+      /*const newCollisions = new Set();
       const wasColliding = new Set();
 
       this.items.forEach(i => {
@@ -304,6 +304,7 @@ class Room {
         });
       });
 
+    */
     }
 
     this.sensors.forEach(s => s.update());
