@@ -73,7 +73,6 @@ class Player extends Viewer {
         geom.computeBoundingBox();
         const geomHalfHeight = (geom.boundingBox.max.y - geom.boundingBox.min.y) / 2;
         const floorY = belowMesh.position.y + geomHalfHeight;
-        //console.log(below.distance);
         this.fall(feetPos > floorY);
         const newFeetPos = pos.y - halfHeight;
         if (newFeetPos < floorY + halfHeight) {
@@ -111,6 +110,13 @@ class Player extends Viewer {
     if (point) {
       mesh.position.addScaledVector(point.face.normal, -point.rest);
     }
+
+    if (keys.keys[32] && keys.keys[32].pressed) {
+      keys.keys[32].pressed = false; // wha?! should be done automagically.
+      this.setV(-0.054);
+      this.mesh.translateY(0.5);
+    }
+
 
     this.syncCamera(camera);
   }

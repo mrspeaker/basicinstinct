@@ -17,6 +17,12 @@ function Fallable(c) {
     }
   };
 
+
+  c.prototype.setV = function (v) {
+    vel = v;
+    acc = 0;
+  };
+
   return c;
 }
 
