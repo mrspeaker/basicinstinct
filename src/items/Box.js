@@ -7,10 +7,24 @@ class Box extends Item {
 
   constructor ({
       color=0x956E46,
-      roof=false} = {}) {
+      roof=false,
+      tex} = {}) {
     super();
     this.type = "Box";
-    const material = new THREE.MeshPhongMaterial({ color });
+    const params = {
+      color,
+    };
+    if (tex) {
+      const map = THREE.ImageUtils.loadTexture("res/images/" + tex + ".jpg");
+      map.minFilter = map.magFilter = THREE.NearestFilter;
+      map.wrapS = THREE.RepeatWrapping;
+      map.wrapT = THREE.RepeatWrapping;
+      map.repeat.set(12, 12);
+      params.map = map;
+
+    }
+    const material = new THREE.MeshPhongMaterial(params);
+
     material.shininess = 5;
     this.mesh = new THREE.Mesh(geometry, material);
     this.isRoof = roof;

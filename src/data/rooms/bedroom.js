@@ -5,7 +5,7 @@ module.exports = {
     "type": "Computer",
     "name": "",
     "args": {
-
+      color: "blue"
     },
     "events": [
       "keydown",
@@ -24,7 +24,7 @@ module.exports = {
     "type": "Box",
     "name": "",
     "args": {
-      "color": 10066329
+      "color": 0xFFFFFF
     },
     "pos": [-0.6698, -1,
       1.2228
@@ -44,7 +44,7 @@ module.exports = {
     "type": "Box",
     "name": "",
     "args": {
-      "color": 10066329
+      "color": 0xFFFFFF
     },
     "pos": [
       1.9848, -1, -1.2604
@@ -64,7 +64,7 @@ module.exports = {
     "type": "Box",
     "name": "",
     "args": {
-      "color": 5587985
+      "color": 0x5D4800
     },
     "pos": [
       0.7977, -0.5001, -1.2615
@@ -84,7 +84,7 @@ module.exports = {
     "type": "Box",
     "name": "",
     "args": {
-      "color": 10066329
+      "color": 0xFFFFFF
     },
     "pos": [-0.4813, -1.05, -0.9734],
     "scale": [
@@ -102,7 +102,7 @@ module.exports = {
     "type": "Box",
     "name": "",
     "args": {
-      "color": 5587985
+      "color": 0x5D4800,
     },
     "pos": [-0.6677, -0.5,
       0.0374
@@ -122,7 +122,8 @@ module.exports = {
     "type": "Box",
     "name": "",
     "args": {
-      "color": 8418678
+      "color": 0xBC776B,
+      "tex": "carpet1"
     },
     "pos": [
       0.4473, -1.5326, -0.4251
@@ -142,7 +143,7 @@ module.exports = {
     "type": "Box",
     "name": "",
     "args": {
-      "color": 10066329
+      "color": 0xFFFFFF
     },
     "pos": [-0.8502, -1.0401, -0.5104],
     "scale": [
@@ -160,7 +161,7 @@ module.exports = {
     "type": "Box",
     "name": "",
     "args": {
-      "color": 2245666
+      "color": 0x66AA3A
     },
     "ons": {
       "itemSelected": [{
@@ -199,7 +200,7 @@ Then hit 'escape' to complete.
     "type": "Box",
     "name": "",
     "args": {
-      "color": 2245666
+      "color": 0x66AA3A
     },
     "ons": {
       "itemSelected": [{
@@ -230,7 +231,7 @@ It's a secret.
     "type": "Box",
     "name": "",
     "args": {
-      "color": 2236962
+      "color": 0x555555
     },
     "pos": [-0.6581, -0.38,
       0.4921
@@ -250,7 +251,7 @@ It's a secret.
     "type": "Box",
     "name": "",
     "args": {
-      "color": 2236962
+      "color": 0x555555
     },
     "pos": [-0.6987, -0.43, -0.2463],
     "scale": [
@@ -266,9 +267,10 @@ It's a secret.
   }, {
     "id": 13,
     "type": "Box",
-    "name": "",
+    "name": "wall1",
     "args": {
-      "color": 3355460
+      "color": 0x77BFC8,
+      "tex": "circ"
     },
     "pos": [
       0.6502,
@@ -287,9 +289,9 @@ It's a secret.
   }, {
     "id": 14,
     "type": "Box",
-    "name": "",
+    "name": "wall2",
     "args": {
-      "color": 3355460
+      "color": 0x555555
     },
     "pos": [-0.5719, -0.3951,
       1.0558
@@ -309,7 +311,7 @@ It's a secret.
     "type": "Switch",
     "name": "",
     "args": {
-      "color": 10066329
+      "color": 0xFFFFFF
     },
     "pos": [
       2.5335, -0.2448, -2.1473
@@ -372,7 +374,8 @@ It's a secret.
     "type": "Box",
     "name": "",
     "args": {
-      "color": 8418677
+      "color": 0xBC776B,
+      "tex": "carpet1"
     },
     "pos": [
       0.4748, -1.5301,
@@ -393,7 +396,8 @@ It's a secret.
     "type": "Box",
     "name": "",
     "args": {
-      "color": 8418677
+      "color": 0xBC776B,
+      "tex": "carpet1"
     },
     "pos": [
       4.694, -1.5326, -0.4961
@@ -413,7 +417,8 @@ It's a secret.
     "type": "Box",
     "name": "",
     "args": {
-      "color": 8418677
+      "color": 0xBC776B,
+      "tex": "carpet1"
     },
     "pos": [
       4.6845, -1.5301,
@@ -432,9 +437,10 @@ It's a secret.
   }, {
     "id": 13,
     "type": "Box",
-    "name": "",
+    "name": "wall3",
     "args": {
-      "color": 3355460
+      "color": 0x77BFC8,
+      "tex": "circ"
     },
     "pos": [-1.615,
       0.2178,
@@ -453,9 +459,10 @@ It's a secret.
   }, {
     "id": 13,
     "type": "Box",
-    "name": "",
+    "name": "wall4",
     "args": {
-      "color": 3355460
+      "tex": "circ",
+      "color": 0x77BFC8
     },
     "pos": [
       5.8099,
@@ -474,9 +481,10 @@ It's a secret.
   }, {
     "id": 13,
     "type": "Box",
-    "name": "",
+    "name": "wall5",
     "args": {
-      "color": 3355460
+      "color": 0x77BFC8,
+      "tex": "circ"
     },
     "pos": [
       3.8527,
@@ -497,7 +505,8 @@ It's a secret.
     "type": "Box",
     "name": "",
     "args": {
-      "color": 2236962
+      "color": 0x555555,
+      "tex": "wall"
     },
     "pos": [
       0.6419, -1.2051,
@@ -518,7 +527,8 @@ It's a secret.
     "type": "Box",
     "name": "",
     "args": {
-      "color": 10066329
+      "color": 0xFFFFFF,
+      "tex": "wall"
     },
     "pos": [-1.1649, -0.8325,
       3.6777
@@ -538,7 +548,8 @@ It's a secret.
     "type": "Box",
     "name": "",
     "args": {
-      "color": 10066329
+      "color": 0xFFFFFF,
+      "tex": "wall"
     },
     "pos": [-1.1424, -0.83,
       4.8876
@@ -558,7 +569,8 @@ It's a secret.
     "type": "Box",
     "name": "",
     "args": {
-      "color": 2241314
+      "color": 0x8A4034,
+      "tex":"wall"
     },
     "pos": [-1.4609,
       0.5573,
@@ -579,7 +591,8 @@ It's a secret.
     "type": "Box",
     "name": "",
     "args": {
-      "color": 6710886
+      "color": 6710886,
+      "tex": "carpet1"
     },
     "pos": [
       3.5016, -1.5476, -4.5087
@@ -597,9 +610,10 @@ It's a secret.
   }, {
     "id": 13,
     "type": "Box",
-    "name": "",
+    "name": "wall6",
     "args": {
-      "color": 3355460
+      "color": 0x77BFC8,
+      "tex": "circ"
     },
     "pos": [
       6.6349,
@@ -619,9 +633,10 @@ It's a secret.
   }, {
     "id": 13,
     "type": "Box",
-    "name": "",
+    "name": "wall7",
     "args": {
-      "color": 3355460
+      "color": 0x77BFC8,
+      "tex": "circ"
     },
     "pos": [
       2.5426,
@@ -643,7 +658,8 @@ It's a secret.
     "type": "Box",
     "name": "",
     "args": {
-      "color": 4931381
+      "color": 0x8A4034,
+      "tex": "wallpaper"
     },
     "pos": [
       2.6345, -1.4901,
@@ -664,7 +680,7 @@ It's a secret.
     "type": "Box",
     "name": "",
     "args": {
-      "color": 2236979
+      "color": 2236979,
     },
     "pos": [
       4.4525,
@@ -685,8 +701,9 @@ It's a secret.
     "type": "Box",
     "name": "",
     "args": {
-      "color": 10066329,
-      "roof": true
+      "color": 9060404,
+      "roof": true,
+      "tex": "wall"
     },
     "pos": [
       2.4823,

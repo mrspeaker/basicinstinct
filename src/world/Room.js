@@ -108,6 +108,7 @@ class Room {
     }
 
     const args = defn.args || {};
+    console.log(defn.args);
     const itemInst = new item(args);
     itemInst.mesh.userData.inst = itemInst;
     // TODO: ids are messed up. try again.
@@ -249,7 +250,7 @@ class Room {
 
     scene.fog = new THREE.Fog(0x050500, 8, 15);
 
-    const ambLight = new THREE.AmbientLight(0x202020);
+    const ambLight = new THREE.AmbientLight(0x404040);
     scene.add(ambLight);
 
     //var hemLight = new THREE.HemisphereLight(0xffe5bb, 0xFFBF00, 1);
