@@ -41,8 +41,8 @@ class Editor extends Viewer {
     dom.style.display = isOn ? 'block' : 'none';
   }
 
-  handleKeys (keys) {
-    const {selected, room} = this;
+  handleKeys (keys, room) {
+    const {selected} = this;
 
     if (selected) {
       keys.pressed.forEach(k => {
@@ -108,7 +108,7 @@ class Editor extends Viewer {
     }
 
     dragView(mouse, rotation, camera.rotation);
-    this.handleKeys(keys);
+    this.handleKeys(keys, room);
 
     this.syncCamera(camera);
 
