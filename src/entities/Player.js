@@ -86,7 +86,6 @@ class Player extends Viewer {
   update (renderer, camera, room, {mouse, keys}) {
     const {rotation, mesh} = this;
     const children = room.scene.children;
-    const origPos = mesh.position.clone();
 
     dragView(mouse, rotation, camera.rotation);
     this.handleMoveAndComputerKeys(keys, room);
@@ -108,8 +107,9 @@ class Player extends Viewer {
 
     mesh.updateMatrixWorld();
     const h = vertexCollision(mesh, children);
-    if (h.some(v => !!v)) {
-      mesh.position.copy(origPos);
+    const point = h.filter(v => !!v)[0] || null;
+    if (point) {
+      mesh.position.addScaledVector(point.face.normal, -point.rest);
     }
 
     this.syncCamera(camera);

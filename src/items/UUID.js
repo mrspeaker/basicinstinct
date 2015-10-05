@@ -1,2 +1,5 @@
 var id = 1;
-module.exports = () => id++;
+module.exports = {
+  get id () { return ++id; },
+  set id (i) { id = i; }
+};

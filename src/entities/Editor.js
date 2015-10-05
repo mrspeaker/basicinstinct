@@ -52,7 +52,9 @@ class Editor extends Viewer {
           break;
         case 90:
           // Duplicate selected object
-          this.setSelected(room.addItem(room.getDefn(selected)));
+          const origDefn = room.getDefn(selected);
+          delete origDefn.id;
+          this.setSelected(room.addItem(origDefn));
           selected.mesh.position.y += 0.2;
           break;
         case 88:

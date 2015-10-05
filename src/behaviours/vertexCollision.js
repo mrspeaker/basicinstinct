@@ -14,7 +14,7 @@ function getHits (mesh, children) {
     if (hit) {
       const dist = hit.distance - direction.length();
       if (dist < 0) {
-        return dist;
+        return {...hit, rest: dist};
       }
     }
     return false;
