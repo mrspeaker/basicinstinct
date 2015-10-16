@@ -1,9 +1,18 @@
+/* @flow */
 const WorldEvents = new (require('events').EventEmitter)();
 
-module.exports = {
+const Env:{
+  dom: Object,
+  height: number,
+  width: number,
+  events: Object,
+  serialBus: Object
+} = {
   dom: document.body, // Overwrite me!
   height: 0,
   width: 0,
-  events: WorldEvents,
-  serialBus: null
+  events: Object,
+  serialBus: {}
 };
+
+module.exports = Env;

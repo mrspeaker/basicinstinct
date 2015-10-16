@@ -1,3 +1,4 @@
+/* @flow */
 const {THREE} = require('three');
 const items = require('../items/');
 const UUID = require('../items/UUID');
@@ -7,9 +8,27 @@ const Cursor = require('./Cursor');
 const {Always, Random, Click, Collision} = require('../logic/sensors/');
 const {And, Or, Count} = require('../logic/combiners/');
 
+const Viewer = require('../entities/Viewer');
+const Controls = require('../controls/');
+const Item = require('../items/Item');
+
 class Room {
 
-  constructor (DATA, viewer, onLeave) {
+  events: Object;
+  scene: THREE.Scene;
+  name: string;
+  items: Array<Item>;
+  cursor: Cursor;
+  entities: Array<any>;
+  isColliding: Object; // should be Set
+  sensors: Array<any>;
+  combiners: Array<any>;
+  viewer: Viewer;
+
+  onKeyUp: Function;
+  onKeyDown: Function;
+
+  constructor (DATA:Object, viewer:Viewer, onLeave:any) {
     // This is to pass events down to interested items.
     // Might be better to move this out to a more global system
     // like in Env.
@@ -90,17 +109,17 @@ class Room {
     }
   }
 
-  addEntity (entity) {
+  addEntity (entity: Viewer) {
     this.entities.push(entity);
     this.scene.add(entity.mesh);
   }
 
-  setViewer (viewer) {
+  setViewer (viewer: Viewer) {
     this.viewer = viewer;
     this.viewer.setSelected(null);
   }
 
-  addItem (defn) {
+  addItem (defn: Object): Item {
     const item = items[defn.type];
     if (!item) {
       console.log('unknown item:', defn.type);
@@ -140,7 +159,7 @@ class Room {
     return itemInst;
   }
 
-  removeItem (item) {
+  removeItem (item:Object) {
     if (typeof item === 'number') {
       // Handle removing by id.
     }
@@ -149,7 +168,7 @@ class Room {
     this.items = this.items.filter(i => i !== item);
   }
 
-  getItem (id) {
+  getItem (id:Number): Item {
     return this.items.find(i => i.id === id);
   }
 
@@ -238,10 +257,10 @@ class Room {
 
   }
 
-  onKeyDown (e) {
+  onKeyDown (e:Object) {
     this.events.keydown.forEach(i => i.on('keydown', e));
   }
-  onKeyUp (e) {
+  onKeyUp (e:Object) {
     this.events.keyup.forEach(i => i.on('keyup', e));
   }
 
@@ -264,7 +283,7 @@ class Room {
     */
   }
 
-  update (renderer, camera, controls) {
+  update (renderer:THREE.WebGLRenderer, camera:THREE.PerspectiveCamera, controls:Controls | void) {
 
     if (controls) {
 
@@ -317,7 +336,7 @@ class Room {
   onEnter () {}
   onLeave () {}
 
-  getDefn (inst) {
+  getDefn (inst: Object): Object {
     const {id, defn} = inst;
     const {type, args, events} = defn;
     const roundy = a => {
@@ -328,13 +347,18 @@ class Room {
     const rscale = roundy(scale);
     const rrot = roundy(rot);
 
+    const name = inst.name || "unknown";
+
     const out = {
       id,
       type,
       name,
       args,
       events,
-      pos: roundy(pos)
+      pos: roundy(pos),
+      ons: null,
+      scale: null,
+      rot: null
     };
 
     if (Object.keys(inst.ons).length) {

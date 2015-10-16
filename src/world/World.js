@@ -166,7 +166,7 @@ class World {
   update (renderer:THREE.WebGLRenderer, camera:THREE.PerspectiveCamera, controls:Controls) {
     const {room, hasFocus} = this;
 
-    room.update(renderer, camera, hasFocus ? controls : null);
+    room.update(renderer, camera, hasFocus ? controls : undefined);
     if (hasFocus) {
       controls.keys.pressed.forEach(p => {
         if (p.which === 192 /*backtick*/) {
