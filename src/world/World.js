@@ -1,3 +1,5 @@
+/* @flow */
+
 const DATA = require('../data/rooms/');
 const Room = require('./Room');
 const Player = require('../entities/Player');
@@ -6,7 +8,16 @@ const Env = require('../Env');
 const store = require('../data/store');
 const tasks = require('../data/tasks');
 
+const {THREE} = require('three');
+const Controls = require('../controls/');
+
 class World {
+
+  rooms: Object;
+  room: Room;
+  player: Player;
+  editor: Editor;
+  hasFocus: boolean;
 
   constructor () {
     this.rooms = {};
@@ -53,7 +64,7 @@ class World {
     };
   }
 
-  processComputerCommand (args) {
+  processComputerCommand (args:Object) {
     switch (args.type) {
     case 'set':
       const {id, attr, value} = args;
@@ -82,7 +93,7 @@ class World {
     }
   }
 
-  loadRoom (roomName, transform) {
+  loadRoom (roomName: string, transform: Object | void) {
     const {player, editor, rooms} = this;
 
     if (rooms[roomName]) {
@@ -105,7 +116,7 @@ class World {
       const {pos, rot} = transform;
       position.set(pos[0], pos[1], pos[2]);
       // LOL... global! fix this shit!
-      game.camera.rotation.set(rot[0], rot[1], rot[2]);
+      window.game.camera.rotation.set(rot[0], rot[1], rot[2]);
     }
 
     player.setSelected(null);
@@ -119,7 +130,9 @@ class World {
   }
 
   saveRoom () {
-    const {room, room:{items}} = this;
+    const {room} = this;
+    const {items} = room;
+
     const out = {
       name: room.name,
       version: room.version || 1,
@@ -150,7 +163,7 @@ class World {
     room.setViewer(newGuy);
   }
 
-  update (renderer, camera, controls) {
+  update (renderer:THREE.WebGLRenderer, camera:THREE.PerspectiveCamera, controls:Controls) {
     const {room, hasFocus} = this;
 
     room.update(renderer, camera, hasFocus ? controls : null);

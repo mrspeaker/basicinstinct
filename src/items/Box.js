@@ -25,7 +25,7 @@ class Box extends Item {
     }
     const material = new THREE.MeshPhongMaterial(params);
 
-    material.shininess = 5;
+    material.shininess = 2;
     this.mesh = new THREE.Mesh(geometry, material);
     this.isRoof = roof;
   }

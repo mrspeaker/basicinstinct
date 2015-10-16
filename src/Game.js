@@ -1,3 +1,5 @@
+/* @flow */
+
 const {THREE} = require('three');
 const Env = require('./Env');
 const World = require('./world/World');
@@ -5,9 +7,16 @@ const Controls = require('./controls/');
 
 class Game {
 
+  world: World;
+  controls: Controls;
+  renderer: THREE.WebGLRenderer;
+  camera: THREE.PerspectiveCamera;
+
   constructor () {
+
+
     this.world = new World();
-    this.controls = Controls();
+    this.controls = new Controls();
 
     // Add renderer and camera
     this.renderer = new THREE.WebGLRenderer({antialias:true});

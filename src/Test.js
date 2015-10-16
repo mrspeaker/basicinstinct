@@ -49,7 +49,7 @@ class Box {
 class Game {
 
   constructor () {
-    this.controls = Controls();
+    this.controls = new Controls();
 
     // Add renderer and camera
     this.w = 640;
