@@ -1,4 +1,9 @@
-function dragView (mouse, entityRot, cameraRot) {
+/* @flow */
+const {THREE} = require('three');
+const {Vector3} = THREE;
+const Mouse = require('../controls/MouseControls');
+
+function dragView (mouse:Mouse, entityRot:Vector3, cameraRot:Vector3) {
   if (mouse.left.dragging) {
     const {dx, dy} = mouse.pos;
     const dragSpeed = -1.3;

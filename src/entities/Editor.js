@@ -1,3 +1,4 @@
+/* @flow*/
 const {THREE} = require('three');
 const Viewer = require('./Viewer');
 const Env = require('../Env');
@@ -5,8 +6,20 @@ const Items = require('../items/');
 const translateWithKeys = require('../behaviours/translateWithKeys');
 const moveWithKeys = require('../behaviours/moveWithKeys');
 const dragView = require('../behaviours/dragView');
+const raycaster = require('../behaviours/raycaster');
+
+const Keys = require('../controls/KeyControls');
+const Controls = require('../controls/');
+const Room = require('../world/Room');
+
 
 class Editor extends Viewer {
+
+  mode: string;
+  invisible: boolean;
+  ui: HTMLElement;
+  clickAdd: Function;
+
   constructor () {
     super();
     this.mode = "position";
@@ -30,18 +43,20 @@ class Editor extends Viewer {
     }).map(b => this.ui.appendChild(b));
   }
 
-  clickAdd (e) {
-    const type = e.target.getAttribute('data-name');
-    Env.events.emit('addNewItem', type);
+  clickAdd (e:Event) {
+    if (e.target instanceof HTMLInputElement) {
+      const type = e.target.getAttribute('data-name');
+      Env.events.emit('addNewItem', type);
+    }
   }
 
-  toggleUI (isOn) {
+  toggleUI (isOn:boolean) {
     const dom = document.querySelector('#edui');
     if (!dom) { return; }
     dom.style.display = isOn ? 'block' : 'none';
   }
 
-  handleKeys (keys, room) {
+  handleKeys (keys:Keys, room:Room) {
     const {selected} = this;
 
     if (selected) {
@@ -52,15 +67,19 @@ class Editor extends Viewer {
           break;
         case 90:
           // Duplicate selected object
-          const origDefn = room.getDefn(selected);
-          delete origDefn.id;
-          this.setSelected(room.addItem(origDefn));
-          selected.mesh.position.y += 0.2;
+          if (selected) {
+            const origDefn = room.getDefn(selected);
+            delete origDefn.id;
+            this.setSelected(room.addItem(origDefn));
+            selected.mesh.position.y += 0.2;
+          }
           break;
         case 88:
-          room.removeItem(selected);
-          this.setSelected(null);
           // Remove selected.
+          if (selected) {
+            room.removeItem(selected);
+            this.setSelected(null);
+          }
           break;
         case 49: this.mode = "position"; break;
         case 50: this.mode = "scale"; break;
@@ -70,32 +89,34 @@ class Editor extends Viewer {
     }
   }
 
-  update (camera, room, {mouse, keys}) {
+  update (camera: THREE.PerspectiveCamera, room:Room, {mouse, keys}:Controls) {
     const {left, right, forward, backward, up, down} = keys.move;
     const {mode, selected, mesh, rotation} = this;
     const isViewer = !this.selected;
 
     if (left || right || forward || backward || up || down) {
-      const obj = isViewer ? mesh : selected.mesh;
-      var amount = mode === "rotation" ? Math.PI / 20 : 0.05;
-      // Move camera fast by default, slow with shift
-      if (isViewer) {
-        amount *= keys.move.shift ? 0.08: 1;
-      } else {
-        amount *= keys.move.shift ? 1: 0.05;
-      }
+      const obj = isViewer ? mesh : selected ? selected.mesh : null;
+      if (obj) {
+        var amount = mode === "rotation" ? Math.PI / 20 : 0.05;
+        // Move camera fast by default, slow with shift
+        if (isViewer) {
+          amount *= keys.move.shift ? 0.08: 1;
+        } else {
+          amount *= keys.move.shift ? 1: 0.05;
+        }
 
-      if (mode === "position") {
-        translateWithKeys(obj, keys, amount);
-      } else {
-        moveWithKeys(obj[mode], keys, amount);
-      }
+        if (mode === "position") {
+          translateWithKeys(obj, keys, amount);
+        } else {
+          moveWithKeys(obj[mode], keys, amount);
+        }
 
-      if (mode === "scale") {
-        // No 0 size!
-        obj.scale.x = Math.max(0.01, obj.scale.x);
-        obj.scale.y = Math.max(0.01, obj.scale.y);
-        obj.scale.z = Math.max(0.01, obj.scale.z);
+        if (mode === "scale") {
+          // No 0 size!
+          obj.scale.x = Math.max(0.01, obj.scale.x);
+          obj.scale.y = Math.max(0.01, obj.scale.y);
+          obj.scale.z = Math.max(0.01, obj.scale.z);
+        }
       }
 
       if (!isViewer) { Env.events.emit('selectionChange', this.selected); }
@@ -103,7 +124,7 @@ class Editor extends Viewer {
     }
 
     // Check under mouse
-    const hits = this.raycast(room.scene.children, mouse.pos, camera);
+    const hits = raycaster(room.scene.children, mouse.pos, camera);
     this.hovering = hits[0] ? hits[0].object : null;
     if (mouse.right.clicked) {
       this.setSelected(this.hovering);

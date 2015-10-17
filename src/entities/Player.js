@@ -6,6 +6,8 @@ const dragView = require('../behaviours/dragView');
 const vertexCollision = require('../behaviours/vertexCollision');
 const Fallable = require('../behaviours/Fallable');
 
+const raycaster = require('../behaviours/raycaster');
+
 const Keys = require('../controls/KeyControls');
 const Room = require('../world/Room');
 const Controls = require('../controls/');
@@ -75,7 +77,7 @@ class Player extends Viewer {
     const DOWN = new THREE.Vector3(0, -1, 0);
 
     // Check down.
-    const below = this.raycast(children, headPos, DOWN)[0] || null;
+    const below = raycaster(children, headPos, DOWN)[0] || null;
     if (below) {
       const {object} = below;
       if (object) {
@@ -100,7 +102,7 @@ class Player extends Viewer {
     dragView(mouse, rotation, camera.rotation);
     this.handleMoveAndComputerKeys(keys, room);
      // Get hovered / selected item
-    const hits = this.raycast(children, mouse.pos, camera);
+    const hits = raycaster(children, mouse.pos, camera);
     this.hovering = hits[0] ? hits[0].object : null;
     if (mouse.left.clicked) {
       this.setSelected(this.hovering);

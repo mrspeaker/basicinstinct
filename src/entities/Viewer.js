@@ -1,6 +1,5 @@
 /* @flow */
 const Env = require('../Env');
-const Raycastable = require('../behaviours/Raycastable');
 const Transformable = require('../behaviours/Transformable');
 
 const {THREE} = require('three');
@@ -48,4 +47,4 @@ class Viewer {
 
 }
 
-module.exports = Transformable(Raycastable(Viewer));
+module.exports = Viewer;//Transformable(Viewer);
