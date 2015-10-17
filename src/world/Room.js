@@ -122,8 +122,7 @@ class Room {
   addItem (defn: Object): Item {
     const item = items[defn.type];
     if (!item) {
-      console.log('unknown item:', defn.type);
-      return null;
+      throw new Error('unknown item:', defn.type);
     }
 
     const args = defn.args || {};
@@ -159,13 +158,14 @@ class Room {
     return itemInst;
   }
 
-  removeItem (item:Object) {
+  removeItem (item:Object): Item {
     if (typeof item === 'number') {
       // Handle removing by id.
     }
 
     this.scene.remove(item.mesh);
     this.items = this.items.filter(i => i !== item);
+    return item;
   }
 
   getItem (id:Number): Item {
@@ -210,7 +210,9 @@ class Room {
         // room event.
         switch (name) {
         case 'showListing':
-          this.viewer.showListing(a.text);
+          if (this.viewer.showListing) {
+            this.viewer.showListing(a.text);
+          };
           break;
         case 'itemSelected':
           // THIS is if sent to room!
@@ -287,7 +289,7 @@ class Room {
 
     if (controls) {
 
-      this.viewer.update(renderer, camera, this, controls);
+      this.viewer.update(camera, this, controls);
 
       const newCollisions = new Set();
       const wasColliding = new Set();

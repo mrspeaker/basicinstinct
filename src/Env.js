@@ -1,17 +1,18 @@
 /* @flow */
-const WorldEvents = new (require('events').EventEmitter)();
+const {EventEmitter} = require('events');
+const WorldEvents = new EventEmitter();
 
-const Env:{
+const Env: {
   dom: Object,
   height: number,
   width: number,
-  events: Object,
+  events: EventEmitter,
   serialBus: Object
 } = {
   dom: document.body, // Overwrite me!
   height: 0,
   width: 0,
-  events: Object,
+  events: WorldEvents,
   serialBus: {}
 };
 

@@ -1,3 +1,4 @@
+/* @flow */
 const {THREE} = require('three');
 const Viewer = require('./Viewer');
 const translateWithKeys = require('../behaviours/translateWithKeys');
@@ -5,7 +6,16 @@ const dragView = require('../behaviours/dragView');
 const vertexCollision = require('../behaviours/vertexCollision');
 const Fallable = require('../behaviours/Fallable');
 
+const Keys = require('../controls/KeyControls');
+const Room = require('../world/Room');
+const Controls = require('../controls/');
+
 class Player extends Viewer {
+
+  gui: HTMLElement;
+  guiListing: HTMLElement;
+  guiPopup: HTMLElement;
+
   constructor () {
     super();
     this.type = "Player";
@@ -16,6 +26,7 @@ class Player extends Viewer {
     this.mesh.visible = false;
 
     this.initGUI();
+
   }
 
   initGUI () {
@@ -32,16 +43,16 @@ class Player extends Viewer {
     }, false);
   }
 
-  toggleUI (isOn) {
+  toggleUI (isOn: boolean) {
     this.gui.style.display = isOn ? 'block' : 'none';
   }
 
-  showListing (text) {
+  showListing (text: string) {
     this.guiListing.style.display = 'block';
     this.guiListing.querySelector('.content').innerHTML = text.replace(/\n/g, '<br/>');
   }
 
-  handleMoveAndComputerKeys (keys, room) {
+  handleMoveAndComputerKeys (keys: Keys, room: Room) {
     const {mesh, selected} = this;
     const usingComputer = selected && selected.type === "Computer";
 
@@ -54,7 +65,7 @@ class Player extends Viewer {
     translateWithKeys(mesh, keys, 0.05);
   }
 
-  checkGroundCollisions (children) {
+  checkGroundCollisions (children: Array<THREE.Object3d>) {
     const {position:pos} = this;
     const playerHeight = 1.0;
     const halfHeight = playerHeight / 2;
@@ -82,7 +93,7 @@ class Player extends Viewer {
     }
   }
 
-  update (renderer, camera, room, {mouse, keys}) {
+  update (camera: THREE.PerspectiveCamera, room:Room, {mouse, keys}:Controls) {
     const {rotation, mesh} = this;
     const children = room.scene.children;
 

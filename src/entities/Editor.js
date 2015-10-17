@@ -70,7 +70,7 @@ class Editor extends Viewer {
     }
   }
 
-  update (renderer, camera, room, {mouse, keys}) {
+  update (camera, room, {mouse, keys}) {
     const {left, right, forward, backward, up, down} = keys.move;
     const {mode, selected, mesh, rotation} = this;
     const isViewer = !this.selected;
